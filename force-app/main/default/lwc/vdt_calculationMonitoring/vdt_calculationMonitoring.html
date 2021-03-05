@@ -1,0 +1,66 @@
+<template>
+    <div class="container">
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12">
+                <lightning-layout>
+                    <lightning-layout-item>
+                        <ul>
+                            <li>
+                                <span>Total Calculations Capacity:</span>
+                                <span class="value">{_monitoringData.capacity}</span>
+                            </li>
+                            <li>
+                                <span><strong>In Progress</strong>:</span>
+                                <span class="value">{_monitoringData.inProgress}</span>
+                            </li>
+                            <li>
+                                <span><strong>In Queue</strong>:</span>
+                                <span class="value">{_monitoringData.inQueue}</span>
+                            </li>
+                            <li>
+                                <span><strong>Remaining</strong>:</span>
+                                <span class="value">{_monitoringData.remaining}</span>
+                            </li>
+                        </ul>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="monitoring-table">
+                <lightning-layout multiple-rows>
+                    <lightning-layout-item size="12">
+                        <lightning-layout horizontal-align="end">
+                            <lightning-layout-item>
+                                <lightning-button
+                                    variant="brand"
+                                    name="refresh"
+                                    label='Refresh'
+                                    onclick={handleRefresh}
+                                    disabled={_disableRefresh}
+                                ></lightning-button>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" class="monitoring-table">
+                        <template if:true={_showEmpty}>
+                            <lightning-layout-item size="12">
+                                <c-vdt_illustration-provider
+                                    svgname="showempty"
+                                    message="No calculations are running or queued right now."
+                                ></c-vdt_illustration-provider>
+                            </lightning-layout-item>
+                        </template>
+                        <template if:true={_showTable}>
+                            <lightning-datatable
+                                key-field="id"
+                                data={_monitoringData.calculationRecords}
+                                columns={_columns}
+                                hide-checkbox-column
+                            >
+                            </lightning-datatable>
+                        </template>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

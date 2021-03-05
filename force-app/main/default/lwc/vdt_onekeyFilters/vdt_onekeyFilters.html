@@ -1,0 +1,22 @@
+<template>
+    <div class="container">
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12">
+                <div class="title">Select Filter Criteria</div>
+            </lightning-layout-item>
+            <lightning-layout-item size="12">
+                <lightning-layout>
+                    <lightning-layout-item size="4" padding="horizontal-medium">
+                        <c-vdt_onekey-hcp-filters></c-vdt_onekey-hcp-filters>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="4" padding="horizontal-medium">
+                        <c-vdt_onekey-hco-filters></c-vdt_onekey-hco-filters>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="4" padding="horizontal-medium">
+                        <c-vdt_onekey-product-filters></c-vdt_onekey-product-filters>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

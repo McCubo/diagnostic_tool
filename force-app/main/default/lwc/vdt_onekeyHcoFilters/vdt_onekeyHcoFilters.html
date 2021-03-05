@@ -1,0 +1,45 @@
+<template>
+    <div class="container">
+        <lightning-layout>
+            <lightning-layout-item size="2" class="margin-icon-container">
+                <lightning-icon 
+                    icon-name="utility:resource_territory" 
+                    alternative-text="hco" 
+                    title="hco"
+                    size="large"
+                ></lightning-icon>
+            </lightning-layout-item>
+            <lightning-layout-item size="9">
+                <lightning-layout multiple-rows>
+                    <lightning-layout-item size="12">
+                        <lightning-combobox
+                            name="hco_speciality"
+                            value={_selectedHcoSpeciality}
+                            placeholder="HCO Speciality"
+                            options={_hcoSpecialityOptions}
+                            onchange={handleHcoSpecialityChange}
+                        ></lightning-combobox>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12">
+                        <lightning-combobox
+                            name="hco_type"
+                            value={_selectedHcoType}
+                            placeholder="HCO Type"
+                            options={_hcoTypeOptions}
+                            onchange={handleHcoTypeChange}
+                        ></lightning-combobox>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12">
+                        <lightning-combobox
+                            name="hco_city"
+                            value={_selectedHcoCity}
+                            placeholder="HCO City"
+                            options={_hcoCityOptions}
+                            onchange={handleHcoCityChange}
+                        ></lightning-combobox>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <isExposed>true</isExposed>
+    <lightningMessageFields>
+        <description>used to prpagate calculation data to other components that may format them appropriately</description>
+        <fieldName>data</fieldName>
+    </lightningMessageFields>
+    <masterLabel>vdt_calculationData</masterLabel>
+</LightningMessageChannel>

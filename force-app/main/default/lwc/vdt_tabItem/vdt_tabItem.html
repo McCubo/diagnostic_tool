@@ -1,0 +1,17 @@
+<template>
+    <div class={_containerClass}>
+        <lightning-layout vertical-align="center">
+            <lightning-layout-item>
+                <lightning-icon 
+                    icon-name={iconName} 
+                    alternative-text={tabName} 
+                    title={tabName}
+                    size="x-small"
+                ></lightning-icon>
+            </lightning-layout-item>
+            <lightning-layout-item>
+                <div class="action-label">{tabName}</div>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

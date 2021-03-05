@@ -1,0 +1,18 @@
+<template>
+    <div class="container">
+        <lightning-layout multiple-rows horizontal-align="center">
+            <lightning-layout-item size="6">
+                <lightning-input 
+                    type="search"
+                    placeholder="Search report/dashboard"
+                    autocomplete="off"
+                ></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="graphs">
+                <lightning-layout multiple-rows>
+                    <c-vdt_home-graphs></c-vdt_home-graphs>
+                </lightning-layout>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

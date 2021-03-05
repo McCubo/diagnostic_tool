@@ -1,0 +1,45 @@
+<template>
+    <div class="container">
+        <lightning-layout>
+            <lightning-layout-item size="2" class="margin-icon-container">
+                <lightning-icon 
+                    icon-name="utility:recipe" 
+                    alternative-text="product" 
+                    title="product"
+                    size="large"
+                ></lightning-icon>
+            </lightning-layout-item>
+            <lightning-layout-item size="9">
+                <lightning-layout multiple-rows>
+                    <lightning-layout-item size="12">
+                        <lightning-combobox
+                            name="sales_team"
+                            value={_selectedSalesTeam}
+                            placeholder="Sales Team"
+                            options={_salesTeamOptions}
+                            onchange={handleSalesTeamChange}
+                        ></lightning-combobox>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12">
+                        <lightning-combobox
+                            name="product"
+                            value={_selectedProduct}
+                            placeholder="Product"
+                            options={_productOptions}
+                            onchange={handleProductChange}
+                        ></lightning-combobox>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12">
+                        <lightning-combobox
+                            name="call_type"
+                            value={_selectedCallType}
+                            placeholder="Call Type"
+                            options={_callTypeOptions}
+                            onchange={handleCallTypeChange}
+                        ></lightning-combobox>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

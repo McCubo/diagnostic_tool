@@ -1,0 +1,20 @@
+<template>
+    <div class="container">
+        <lightning-card>
+            <div slot="title">
+                <div class="header-text">Veeva Diagnostic Tool</div>
+            </div>
+            <div slot="actions">
+                <c-vdt_profile-icon></c-vdt_profile-icon>
+            </div>
+            <lightning-layout>
+                <lightning-layout-item size="2">
+                    <c-vdt_sidebar></c-vdt_sidebar>
+                </lightning-layout-item>
+                <lightning-layout-item size="10">
+                    <c-vdt_workspace></c-vdt_workspace>
+                </lightning-layout-item>
+            </lightning-layout>
+        </lightning-card>
+    </div>
+</template>

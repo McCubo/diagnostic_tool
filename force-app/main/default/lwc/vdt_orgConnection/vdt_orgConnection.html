@@ -1,0 +1,18 @@
+<template>
+    <div class="container">
+        <lightning-layout multiple-rows horizontal-align="center">
+            <lightning-layout-item>
+                <div class="title">Select Veeva Org</div>
+            </lightning-layout-item>
+            <lightning-layout-item size="12">
+                <lightning-combobox
+                    name="select org"
+                    value={_selectedOrg}
+                    placeholder="Select an Org"
+                    options={orgOptions}
+                    onchange={handleOrgSelection}
+                ></lightning-combobox>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

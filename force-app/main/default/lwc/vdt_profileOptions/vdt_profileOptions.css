@@ -1,0 +1,18 @@
+li {
+    padding-left: 1rem !important;
+    cursor: pointer;
+}
+
+li:hover {
+    background-color: var(--base-primary-blue-dawn);
+}
+
+.action-label {
+    color: white;
+    font-size: 1rem;
+    padding: 0.5rem;
+}
+
+.option-icon {
+    --sds-c-icon-color-foreground-default: var(--base-secondary-white);
+}

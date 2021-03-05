@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AuthProvider xmlns="http://soap.sforce.com/2006/04/metadata">
+    <consumerKey>3MVG97wqanbUM37K7eSIbevewfSI4lfX47oBIES2Ryng8e7s6LUsaw8dy_aIiy2WqOaBbiDJhczEIwugn76EZ</consumerKey>
+    <consumerSecret>shsu4Z/v2gz6u3mq525dCFAJoDDQxXdm1HwfMWO81WDb85HmoZyiv1VOfA8LXQ1tOjgr0AxvBDOFHRi+SMVvV3BBGPdiC2rX</consumerSecret>
+    <defaultScopes>full</defaultScopes>
+    <friendlyName>VDT_ToolingAuth</friendlyName>
+    <includeOrgIdInIdentifier>true</includeOrgIdInIdentifier>
+    <providerType>Salesforce</providerType>
+    <sendAccessTokenInHeader>false</sendAccessTokenInHeader>
+    <sendClientCredentialsInHeader>false</sendClientCredentialsInHeader>
+    <sendSecretInApis>true</sendSecretInApis>
+</AuthProvider>

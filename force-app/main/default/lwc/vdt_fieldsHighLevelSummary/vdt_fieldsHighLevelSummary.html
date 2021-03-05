@@ -1,0 +1,45 @@
+<template>
+    <div class="container">
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12">
+                <lightning-layout horizontal-align="spread">
+                    <lightning-layout-item size="2">
+                        <lightning-input 
+                            type="text" 
+                            variant="label-hidden"
+                            name="field" 
+                            placeholder="Find field"
+                            value={_fieldFilterInput}
+                            onchange={handleFieldFilterInputChange}
+                        ></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item>
+                        <lightning-button
+                            variant="brand"
+                            name="export_csv"
+                            label='Export CSV'
+                            onclick={handleExportCSV}
+                        ></lightning-button>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="datatable">
+                <lightning-datatable
+                    key-field="name"
+                    data={_currentPageData}
+                    columns={_columns}
+                    hide-checkbox-column
+                ></lightning-datatable>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="paginator">
+                <c-vdt_paginator
+                    page-numbers={_pageNumbers}
+                    current-page={_currentPage}
+                    onprevious={handlePreviousClick}
+                    onpageclick={handlePageClick}
+                    onnext={handleNextClick}
+                ></c-vdt_paginator>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

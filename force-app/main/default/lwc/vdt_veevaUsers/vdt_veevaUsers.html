@@ -1,0 +1,15 @@
+<template>
+    <div class="container">
+        <lightning-datatable
+            key-field="id"
+            data={_users}
+            columns={_columns}
+            enable-infinite-loading
+            hide-checkbox-column
+            onloadmore={loadMoreData}
+            suppress-bottom-bar
+            onrowaction={handleRowAction}
+        >
+        </lightning-datatable>
+    </div>
+</template>

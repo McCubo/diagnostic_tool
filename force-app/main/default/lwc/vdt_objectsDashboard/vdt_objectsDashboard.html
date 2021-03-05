@@ -1,0 +1,36 @@
+<template>
+    <div class="container">
+        <lightning-layout multiple-rows>
+            <template if:true={_showEmpty}>
+                <lightning-layout-item size="12">
+                    <c-vdt_illustration-provider
+                        svgname="showempty"
+                        message="Select Analysis Parameters in 'Calculations' Tab to See Dashboard."
+                    ></c-vdt_illustration-provider>
+                </lightning-layout-item>
+            </template>
+            <template if:true={_showDashboard}>
+                <lightning-layout-item size="12">
+                    <c-vdt_analysis-dashboard-filter
+                        country-code-options={_countryCodeOptions}
+                        onfilterchange={handleFilterChange}
+                    ></c-vdt_analysis-dashboard-filter>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" class="charts">
+                    <lightning-layout>
+                        <lightning-layout-item size="6">
+                            <c-vdt_objects-fields-usage-chart
+                                calculation-data={_filteredData}
+                            ></c-vdt_objects-fields-usage-chart>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6">
+                            <c-vdt_unused-fields-on-layout-chart
+                                calculation-data={_filteredData}
+                            ></c-vdt_unused-fields-on-layout-chart>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </lightning-layout-item>
+            </template>
+        </lightning-layout>
+    </div>
+</template>

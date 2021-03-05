@@ -1,0 +1,31 @@
+<template>
+    <div class="container">
+        <lightning-layout multiple-rows horizontal-align="center">
+            <lightning-layout-item size="12">
+                <lightning-layout horizontal-align="center">
+                    <lightning-layout-item size="6">
+                        <div class="main-kpi-onekey" lwc:dom="manual"></div>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6" class="numerical-indicator-container slds-align_absolute-center">
+                        <c-vdt_number-kpi-indicator 
+                            current-value="90" 
+                            max-value="100"
+                            title="Users Main KPI"
+                            correct-value-treshold="80"
+                            warning-value-treshold="40"
+                            mode="scalar"
+                            show-max-value="true"
+                        ></c-vdt_number-kpi-indicator>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="second-row">
+                <lightning-layout horizontal-align="center">
+                    <lightning-layout-item size="12">
+                        <div class="main-kpi-products" lwc:dom="manual"></div>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

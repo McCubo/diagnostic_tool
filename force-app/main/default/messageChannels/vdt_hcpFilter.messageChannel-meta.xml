@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <isExposed>true</isExposed>
+    <lightningMessageFields>
+        <description>channel used to inform about HCP filtering criteria</description>
+        <fieldName>selectedTab</fieldName>
+    </lightningMessageFields>
+    <masterLabel>vdt_hcpFilter</masterLabel>
+</LightningMessageChannel>

@@ -1,0 +1,21 @@
+:host {
+    position: absolute;
+}
+
+.close-icon-container {
+    float: right;
+}
+
+section {
+    background-color: var(--base-primary-blue-breezy);
+    border-color: var(--base-primary-blue-breezy);
+}
+
+.slds-popover__body {
+    background-color: var(--base-primary-blue-breezy);
+    padding: 0;
+}
+
+.close-icon {
+    --sds-c-icon-color-foreground-default: var(--base-secondary-white);
+}

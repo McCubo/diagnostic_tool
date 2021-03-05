@@ -1,0 +1,37 @@
+<template>
+    <div class="container">
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12">
+                <div class="label slds-text-color_default">
+                    {label}
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item size="12">
+                <lightning-layout>
+                    <lightning-layout-item size="6">
+                        <lightning-combobox
+                            class="year"
+                            name="year"
+                            placeholder="Year"
+                            options={_yearOptions}
+                            onchange={handleYearChange}
+                            variant="label-hidden"
+                            disabled={_yearPickerDisabled}
+                        ></lightning-combobox>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6">
+                        <lightning-combobox
+                            class="month"
+                            name="month"
+                            placeholder="Month"
+                            options={_monthOptions}
+                            onchange={handleMonthChange}
+                            variant="label-hidden"
+                            disabled={_monthPickerDisabled}
+                        ></lightning-combobox>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

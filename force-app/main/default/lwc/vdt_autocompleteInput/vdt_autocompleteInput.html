@@ -1,0 +1,65 @@
+<template>
+    <div class="container">
+        <template if:true={_showSpinner}>
+            <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+        </template>
+        <lightning-input 
+            type="text" 
+            label={label} 
+            placeholder={placeholder}
+            onchange={handleInputChange}
+            value={_inputValue}
+            onclick={handleInputClick}
+            onblur={handleBlur}
+            variant={_labelVariant}
+            autocomplete="off"
+            disabled={disabled}
+        ></lightning-input>
+        <template if:true={_showSuggestions}>
+            <div class="slds-is-relative">
+                <div    
+                    id="listbox-id-4" 
+                    class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" 
+                    role="listbox"
+                    onmouseenter={handleMouseEnter}
+                    onmouseleave={handleMouseLeave}
+                >
+                    <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                    <template for:each={_suggestions} for:item="suggestion">
+                        <li 
+                            role="presentation" 
+                            class="slds-listbox__item" 
+                            key={suggestion.value}
+                            data-value={suggestion.value}
+                            data-label={suggestion.label}
+                            onclick={handleSuggestionClick}
+                        >
+                            <div 
+                                class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option"
+                                title={suggestion.title}
+                            >
+                                <template if:true={suggestion.selected}>
+                                    <span class="slds-media__figure">
+                                        <lightning-icon 
+                                            icon-name="utility:check" 
+                                            alternative-text="check" 
+                                            size="x-small"
+                                            title="check"
+                                        ></lightning-icon>
+                                    </span>
+                                </template>
+                                <span class="slds-media__body">
+                                    <span class="slds-truncate">{suggestion.label}</span>
+                                    <template if:true={suggestion.secondaryLabel}>
+                                        <span class="slds-truncate secondary-label">{suggestion.secondaryLabel}</span>
+                                    </template>
+                                </span>
+                            </div>
+                        </li>
+                    </template>
+                    </ul>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

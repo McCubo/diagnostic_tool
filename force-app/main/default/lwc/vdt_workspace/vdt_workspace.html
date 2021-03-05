@@ -1,0 +1,22 @@
+<template>
+    <div class="container">
+        <template if:true={showHome}>
+            <c-vdt_home></c-vdt_home>
+        </template>
+        <template if:true={showOneKey}>
+            <c-vdt_onekey-data></c-vdt_onekey-data>
+        </template>
+        <template if:true={showFieldAnalysis}>
+            <c-vdt_objects></c-vdt_objects>
+        </template>
+        <template if:true={showUsers}>
+            <c-vdt_veeva-users></c-vdt_veeva-users>
+        </template>
+        <template if:true={showProducts}>
+            <c-vdt_products-and-hierarchy></c-vdt_products-and-hierarchy>
+        </template>
+        <template if:true={showSettings}>
+            settings
+        </template>
+    </div>
+</template>

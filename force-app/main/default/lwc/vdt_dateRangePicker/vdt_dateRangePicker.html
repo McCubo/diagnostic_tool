@@ -1,0 +1,31 @@
+<template>
+    <div class="container">
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12" class="date-picker">
+                <c-vdt_month-year-picker
+                    class="validate"
+                    min-year={_minStartYear}
+                    max-year={_maxStartYear}
+                    label="Start Date"
+                    ondatechange={handleStartDateChange}
+                    year-required
+                    disabled={disabled}
+                ></c-vdt_month-year-picker>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="date-picker">
+                <c-vdt_month-year-picker
+                    class="validate"
+                    min-year={_minEndYear}
+                    max-year={_maxEndYear}
+                    min-month={_minEndMonth}
+                    label="End Date"
+                    ondatechange={handleEndDateChange}
+                    year-disabled={_endYearDisabled}
+                    month-disabled={_endMonthDisabled}
+                    month-required={_endMonthRequired}
+                    disabled={disabled}
+                ></c-vdt_month-year-picker>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

@@ -1,0 +1,51 @@
+<template>
+    <div class="slds-align_absolute-center">
+        <template if:true={showPagination}>
+            <ul class="slds-button-group-row">
+                <c-vdt_pagination-item 
+                    icon-name="utility:chevronleft" 
+                    onclick={goToPrevious}
+                ></c-vdt_pagination-item>
+                <template if:true={_showFirst}>
+                    <c-vdt_pagination-item
+                        page-number={_firstPageNumber} 
+                        data-page-number={pageNumber}
+                        onclick={firstClick}
+                        current-page-number={currentPage}
+                    ></c-vdt_pagination-item>
+                </template>
+                <template if:true={_showStartDots}>    
+                    <c-vdt_pagination-item 
+                        page-number='...'>
+                    </c-vdt_pagination-item>
+                </template>
+                <template for:each={_visiblePages} for:item="pageNumber">
+                    <c-vdt_pagination-item 
+                        key={pageNumber} 
+                        page-number={pageNumber} 
+                        data-page-number={pageNumber}
+                        onclick={goToPage} 
+                        current-page-number={currentPage}
+                    ></c-vdt_pagination-item>
+                </template>
+                <template if:true={_showEndDots}>
+                    <c-vdt_pagination-item 
+                        page-number='...'>
+                    </c-vdt_pagination-item>
+                </template>
+                <template if:true={_showLast}>
+                    <c-vdt_pagination-item
+                        page-number={_lastPageNumber} 
+                        data-page-number={pageNumber}
+                        onclick={lastClick}
+                        current-page-number={currentPage}
+                    ></c-vdt_pagination-item>
+                </template>
+                <c-vdt_pagination-item 
+                    icon-name="utility:chevronright" 
+                    onclick={goToNext}
+                ></c-vdt_pagination-item>
+            </ul>
+        </template>
+    </div>
+</template>

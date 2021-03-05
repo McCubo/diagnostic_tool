@@ -1,0 +1,45 @@
+<template>
+    <div class="container">
+        <lightning-layout>
+            <lightning-layout-item size="2" class="margin-icon-container">
+                <lightning-icon 
+                    icon-name="utility:resource_territory" 
+                    alternative-text="hcp" 
+                    title="hcp"
+                    size="large"
+                ></lightning-icon>
+            </lightning-layout-item>
+            <lightning-layout-item size="9">
+                <lightning-layout multiple-rows>
+                    <lightning-layout-item size="12">
+                        <lightning-combobox
+                            name="hcp_speciality"
+                            value={_selectedHcpSpeciality}
+                            placeholder="HCP Speciality"
+                            options={_hcpSpecialityOptions}
+                            onchange={handleHcpSpecialityChange}
+                        ></lightning-combobox>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12">
+                        <lightning-combobox
+                            name="hcp_type"
+                            value={_selectedHcpType}
+                            placeholder="HCP Type"
+                            options={_hcpTypeOptions}
+                            onchange={handleHcpTypeChange}
+                        ></lightning-combobox>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12">
+                        <lightning-combobox
+                            name="hcp_city"
+                            value={_selectedHcpCity}
+                            placeholder="HCP City"
+                            options={_hcpCityOptions}
+                            onchange={handleHcpCityChange}
+                        ></lightning-combobox>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

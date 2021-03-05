@@ -1,0 +1,53 @@
+<template>
+    <div class="conatiner">
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12">
+                <lightning-layout horizontal-align="spread">
+                    <lightning-layout-item size="4">
+                        <c-vdt_objects-calculation-filter
+                            ondiagnose={handleDiagnose}
+                            disabled={_filterDisabled}
+                        ></c-vdt_objects-calculation-filter>
+                    </lightning-layout-item>
+                    <template if:true={_showCalculationButton}>
+                        <lightning-layout-item>
+                            <c-vdt_calculation-button
+                                last-calculation-date={_calculation.calculationDate}
+                                calculation-status={_calculation.status}
+                                oncalculate={handleCalculate}
+                            ></c-vdt_calculation-button>
+                        </lightning-layout-item>
+                    </template>
+                </lightning-layout>
+            </lightning-layout-item>
+            <template if:true={_showCalculationSection}>
+                <lightning-layout-item size="12" class="calculation-section">
+                    <lightning-layout multiple-rows>
+                        <template if:true={_showEmpty}>
+                            <lightning-layout-item size="12">
+                                <c-vdt_illustration-provider
+                                    svgname="showempty"
+                                    message={_emptyMessage}
+                                ></c-vdt_illustration-provider>
+                            </lightning-layout-item>
+                        </template>
+                        <template if:true={_showCalculation}>
+                            <lightning-layout-item size="12">
+                                <c-vdt_fields-high-level-summary
+                                    calculation-data={_calculation.data}
+                                    object-name={_filter.objectName}
+                                ></c-vdt_fields-high-level-summary>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" class="detail-calculation">
+                                <c-vdt_field-detail-level-summary
+                                    calculation-data={_calculation.data}
+                                    object-name={_filter.objectName}
+                                ></c-vdt_field-detail-level-summary>
+                            </lightning-layout-item>
+                        </template>
+                    </lightning-layout>
+                </lightning-layout-item>
+            </template>
+        </lightning-layout>
+    </div>
+</template>

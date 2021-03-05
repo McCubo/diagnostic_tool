@@ -1,0 +1,23 @@
+<template>
+    <div class="container">
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12">
+                <div class="title">
+                    {title}
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item size="12">
+                <div class={_valueStyle}>
+                    <span>{_valueString}</span>
+                </div>
+            </lightning-layout-item>
+            <template if:true={showMaxValue}>
+                <lightning-layout-item size="12">
+                    <div class="max-value value-neutral">
+                        <span>{maxValue}</span>
+                    </div>
+                </lightning-layout-item>
+            </template>
+        </lightning-layout>
+    </div>
+</template>

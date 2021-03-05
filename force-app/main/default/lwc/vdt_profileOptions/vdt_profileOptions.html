@@ -1,0 +1,82 @@
+<template>
+    <div class="container">
+        <ul class="slds-has-block-links_space">
+            <li 
+                class="slds-item"
+                onclick={handleProfileClick}
+            >
+                <lightning-layout vertical-align="center">
+                    <lightning-layout-item>
+                        <lightning-icon 
+                            icon-name="utility:identity" 
+                            alternative-text="profile" 
+                            title="profile"
+                            size="x-small"
+                            class="option-icon"
+                        ></lightning-icon>
+                    </lightning-layout-item>
+                    <lightning-layout-item>
+                        <div class="action-label">Profile</div>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </li>
+            <li 
+                class="slds-item"
+                onclick={handleHelpClick}
+            >
+                <lightning-layout vertical-align="center">
+                    <lightning-layout-item>
+                        <lightning-icon 
+                            icon-name="utility:info" 
+                            alternative-text="help" 
+                            title="help"
+                            size="x-small"
+                            class="option-icon"
+                        ></lightning-icon>
+                    </lightning-layout-item>
+                    <lightning-layout-item>
+                        <div class="action-label">Help</div>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </li>
+            <li 
+                class="slds-item"
+                onclick={handleSuggestFeatureClick}
+            >
+                <lightning-layout vertical-align="center">
+                    <lightning-layout-item>
+                        <lightning-icon 
+                            icon-name="utility:share_post" 
+                            alternative-text="suggest" 
+                            title="suggest"
+                            size="x-small"
+                            class="option-icon"
+                        ></lightning-icon>
+                    </lightning-layout-item>
+                    <lightning-layout-item>
+                        <div class="action-label">Suggest a Feature</div>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </li>
+            <li 
+                class="slds-item"
+                onclick={handleLogoutClick}
+            >
+                <lightning-layout vertical-align="center">
+                    <lightning-layout-item>
+                        <lightning-icon 
+                            icon-name="utility:logout" 
+                            alternative-text="logout" 
+                            title="logout"
+                            size="x-small"
+                            class="option-icon"
+                        ></lightning-icon>
+                    </lightning-layout-item>
+                    <lightning-layout-item>
+                        <div class="action-label">Logout</div>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </li>
+        </ul>
+    </div>
+</template>

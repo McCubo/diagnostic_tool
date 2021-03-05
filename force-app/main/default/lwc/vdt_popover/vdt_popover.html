@@ -1,0 +1,28 @@
+<template>
+    <div class="container">
+        
+    <section 
+        aria-describedby="dialog-body-id-98" 
+        aria-labelledby="dialog-heading-id-103" 
+        class={_sectionClass} 
+        role="dialog"
+    >
+        <template if:true={showCloseButton}>
+            <div class="close-icon-container slds-popover__close">
+                <lightning-button-icon 
+                    icon-name="utility:close" 
+                    variant="bare" 
+                    alternative-text="close" 
+                    title="close"
+                    size="small"
+                    onclick={handleCloseClick}
+                    icon-class="close-icon"
+                ></lightning-button-icon>
+            </div>
+        </template>
+        <div class="slds-popover__body" id="dialog-body-id-98">
+            <slot name="body"></slot>
+        </div>
+      </section>
+    </div>
+</template>

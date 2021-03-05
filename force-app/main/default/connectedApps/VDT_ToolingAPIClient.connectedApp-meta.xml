@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ConnectedApp xmlns="http://soap.sforce.com/2006/04/metadata">
+    <contactEmail>a.sawicki@polsource.com</contactEmail>
+    <label>VDT_ToolingAPIClient</label>
+    <oauthConfig>
+        <callbackUrl>https://base-crm--baselife.my.salesforce.com/services/authcallback/VDT_ToolingAuth</callbackUrl>
+        <consumerKey>3MVG97wqanbUM37K7eSIbevewfSI4lfX47oBIES2Ryng8e7s6LUsaw8dy_aIiy2WqOaBbiDJhczEIwugn76EZ</consumerKey>
+        <isAdminApproved>true</isAdminApproved>
+        <isConsumerSecretOptional>false</isConsumerSecretOptional>
+        <isIntrospectAllTokens>false</isIntrospectAllTokens>
+        <scopes>Basic</scopes>
+        <scopes>Api</scopes>
+        <scopes>Web</scopes>
+        <scopes>Full</scopes>
+        <scopes>Chatter</scopes>
+        <scopes>CustomApplications</scopes>
+        <scopes>RefreshToken</scopes>
+        <scopes>OpenID</scopes>
+        <scopes>CustomPermissions</scopes>
+        <scopes>Wave</scopes>
+        <scopes>Eclair</scopes>
+        <scopes>Pardot</scopes>
+        <scopes>Lightning</scopes>
+        <scopes>Content</scopes>
+    </oauthConfig>
+    <oauthPolicy>
+        <ipRelaxation>ENFORCE</ipRelaxation>
+        <refreshTokenPolicy>infinite</refreshTokenPolicy>
+    </oauthPolicy>
+    <profileName>System Administrator</profileName>
+</ConnectedApp>

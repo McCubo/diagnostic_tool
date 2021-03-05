@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Running_Calculations_Upper_Bound</fullName>
+    <active>true</active>
+    <description>Upper bound for running calculations set according to governor limits.</description>
+    <errorConditionFormula>Maximum_Running_Calculations__c &gt; 5</errorConditionFormula>
+    <errorDisplayField>Maximum_Running_Calculations__c</errorDisplayField>
+    <errorMessage>According to Salesforce Governor Limits, Maximum Running Calculations must be less than or equal 5</errorMessage>
+</ValidationRule>

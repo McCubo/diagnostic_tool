@@ -1,0 +1,9 @@
+.container {
+    position: relative;
+}
+
+.secondary-label {
+    margin-left: 0.5rem;
+    color: var(--base-secondary-grey);
+    width: 100%;
+}

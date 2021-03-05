@@ -1,0 +1,23 @@
+<template>
+    <div class="container">
+        <!-- <template if:true={_showSpinner}>
+            <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+        </template> -->
+        <lightning-layout multiple-rows>
+            <template if:true={_showLastCalculation}>
+                <lightning-layout-item size="12">
+                    <strong>Last Calculation: {lastCalculationDate}</strong>
+                </lightning-layout-item>
+            </template>
+            <lightning-layout-item size="12" class="calculation-button">
+                <lightning-button
+                    variant="neutral"
+                    name="recalculate"
+                    label={_buttonLabel}
+                    onclick={handleButtonClick}
+                    disabled={_buttonDisabled}
+                ></lightning-button>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

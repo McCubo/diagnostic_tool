@@ -1,0 +1,54 @@
+<template>
+    <div class="container">
+        <lightning-layout multiple-rows horizontal-align="center">
+            <lightning-layout-item size="12">
+                <lightning-layout horizontal-align="center">
+                    <lightning-layout-item size="4" class="numerical-indicator-container slds-align_absolute-center">
+                        <c-vdt_number-kpi-indicator 
+                            current-value={_xKpiValue}
+                            max-value="100"
+                            title="KPI X"
+                            correct-value-treshold="80"
+                            warning-value-treshold="40"
+                            mode="scalar"
+                        ></c-vdt_number-kpi-indicator>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="4">
+                        <div class="kpi-1" lwc:dom="manual"></div>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="4" class="numerical-indicator-container slds-align_absolute-center">
+                        <c-vdt_number-kpi-indicator 
+                            current-value={_yKpiValue} 
+                            max-value="100"
+                            title="KPI Y"
+                            correct-value-treshold="80"
+                            warning-value-treshold="40"
+                            mode="percentage"
+                        ></c-vdt_number-kpi-indicator>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="second-row">
+                <lightning-layout horizontal-align="center">
+                    <lightning-layout-item size="4">
+                        <div class="kpi-2" lwc:dom="manual"></div>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="4" class="numerical-indicator-container slds-align_absolute-center">
+                        <c-vdt_number-kpi-indicator 
+                            current-value={_zKpiValue}
+                            max-value="10"
+                            title="KPI Z"
+                            correct-value-treshold="80"
+                            warning-value-treshold="40"
+                            mode="scalar"
+                            show-max-value="false"
+                        ></c-vdt_number-kpi-indicator>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="4">
+                        <div class="kpi-3" lwc:dom="manual"></div>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

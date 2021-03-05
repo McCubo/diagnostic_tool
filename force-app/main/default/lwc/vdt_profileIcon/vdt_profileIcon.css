@@ -1,0 +1,17 @@
+.container {
+    position: relative;
+}
+
+lightning-icon {
+    cursor: pointer;
+}
+
+c-vdt_popover {
+    left: -16rem;
+    top: -0.25rem;
+}
+
+.profile-icon {
+    --sds-c-icon-color-foreground-default: var(--base-primary-grey-contrast);
+    --sds-c-icon-color-background: var(--base-primary-grey);
+}

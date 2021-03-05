@@ -1,0 +1,23 @@
+<template>
+    <div class="container">
+        <lightning-layout>
+            <lightning-layout-item size="2" class="country-select">
+                <c-vdt_autocomplete-input
+                    multiselect
+                    placeholder="Select Country"
+                    options={countryCodeOptions}
+                    onoptionselect={handleCountryOptionSelect}
+                ></c-vdt_autocomplete-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="2" class="checkbox">
+                <lightning-input 
+                    type="checkbox" 
+                    label={_excludeFieldsCheckboxLabel} 
+                    name="exclude" 
+                    value={_filter.excludeStandardFields}
+                    onchange={handleExcludeStandardFieldsChange}
+                ></lightning-input>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

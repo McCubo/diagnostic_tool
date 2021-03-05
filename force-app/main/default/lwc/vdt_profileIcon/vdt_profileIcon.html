@@ -1,0 +1,22 @@
+<template>
+    <div class="container">
+        <lightning-icon 
+            icon-name="action:user" 
+            alternative-text="profile" 
+            title="profile"
+            size="medium"
+            onclick={handleClick}
+            class="profile-icon"
+        ></lightning-icon>
+        <template if:true={_popoverVisible}>
+            <c-vdt_popover
+                nubbin-position="right-top"
+                onclose={handleClosePopover}
+            >
+                <span slot="body">
+                    <c-vdt_profile-options></c-vdt_profile-options>
+                </span>
+            </c-vdt_popover>
+        </template>
+    </div>
+</template>

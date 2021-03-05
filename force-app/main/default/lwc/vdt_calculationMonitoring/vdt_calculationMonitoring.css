@@ -1,0 +1,20 @@
+.table-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+ul {
+    font-size: 1rem;
+}
+
+ul li .value {
+    margin-left: 0.5rem;
+}
+
+.monitoring-table {
+    margin-top: 2rem;
+}
+
+.monitoring-table {
+    margin-top: 1rem;
+}
