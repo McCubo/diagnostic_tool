@@ -1,12 +1,24 @@
 <template>
     <div class="container">
-        <lightning-layout multiple-rows horizontal-align="center">
+        <lightning-layout multiple-rows>
             <lightning-layout-item size="12">
-                <c-vdt_onekey-filters></c-vdt_onekey-filters>
+                <lightning-layout horizontal-align="spread">
+                    <lightning-layout-item size="10">
+                        <c-vdt_onekey-filters></c-vdt_onekey-filters>
+                    </lightning-layout-item>                    
+                    <lightning-layout-item>
+                        <lightning-button label="Calculate"></lightning-button>
+                    </lightning-layout-item>
+                </lightning-layout>
             </lightning-layout-item>
             <lightning-layout-item size="12" class="graphs">
                 <lightning-layout multiple-rows>
-                    <c-vdt_onekey-graphs></c-vdt_onekey-graphs>
+                    <c-vdt_onekey-analysis-summary></c-vdt_onekey-analysis-summary>
+                </lightning-layout>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="graphs">
+                <lightning-layout multiple-rows>
+                    <c-vdt_onekey-analysis-details></c-vdt_onekey-analysis-details>
                 </lightning-layout>
             </lightning-layout-item>
         </lightning-layout>

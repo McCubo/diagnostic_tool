@@ -1,0 +1,15 @@
+<template>
+    <div class="slds-m-around_medium">
+        <div class="slds-grid slds-grid_align-spread slds-p-bottom_x-small" id="progress-bar-label-id-5">
+            <span>Actual: {actualValue}</span>
+            <span aria-hidden="true">
+                <strong>Target: {targetValue}</strong>
+            </span>
+        </div>
+        <div class="slds-progress-bar slds-progress-bar_medium slds-progress-bar_circular" aria-valuemin="0" aria-valuemax="101" aria-valuenow="100" role="progressbar">
+            <span class={cssClass} style={completion}>
+                <span class="slds-assistive-text">Progress: 25%</span>
+            </span>
+        </div>  
+    </div>
+</template>

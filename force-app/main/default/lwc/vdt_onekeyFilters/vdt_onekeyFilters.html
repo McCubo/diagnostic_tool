@@ -6,16 +6,23 @@
             </lightning-layout-item>
             <lightning-layout-item size="12">
                 <lightning-layout>
-                    <lightning-layout-item size="4" padding="horizontal-medium">
-                        <c-vdt_onekey-hcp-filters></c-vdt_onekey-hcp-filters>
-                    </lightning-layout-item>
-                    <lightning-layout-item size="4" padding="horizontal-medium">
-                        <c-vdt_onekey-hco-filters></c-vdt_onekey-hco-filters>
-                    </lightning-layout-item>
-                    <lightning-layout-item size="4" padding="horizontal-medium">
-                        <c-vdt_onekey-product-filters></c-vdt_onekey-product-filters>
+                    <lightning-layout-item size="4">
+                        <c-vdt_autocomplete-input
+                            multiselect
+                            label="Country"
+                            placeholder="Select Country"
+                            options={_countryCodeOptions}
+                            onoptionselect={handleCountryOptionSelect}
+                        ></c-vdt_autocomplete-input>
                     </lightning-layout-item>
                 </lightning-layout>
+            </lightning-layout-item>
+            <lightning-layout-item size="6" class="slds-m-top_large">
+                Apply date range on transactional records
+                <c-vdt_date-range-picker
+                    class="validate range-picker"
+                    onrangechange={handleDateRangeChange}
+                    disabled={disabled}></c-vdt_date-range-picker>                
             </lightning-layout-item>
         </lightning-layout>
     </div>

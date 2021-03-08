@@ -1,0 +1,25 @@
+<template>
+    <div class="container">
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12">
+                <lightning-layout horizontal-align="end">
+                    <lightning-layout-item>
+                        <lightning-button
+                            variant="brand"
+                            name="export_csv"
+                            label='Export CSV'
+                            onclick={handleExportCSV}
+                        ></lightning-button>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="datatable">
+                <c-vdt_datatable key-field="id"
+                                  data={data} 
+                                  columns={columns} 
+                                  hide-checkbox-column>
+                </c-vdt_datatable>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>
