@@ -24,7 +24,7 @@ export const TABS = {
         active: false
     },
     products: {
-        name: 'Product and Territory',
+        name: 'Product Hierarchy and Adoption',
         icon: 'utility:hierarchy',
         active: false
     },
@@ -34,7 +34,7 @@ export const TABS = {
         active: false
     }
 }
-export const DEFAULT_TAB = TABS.home;
+export const DEFAULT_TAB = TABS.onekey;
 
 export default class Vdt_tabs extends LightningElement {
     _currentTab = DEFAULT_TAB;
