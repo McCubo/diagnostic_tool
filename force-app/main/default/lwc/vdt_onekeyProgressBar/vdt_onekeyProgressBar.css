@@ -1,0 +1,12 @@
+.bar-step {
+    position:absolute;
+    margin-top:-12px;
+	z-index:1;
+    font-size:12px;
+}
+
+.label-line {
+    background: #000;
+    height:16px;
+	width:1px;
+}

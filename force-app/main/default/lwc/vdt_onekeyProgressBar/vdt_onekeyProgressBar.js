@@ -1,7 +1,7 @@
 import { api, LightningElement } from 'lwc';
 
-const BAR_CLASS= 'slds-progress-bar__value';
-const BAR_CLASS_COMPLETED = 'slds-progress-bar__value_success';
+const KPI_TYPE_LOWER_IS_BETTER = 'lower';
+const KPI_TYPE_HIGHER_IS_BETTER = 'higher';
 
 export default class Vdt_onekeyProgressBar extends LightningElement {
     
@@ -11,15 +11,29 @@ export default class Vdt_onekeyProgressBar extends LightningElement {
     actualValue;
     @api
     targetValue;
+    @api
+    kpiType;
+
+    get actualValueLabel() {
+        return this.actualValue + '%';
+    }
+
+    get targetValueLabel() {
+        return this.targetValue + '%';
+    }
 
     get completion() {
-        return 'width:' + ((this.actualValue/this.targetValue) *100) + '%';
+        let progressConfig = 'width:' + this.actualValue + '%;';
+        if ((this.kpiType == KPI_TYPE_HIGHER_IS_BETTER && this.actualValue >= this.targetValue) || (this.kpiType == KPI_TYPE_LOWER_IS_BETTER && this.actualValue <= this.targetValue)) {
+            progressConfig += 'background: #4bca81';
+        } else {
+            progressConfig += 'background: #FF0000';
+        }
+        return progressConfig;
     }
 
-    get cssClass() {
-        if (this.actualValue == this.targetValue) {
-            return BAR_CLASS + ' ' + BAR_CLASS_COMPLETED;
-        }
-        return BAR_CLASS;
+    get targetPercentage() {
+        return 'left:' + this.targetValue + '%';
     }
+
 }
