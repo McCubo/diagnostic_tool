@@ -2,11 +2,26 @@
     <div class="container">
         <lightning-layout multiple-rows>
             <lightning-layout-item size="12">
-                <lightning-layout horizontal-align="spread">
-                    <lightning-layout-item size="10">
-                        <c-vdt_onekey-detail-filters></c-vdt_onekey-detail-filters>
+                <lightning-layout>
+                    <lightning-layout-item size="4">
+                        <c-vdt_autocomplete-input
+                            multiselect
+                            label="Speciality"
+                            placeholder="Select an Speciality"
+                            options={_specialityOptions}
+                            onoptionselect={handleSpecialityChange}
+                        ></c-vdt_autocomplete-input>
                     </lightning-layout-item>
-                    <lightning-layout-item>
+                    <lightning-layout-item size="4" padding="horizontal-small">
+                        <c-vdt_autocomplete-input
+                            multiselect
+                            label="Record Type"
+                            placeholder="Select a Record Type"
+                            options={_recordTypeOptions}
+                            onoptionselect={handleRecordTypeChange}
+                        ></c-vdt_autocomplete-input>                       
+                    </lightning-layout-item>
+                    <lightning-layout-item alignment-bump="left">
                         <lightning-button
                             variant="brand"
                             name="export_csv"
@@ -19,7 +34,7 @@
             <lightning-layout-item size="12" class="datatable">
                 <lightning-datatable
                     columns={gridColumns}
-                    data={gridData}
+                    data={_data}
                     key-field="id"
                     hide-checkbox-column
                 ></lightning-datatable>
