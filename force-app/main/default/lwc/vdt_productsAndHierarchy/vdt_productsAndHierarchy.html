@@ -1,3 +1,27 @@
 <template>
-    <div class="tree"></div>
+    <lightning-layout>
+        <lightning-layout-item size="4">
+            <c-vdt_autocomplete-input
+                multiselect
+                label="Country"
+                placeholder="Select Countries"
+                options={_countries}
+                onoptionselect={handleCountryChange}
+            ></c-vdt_autocomplete-input>
+        </lightning-layout-item>
+        <lightning-layout-item size="4" padding="horizontal-small">
+            <c-vdt_autocomplete-input
+                multiselect
+                label="Product Type"
+                placeholder="Select Product Types"
+                options={_productTypes}
+                onoptionselect={handleProductTypeChange}
+            ></c-vdt_autocomplete-input>                       
+        </lightning-layout-item>
+    </lightning-layout>
+    <div class="slds-m-top_medium slds-m-bottom_x-large">
+        <div class="slds-p-around_medium">
+            <lightning-tree items={treeData} header="Product Hierarchy"></lightning-tree>
+        </div>
+    </div>
 </template>
