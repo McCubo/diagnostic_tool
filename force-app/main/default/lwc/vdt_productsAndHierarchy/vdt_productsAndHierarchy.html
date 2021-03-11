@@ -24,4 +24,14 @@
             <lightning-tree items={treeData} header="Product Hierarchy"></lightning-tree>
         </div>
     </div>
+    <lightning-accordion class="example-accordion" allow-multiple-sections-open>
+        <lightning-accordion-section name="product_table" label="Product Adoption Analysis">
+            <lightning-datatable
+                key-field="id"
+                data={data}
+                columns={columns}
+                hide-checkbox-column>
+            </lightning-datatable>        
+        </lightning-accordion-section>
+    </lightning-accordion>
 </template>

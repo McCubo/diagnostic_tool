@@ -3,7 +3,7 @@
         <div class="slds-grid slds-grid_align-spread slds-p-bottom_x-small" id="progress-bar-label-id-5">
             <span>Actual: {actualValueLabel}</span>
             <span aria-hidden="true">
-                <strong>Target: {targetValueLabel}</strong>
+                <strong>{targetValueLabel}</strong>
             </span>
         </div> 
         <div title={actualValueLabel} class="slds-progress-bar slds-progress-bar_small" aria-valuemin="0" role="progressbar">
@@ -11,7 +11,7 @@
                 <span class="slds-assistive-text">Progress: {completion}</span>
             </span>
         </div>
-        <div class="bar-step" style={targetPercentage}>
+        <div title={targetValueLabel} class="bar-step" style={targetPercentage}>
             <div class="label-line"></div>
         </div>
         <div class="slds-float_left">0%</div>

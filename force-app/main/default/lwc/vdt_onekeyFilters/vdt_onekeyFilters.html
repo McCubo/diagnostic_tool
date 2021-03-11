@@ -4,9 +4,8 @@
             <lightning-layout-item size="12">
                 <lightning-layout>
                     <lightning-layout-item size="4">
+                        <p class="input-label">Country</p>
                         <c-vdt_autocomplete-input
-                            multiselect
-                            label="Country"
                             placeholder="Select Country"
                             options={_countryCodeOptions}
                             onoptionselect={handleCountryOptionSelect}
@@ -15,7 +14,7 @@
                 </lightning-layout>
             </lightning-layout-item>
             <lightning-layout-item size="6" class="slds-m-top_large">
-                Apply date range on transactional records
+                <p class="bold-text">Apply date range on transactional records</p>
                 <c-vdt_date-range-picker
                     class="validate range-picker"
                     onrangechange={handleDateRangeChange}

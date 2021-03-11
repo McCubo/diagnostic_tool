@@ -2,3 +2,11 @@
     font-size: 1.25rem;
     color: var(--base-secondary-black);
 }
+
+.bold-text {
+    font-weight: bold;
+}
+
+.input-label {
+    font-size: medium;
+}

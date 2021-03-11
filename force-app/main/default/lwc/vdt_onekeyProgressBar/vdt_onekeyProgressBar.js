@@ -19,7 +19,7 @@ export default class Vdt_onekeyProgressBar extends LightningElement {
     }
 
     get targetValueLabel() {
-        return this.targetValue + '%';
+        return 'Target: ' + this.targetValue + '%';
     }
 
     get completion() {
