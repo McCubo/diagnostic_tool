@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
+  <!--
   <types>
     <name>CustomApplication</name>
     <members>Veeva_Diagnostic_Tool</members>
   </types>
+  -->
   <types>
     <name>ApexClass</name>
     <members>VDT_AnalysisDashboardFilterController</members>
@@ -20,7 +22,7 @@
     <members>VDT_DataCalculationSelector</members>
     <members>VDT_DataCalculationService</members>
     <members>VDT_DataCalculationTriggerHandler</members>
-    <members>VDT_DataCalculationTriggerTest</members>
+    <!-- <members>VDT_DataCalculationTriggerTest</members> -->
     <members>VDT_DateRangePickerController</members>
     <members>VDT_DateRangePickerControllerTest</members>
     <members>VDT_EmailService</members>
@@ -44,15 +46,18 @@
     <members>VDT_TriggerHandler</members>
     <members>VDT_VeevaUsersController</members>
   </types>
+  <!--
   <types>
     <name>CustomMetadata</name>
     <members>VDT_General_Setting.Default</members>
     <members>VDT_Object_Country_Field_Mapping.Account</members>
   </types>
+  -->
   <types>
     <name>EmailTemplate</name>
     <members>unfiled$public/VDT_FieldCamparisonCalculationFinished</members>
   </types>
+  <!--
   <types>
     <name>FlexiPage</name>
     <members>Veeva_Diagnostic_Tool_UtilityBar</members>
@@ -65,8 +70,14 @@
     <members>VDT_Object_Batch_Size_Mapping__mdt-VDT Object Batch Size Mapping Layout</members>
     <members>VDT_Object_Country_Field_Mapping__mdt-VDT Object Country Field Mapping Layout</members>
   </types>
+  -->
   <types>
-    <name>LightningComponentBundle</name>
+    <name>LightningComponentBundle</name>    
+    <members>vdt_onekeyAnalysisDetails</members>
+    <members>vdt_onekeyProgressBar</members>
+    <members>vdt_enrichedText</members>
+    <members>vdt_datatable</members>
+    <members>vdt_onekeyAnalysisSummary</members>
     <members>vdt_analysisDashboardFilter</members>
     <members>vdt_app</members>
     <members>vdt_autocompleteInput</members>
@@ -116,9 +127,12 @@
     <members>vdt_productFilter</members>
     <members>vdt_refreshMonitoring</members>
     <members>vdt_tabs</members>
+    <members>vdt_onekeyCountryChannel</members>
   </types>
   <types>
     <name>CustomField</name>
+	<members>VDT_Calculation_Status_Update__e.Calculation_Id__c</members>
+	<members>VDT_Calculation_Status_Update__e.Status__c</members>
     <members>VDT_Data_Calculation__c.End_Date__c</members>
     <members>VDT_Data_Calculation__c.End_Month__c</members>
     <members>VDT_Data_Calculation__c.End_Year__c</members>
@@ -152,6 +166,7 @@
   </types>
   <types>
     <name>CustomObject</name>
+    <members>VDT_Calculation_Status_Update__e</members>
     <members>VDT_Data_Calculation__c</members>
     <members>VDT_General_Setting__mdt</members>
     <members>VDT_Log_Event__c</members>
@@ -163,21 +178,26 @@
     <name>ValidationRule</name>
     <members>VDT_General_Setting__mdt.Running_Calculations_Upper_Bound</members>
   </types>
+  <!--
   <types>
     <name>Profile</name>
     <members>Admin</members>
   </types>
+  -->
   <types>
     <name>StaticResource</name>
     <members>vdt_chartjs</members>
     <members>vdt_d3</members>
     <members>vdt_moment</members>
     <members>vdt_styles</members>
+    <members>vdt_onekey_summary_table</members>
   </types>
+  <!--
   <types>
     <name>CustomTab</name>
     <members>Veeva_Diagnostic_Tool</members>
   </types>
+  -->
   <types>
     <name>ApexTrigger</name>
     <members>VDT_DataCalculationTrigger</members>
