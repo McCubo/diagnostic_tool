@@ -9,7 +9,7 @@ export const TABS = {
         active: true
     },
     onekey: {
-        name: 'OneKey Data',
+        name: 'Master Data Analysis',
         icon: 'utility:file',
         active: false
     },
@@ -34,7 +34,7 @@ export const TABS = {
         active: false
     }
 }
-export const DEFAULT_TAB = TABS.onekey;
+export const DEFAULT_TAB = TABS.home;
 
 export default class Vdt_tabs extends LightningElement {
     _currentTab = DEFAULT_TAB;
