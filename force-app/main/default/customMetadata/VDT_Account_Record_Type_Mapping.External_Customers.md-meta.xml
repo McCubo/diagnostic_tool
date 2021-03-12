@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>External Customers</label>
+    <protected>false</protected>
+    <values>
+        <field>Account_Record_Types__c</field>
+        <value xsi:type="xsd:string">Business_Professional_vod,Distributor_vod,Distributor Branch_vod,Person Account,Government_Agency_vod,Wholesaler_vod,KOL_vod,Publication_vod,Organization_vod</value>
+    </values>
+</CustomMetadata>
