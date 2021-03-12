@@ -20,7 +20,7 @@ export default class Vdt_onekeyHcpFilters extends LightningElement {
     ];
 
     @wire(MessageContext)
-    _messageContext;
+    messageContext;
 
     _selectedSalesTeam = '';
     _selectedProduct = '';
@@ -42,7 +42,7 @@ export default class Vdt_onekeyHcpFilters extends LightningElement {
     }
 
     publishFilterChange() {
-        publish(this._messageContext, productFilterMessageChannel, {filter: {
+        publish(this.messageContext, productFilterMessageChannel, {filter: {
             salesTeam: this._selectedSalesTeam,
             product: this._selectedProduct,
             callType: this._selectedCallType

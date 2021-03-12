@@ -30,7 +30,7 @@ public inherited sharing class VDT_ToolingAPIService {
         }
 
         String sql='SELECT Layout.Name FROM ProfileLayout WHERE TableEnumOrId=\'enumOrId\'';
-        String body = toolingAPISOQL(sql.replace('enumOrId', objectName));
+        String body = toolingAPISOQL(sql.replace('enumOrId', enumOrId));
         Set<String> layouts = new Set<String>();
 
         if(String.isNotBlank(body)){

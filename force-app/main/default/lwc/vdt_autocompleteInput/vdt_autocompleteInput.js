@@ -46,15 +46,8 @@ export default class Vdt_autocompleteInput extends LightningElement {
         return this._options;
     }
     set options(val) {
-        val.forEach(v => {
-            this._options.push({
-                label: v.label,
-                value: v.value,
-                secondaryLabel: v.secondaryLabel ? v.secondaryLabel : null,
-                selected: v.selected
-            });
-            v.selected ? this.pushSelectedItem(v.label, v.value) : null;
-        });
+        this._options = JSON.parse(JSON.stringify(val));
+        this._selectedItems = this._options.filter(option => option.selected);
         this._inputValue = this._selectedLabels.join(',');
     }
     @api
@@ -121,6 +114,7 @@ export default class Vdt_autocompleteInput extends LightningElement {
             if (clickedOption.selected) {
                 this.pushSelectedItem(clickedOption.label, clickedOption.value);
             }
+            this._options.forEach(option => option.value !== clickedOption.value ? option.selected = false : null);
             this._showSuggestions = false;
             this.dispatchEvent(new CustomEvent('optionselect', {detail: this._selectedValues[0]}));
         }

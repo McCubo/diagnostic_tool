@@ -2,7 +2,7 @@
 public inherited sharing class VDT_DataCalculationTriggerTest {
     @isTest
     static void shouldSetNextCalculationToInProgress() {
-        Test.setMock(VDT_ToolingAPICalloutMock.PageLayoutCallout.class, new VDT_ToolingAPICalloutMock.PageLayoutCallout());
+        Test.setMock(HttpCalloutMock.class, new VDT_PageLayoutService.PageLayoutCalloutMock());
         List<VDT_Data_Calculation__c> dataCalculations = new List<VDT_Data_Calculation__c>();
         dataCalculations.add(new VDT_Data_Calculation__c(
             VDT_Object_Name__c = 'Account',

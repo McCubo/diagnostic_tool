@@ -2,9 +2,7 @@ public without sharing class VDT_PageLayoutService {
     public static Map<String, List<String>> getLayoutsWithFieldsForObject(string objectName) {
         List<List<String>> layoutNamesChunks = new List<List<String>>();
         Map<String, List<String>> layoutWithFields = new Map<String, List<String>>();
-        system.debug('objectName :: ' + objectName);
         List<String> layoutNames = VDT_ToolingAPIService.getLayoutNamesForObject(objectName);
-        system.debug('layoutNames :: ' + layoutNames);
 
         // only list of 10 names can be retrieved in one Metadata.Operations.retrieve() call
         if (layoutNames.size() > 10) {
@@ -32,7 +30,6 @@ public without sharing class VDT_PageLayoutService {
             for (String layoutName : chunk) {
                 layoutFullNames.add(String.format('{0}-{1}', new String[]{objectName, layoutName})); 
             }
-            system.debug('layoutFullNames :: ' + layoutFullNames);
             List<Metadata.Metadata> layoutMetadata = 
                 Metadata.Operations.retrieve(Metadata.MetadataType.Layout, layoutFullNames);
             //get only layput name

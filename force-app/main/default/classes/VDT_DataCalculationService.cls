@@ -134,6 +134,15 @@ public inherited sharing class VDT_DataCalculationService {
 
         return monitoringData;
     }
+
+    public static void sendStatusUpdateEvent(Id calculationId, String status) {
+        VDT_Calculation_Status_Update__e statusUpdate = new VDT_Calculation_Status_Update__e(
+            Calculation_Id__c = calculationId,
+            Status__c = status
+        );
+
+        EventBus.publish(new List<SObject>{ statusUpdate });
+    }
     
     public class DataCalculation {
         @AuraEnabled

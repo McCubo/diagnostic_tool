@@ -32,9 +32,13 @@ public inherited sharing class VDT_ObjectCalculationBuilder {
             }
 
             for (SObject record : records) {
+                // system.debug('record.get(this.countryField) :: ' + record.get('CreatedBy'));
+                // system.debug('record.get(this.countryField) :: ' + record.get('CreatedBy.Country'));
                 String countryCode;
                 if (this.countryField.indexOf('.') >= 0) {
+                    system.debug('this.countryField :: ' + this.countryField);
                     List<String> parentCountryField = this.countryField.split('\\.');
+                    system.debug('parentCountryField :: ' + parentCountryField);
                     countryCode = String.valueOf(record.getSObject(parentCountryField[0]).get(parentCountryField[1]));
                 } else {
                     countryCode = String.valueOf(record.get(this.countryField));

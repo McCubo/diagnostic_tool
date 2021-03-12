@@ -1,10 +1,16 @@
 import { LightningElement, api } from 'lwc';
 
 export default class Vdt_paginator extends LightningElement {
-    _showStartDots = false;
+    get _showStartDots() {
+        return  this._currentPage >= this._firstPageNumber+this._visiblePageNumbersCount-1 &&
+                this._visiblePages.length+1 > this._visiblePageNumbersCount;
+    }
     _showFirst = false;
     _showLast = false;
-    _showEndDots = false;
+    get _showEndDots() {
+        return  this._currentPage < this._lastPageNumber-2 && 
+                this._visiblePages.length+1 > this._visiblePageNumbersCount;
+    }
     _visiblePageNumbersCount = 4;
     _firstPageNumber;
     _lastPageNumber;
@@ -12,28 +18,24 @@ export default class Vdt_paginator extends LightningElement {
     _visiblePages = [];
     _currentPage;
 
+    _dynamicPages = [];
+
     initVisiblePages() {
         let visibleNumbers = [];
-        if (this.pageNumbers.length <= this._visiblePageNumbersCount || 
-            this.pageNumbers.length + 1 === this._visiblePageNumbersCount) {
-            visibleNumbers = this.pageNumbers;
-        } else  {
-            visibleNumbers = this.pageNumbers.slice(0, this._visiblePageNumbersCount);
-            this._showEndDots = true;
+        this._showFirst = true;
+        if (this._firstPageNumber === this._lastPageNumber) {
+            this._showLast = false;
+        } else if (this._pageNumbers.length === 0) {
             this._showLast = true;
-        } 
+        } else if (this._pageNumbers.length <= this._visiblePageNumbersCount) {
+            this._showLast = true;
+            visibleNumbers = this._pageNumbers;
+        } else {
+            this._showLast = true;
+            visibleNumbers = this._pageNumbers.slice(0, this._visiblePageNumbersCount);
+        }
 
         this._visiblePages = visibleNumbers;
-        // else if (this._currentPage < this._visiblePageNumbersCount+2) {
-        //     visibleNumbers = this.pageNumbers.slice(0, this._visiblePageNumbersCount+2);
-        //     visibleNumbers.push(this.pageNumbers[this.pageNumbers.length-1]);
-        //     this._showEndDots = true;
-        // } else if (this._currentPage < this.pageNumbers.length-1-this._visiblePageNumbersCount) {
-        //     visibleNumbers = this.pageNumbers.slice(0, this._visiblePageNumbersCount+2);
-        //     visibleNumbers.push(this.pageNumbers[this.pageNumbers.length-1]);
-        //     this._showStartDots = true;
-        //     this._showEndDots = true;
-        // }
     }
 
     @api 
@@ -49,14 +51,15 @@ export default class Vdt_paginator extends LightningElement {
         return this._pageNumbers;
     }
     set pageNumbers(val) {
-        this._pageNumbers = val;
-        this._firstPageNumber = this._pageNumbers[0];
-        this._lastPageNumber = this._pageNumbers[this._pageNumbers.length-1];
+        this._firstPageNumber = val[0];
+        this._lastPageNumber = val[val.length-1];
+        this._pageNumbers = val.slice(1, val.length-1);
+
         this.initVisiblePages();
     }
 
     get showPagination() {
-        return this.pageNumbers.length > 1;
+        return this.pageNumbers.length > 0;
     }
 
     goToPrevious() {
@@ -69,19 +72,11 @@ export default class Vdt_paginator extends LightningElement {
 
     firstClick() {
         this._visiblePages = this._pageNumbers.slice(0, this._visiblePageNumbersCount);
-        this._showStartDots = false;
-        this._showFirst = false;
-        this._showLast = true;
-        this._showEndDots = true;
         this.dispatchEvent(new CustomEvent('pageclick', { detail: this._firstPageNumber }));
     }
 
     lastClick() {
-        this._visiblePages = this._pageNumbers.slice(this.pageNumbers.length-this._visiblePageNumbersCount, this.pageNumbers.length-1);
-        this._showEndDots = false;
-        this._showLast = true;
-        this._showFirst = true;
-        this._showStartDots = true;
+        this._visiblePages = this._pageNumbers.slice(this.pageNumbers.length-this._visiblePageNumbersCount, this.pageNumbers.length);
         this.dispatchEvent(new CustomEvent('pageclick', { detail: this._lastPageNumber }));
     }
 
@@ -93,31 +88,11 @@ export default class Vdt_paginator extends LightningElement {
         let clickedPage = parseInt(this._currentPage);
         let lastPageClicked = this._visiblePages.indexOf(clickedPage) === this._visiblePages.length-1;
         let firstPageClicked = this._visiblePages.indexOf(clickedPage) === 0;
-        let pageBeforeLastPage = this._pageNumbers[this._pageNumbers.length-2];
 
-        if ( lastPageClicked && clickedPage !== pageBeforeLastPage) {
-            this._visiblePages = this._pageNumbers.slice(this._visiblePages[0], clickedPage+1);
-        } else if (firstPageClicked && clickedPage !== this._firstPageNumber) {
-            this._visiblePages = this._pageNumbers.slice(clickedPage-2, (clickedPage-2)+this._visiblePageNumbersCount);
-        }
-
-        let startingWithFirstPage = this._pageNumbers.indexOf(this._visiblePages[0]) === 0;
-        let startingWithSecondPage = this._pageNumbers.indexOf(this._visiblePages[0]) === 1;
-        let endingWithThreeBeforeLast = this._pageNumbers.indexOf(clickedPage) === this._pageNumbers.length-3;
-        let endingWithBeforeLast = this._pageNumbers.indexOf(clickedPage) === this._pageNumbers.length-2;
-        if (startingWithFirstPage) {
-            this._showStartDots = false;
-            this._showFirst = false;
-        } else if (startingWithSecondPage) {
-            this._showStartDots = false;
-            this._showFirst = true;
-        } else if (endingWithThreeBeforeLast || endingWithBeforeLast) {
-            this._showEndDots = false;
-        } else {
-            this._showStartDots = true;
-            this._showFirst = true;
-            this._showEndDots = true;
-            this._showLast = true;
+        if (lastPageClicked && clickedPage < this._lastPageNumber-2) {
+            this._visiblePages = this._pageNumbers.slice(this._visiblePages[0]-1, clickedPage);
+        } else if (firstPageClicked && clickedPage > this._firstPageNumber+1) {
+            this._visiblePages = this._pageNumbers.slice(clickedPage-3, clickedPage+1);
         }
     }
 }
