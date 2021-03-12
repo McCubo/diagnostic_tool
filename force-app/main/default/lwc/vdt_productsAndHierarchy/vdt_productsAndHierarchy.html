@@ -20,18 +20,33 @@
         </lightning-layout-item>
     </lightning-layout>
     <div class="slds-m-top_medium slds-m-bottom_x-large">
-        <div class="slds-p-around_medium">
-            <lightning-tree items={treeData} header="Product Hierarchy"></lightning-tree>
-        </div>
+            <lightning-accordion class="example-accordion" allow-multiple-sections-open>
+                <lightning-accordion-section name="product_hierarchy" label="Product Hierarchy">
+                    <lightning-tree items={treeData}></lightning-tree>
+                </lightning-accordion-section>
+            </lightning-accordion>
     </div>
     <lightning-accordion class="example-accordion" allow-multiple-sections-open>
         <lightning-accordion-section name="product_table" label="Product Adoption Analysis">
-            <lightning-datatable
-                key-field="id"
-                data={data}
-                columns={columns}
-                hide-checkbox-column>
-            </lightning-datatable>        
+            <lightning-layout multiple-rows>
+                <lightning-layout-item size="4">
+                    <p class="bold-text">Apply date range on transactional records</p>
+                    <c-vdt_date-range-picker
+                        class="validate range-picker"
+                        onrangechange={handleDateRangeChange}
+                        disabled={disabled}></c-vdt_date-range-picker>  
+                </lightning-layout-item>
+            </lightning-layout> 
+            <lightning-layout multiple-rows>
+                <lightning-layout-item size="12" class="datatable">
+                    <lightning-datatable
+                        key-field="id"
+                        data={data}
+                        columns={columns}
+                        hide-checkbox-column>
+                    </lightning-datatable>  
+                </lightning-layout-item>
+            </lightning-layout>
         </lightning-accordion-section>
     </lightning-accordion>
 </template>

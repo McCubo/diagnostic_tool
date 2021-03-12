@@ -336,6 +336,13 @@ export default class Vdt_onekeyAnalysisDetails extends LightningElement {
     updateTableInformation() {
         this._data = RAW_DATA.map((record) => {
             let calculationsOnRecordTypes = { visitedCalled: 0, partCyclePlan: 0, notPartOfCyclePlan: 0, notInProductMetrics: 0, noAddress: 0, notAlignedToTerritories:0 };
+            if (this._recordTypes.length == 0 || this._recordTypes.includes('All')) {
+                record.recordtype = 'All';
+            } else if (this._recordTypes.length == 1) {
+                record.recordtype = this._recordTypes[0];
+            } else {
+                record.recordtype = '';
+            }
             Object.keys(record.recordTypeUsageSummary).forEach(recordTypeName => {
                 if (this._recordTypes.length == 0 || this._recordTypes.includes('All') || this._recordTypes.includes(recordTypeName)) {
                     if (this._selectedCountry == 'All' || this._selectedCountry == record.recordTypeUsageSummary[recordTypeName]['country']) {

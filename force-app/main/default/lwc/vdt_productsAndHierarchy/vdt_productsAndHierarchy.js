@@ -204,6 +204,7 @@ export default class Vdt_productsAndHierarchy extends LightningElement {
     handleProductTypeChange(event) {
         this.search.types = event.detail;
         this.treeData = this.filterData(JSON.parse(JSON.stringify(this.items)));
+        this.data = this.filterTableData(JSON.parse(JSON.stringify(ADOPTION_DATA)));
     }
     filterData(items) {
         let filtered = items.filter((recordRow) => {
@@ -223,5 +224,16 @@ export default class Vdt_productsAndHierarchy extends LightningElement {
             }
         });
         return filtered;
+    }
+
+    filterTableData(records) {
+        let filtered = records.filter((recordRow) => {
+            return this.search.types.includes(recordRow.type);
+        });
+        return filtered;
+    }
+
+    handleDateRangeChange(evt) {
+        console.log(JSON.stringify(evt.detail));
     }
 }
