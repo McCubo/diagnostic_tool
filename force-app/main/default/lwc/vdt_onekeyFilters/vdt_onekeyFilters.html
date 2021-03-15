@@ -4,12 +4,7 @@
             <lightning-layout-item size="12">
                 <lightning-layout>
                     <lightning-layout-item size="4">
-                        <p class="input-label">Country</p>
-                        <c-vdt_autocomplete-input
-                            placeholder="Select Country"
-                            options={_countryCodeOptions}
-                            onoptionselect={handleCountryOptionSelect}
-                        ></c-vdt_autocomplete-input>
+                        <c-vdt_onekey-country-input class="validate" disabled={disabled} oncountrychange={handleCountryOptionSelect}></c-vdt_onekey-country-input>
                     </lightning-layout-item>
                 </lightning-layout>
             </lightning-layout-item>
@@ -18,7 +13,21 @@
                 <c-vdt_date-range-picker
                     class="validate range-picker"
                     onrangechange={handleDateRangeChange}
-                    disabled={disabled}></c-vdt_date-range-picker>                
+                    disabled={disabled}></c-vdt_date-range-picker>
+            </lightning-layout-item>
+        </lightning-layout>
+        <lightning-layout>
+            <lightning-layout-item class="search-button">
+                <template if:true={disabled}>
+                    <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                </template>
+                <lightning-button
+                    variant="brand"
+                    name="display-info"
+                    label='Display Information'
+                    onclick={handleDisplayInfoClick}
+                    disabled={disabled}
+                ></lightning-button>
             </lightning-layout-item>
         </lightning-layout>
     </div>

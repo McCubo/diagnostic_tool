@@ -4,23 +4,37 @@
             <lightning-layout-item size="12">
                 <lightning-layout horizontal-align="spread">
                     <lightning-layout-item size="10">
-                        <c-vdt_onekey-filters></c-vdt_onekey-filters>
-                    </lightning-layout-item>                    
-                    <lightning-layout-item>
-                        <button class="slds-button slds-button_neutral" style="width:150px; height: 50px;">Calculate</button>
+                        <c-vdt_onekey-filters onshowinfo={handleShowInfo} disabled={_filterDisabled}></c-vdt_onekey-filters>
                     </lightning-layout-item>
+                    <template if:true={_showCalculationButton}>                    
+                        <lightning-layout-item>
+                            <button class="slds-button slds-button_neutral" style="width:150px; height: 50px;">Calculate</button>
+                        </lightning-layout-item>
+                    </template>
                 </lightning-layout>
             </lightning-layout-item>
-            <lightning-layout-item size="12" class="graphs">
-                <lightning-layout multiple-rows>
-                    <c-vdt_onekey-analysis-summary></c-vdt_onekey-analysis-summary>
-                </lightning-layout>
-            </lightning-layout-item>
-            <lightning-layout-item size="12" class="graphs">
-                <lightning-layout multiple-rows>
-                    <c-vdt_onekey-analysis-details></c-vdt_onekey-analysis-details>
-                </lightning-layout>
-            </lightning-layout-item>
+            <template if:true={_showCalculationSection}>
+                <template if:true={_showEmpty}>
+                    <lightning-layout-item size="12">
+                        <c-vdt_illustration-provider
+                            svgname="lakeMountain"
+                            message={_emptyMessage}
+                        ></c-vdt_illustration-provider>
+                    </lightning-layout-item>
+                </template>
+                <template if:true={_showCalculation}>
+                    <lightning-layout-item size="12" class="graphs">
+                        <lightning-layout multiple-rows>
+                            <c-vdt_onekey-analysis-summary countries={countries} calculation-data={_calculation.data}></c-vdt_onekey-analysis-summary>
+                        </lightning-layout>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" class="graphs">
+                        <lightning-layout multiple-rows>
+                            <!-- <c-vdt_onekey-analysis-details calculation-data={_calculation.detailData}></c-vdt_onekey-analysis-details> -->
+                        </lightning-layout>
+                    </lightning-layout-item>
+                </template>
+            </template>
         </lightning-layout>
     </div>
 </template>

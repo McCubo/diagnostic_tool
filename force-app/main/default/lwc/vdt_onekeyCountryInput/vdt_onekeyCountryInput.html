@@ -1,0 +1,15 @@
+<template>
+    <lightning-layout>
+        <lightning-layout-item size="12">
+            <p class="input-label">Country</p>
+            <c-vdt_autocomplete-input
+                multiselect
+                placeholder="Select Country"
+                class="validate"
+                options={_countryCodeOptions}
+                onoptionselect={handleCountryOptionSelect}
+                disabled={disabled}
+            ></c-vdt_autocomplete-input>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>
