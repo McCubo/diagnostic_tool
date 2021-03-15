@@ -1,5 +1,7 @@
 public inherited sharing class VDT_DataCalculationSelector {
+    
     private Integer limitValue;
+    private static final String MASTER_ANALYSIS_RECORD_TYPE = 'Master Data Analysis';
 
     public String getObjectName() {
         return 'VDT_Data_Calculation__c';
@@ -58,6 +60,41 @@ public inherited sharing class VDT_DataCalculationSelector {
 
         system.debug(query);
 
+        return Database.query(query);
+    }
+
+    public List<VDT_Data_Calculation__c> getByAnalysisCalculationParameters(VDT_DataCalculationService.CalculationAnalysisParameters calculationParameters) {
+        List<String> countryCriteria = new List<String>();
+        for (String country : calculationParameters.countries) {
+            countryCriteria.add('VDT_Country__c LIKE \'%'+ country + '%\'');
+        }
+        countryCriteria.add('VDT_Country__c LIKE \'%All%\'');
+        String whereString = '(' + String.join(countryCriteria, ' OR ') + ')';
+        if (calculationParameters.startYear != null) {
+            whereString += ' AND Start_Year__c = ' + calculationParameters.startYear;
+        }
+        if (calculationParameters.startMonth != null) {
+            whereString += ' AND Start_Month__c = ' + calculationParameters.startMonth;
+        }
+        if (calculationParameters.endYear != null) {
+            whereString += ' AND End_Year__c = ' + calculationParameters.endYear;
+        }
+        if (calculationParameters.endMonth != null) {
+            whereString += ' AND End_Month__c = ' + calculationParameters.endMonth;
+        }
+        whereString += ' AND RecordType.Name = :MASTER_ANALYSIS_RECORD_TYPE';
+        String query = String.format(
+            'SELECT {0} FROM {1} ' + 
+            'WHERE {2} '+
+            'WITH SECURITY_ENFORCED ' +
+            '{3}', 
+            new List<String>{
+                getFieldListString(),
+                getObjectName(),
+                whereString,
+                getLimitString()
+            }
+        );
         return Database.query(query);
     }
 
