@@ -73,4 +73,15 @@ public inherited sharing class VDT_ObjectService {
 
         return fields;
     }
+
+    public static List<VDT_OptionWrapper> getPicklistOptionsBySObjectName(Schema.DescribeSObjectResult objectDescribe, String fieldName) {
+        List<VDT_OptionWrapper> options = new List<VDT_OptionWrapper>();
+        Map<String, Schema.SObjectField> fieldMap = objectDescribe.fields.getMap(); 
+        List<Schema.PicklistEntry> values = fieldMap.get(fieldName).getDescribe().getPickListValues();
+        for (Schema.PicklistEntry a : values) { 
+           options.add(new VDT_OptionWrapper(a.getLabel(), a.getValue())); 
+        }
+        return options;
+    }
+
 }

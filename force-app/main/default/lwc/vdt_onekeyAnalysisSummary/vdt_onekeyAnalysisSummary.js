@@ -28,8 +28,8 @@ export default class Vdt_onekeyAnalysisSummary extends LightningElement {
     columns = COLUMNS;
 
     _rawData = [];
-
     _calculationData = [];
+    
     @api
     get calculationData() {
         return this._calculationData;

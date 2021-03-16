@@ -21,4 +21,32 @@ public inherited sharing class VDT_MasterDataAnalysisController {
         }
     }
 
+    @AuraEnabled(cacheable=true)
+    public static List<VDT_OptionWrapper> fetchAccountRecordTypeOptions(){
+        try {
+            List<VDT_OptionWrapper> recordTypeOptions = new List<VDT_OptionWrapper>();
+            List<RecordType> accountRecordTypes = VDT_RecordTypeService.getRecordTypesBySObject('Account');
+            for (RecordType accountRecordType : accountRecordTypes) {
+                if (String.isNotBlank(accountRecordType.Description) && String.isNotBlank(accountRecordType.DeveloperName)) {
+                    recordTypeOptions.add(new VDT_OptionWrapper(accountRecordType.Description, accountRecordType.DeveloperName));
+                }
+            }
+            return recordTypeOptions;
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<VDT_OptionWrapper> fetchAccountSpecialtyOptions(){
+        try {
+            return VDT_ObjectService.getPicklistOptionsBySObjectName(SObjectType.Account, 'Specialty_1_vod__c');
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
 }
