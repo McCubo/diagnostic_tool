@@ -84,4 +84,10 @@ public inherited sharing class VDT_ObjectService {
         return options;
     }
 
+    public static String getFieldTypeBySObjectName(String objectName, String fieldName) {
+        SObjectType sobjectType = ((SObject)(Type.forName('Schema.' + objectName).newInstance())).getSObjectType();
+        DescribeSObjectResult describeResult = sobjectType.getDescribe();
+        return String.valueOf(describeResult.fields.getMap().get(fieldName).getDescribe().getType());
+    }
+
 }

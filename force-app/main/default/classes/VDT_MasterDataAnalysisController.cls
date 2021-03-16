@@ -49,4 +49,30 @@ public inherited sharing class VDT_MasterDataAnalysisController {
             throw new AuraHandledException(e.getMessage());
         }
     }
+
+    @AuraEnabled(cacheable=true)
+    public static String getAccountCountryFieldType() {
+        try {
+            String accountSObject = 'Account';
+            String countryFieldName = VDT_CustomMetadataService.getCountryFieldForObject(accountSObject);
+            return VDT_ObjectService.getFieldTypeBySObjectName(accountSObject, countryFieldName);
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled
+    public static List<VDT_OptionWrapper> getCountryOptions() {
+        try {
+            String accountSObject = 'Account';
+            String countryFieldName = VDT_CustomMetadataService.getCountryFieldForObject(accountSObject);
+            return VDT_ObjectService.getPicklistOptionsBySObjectName(SObjectType.Account, countryFieldName);
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
 }

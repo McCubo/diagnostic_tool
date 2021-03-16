@@ -8,7 +8,11 @@
                     </lightning-layout-item>
                     <template if:true={_showCalculationButton}>                    
                         <lightning-layout-item>
-                            <button class="slds-button slds-button_neutral" style="width:150px; height: 50px;">Calculate</button>
+                            <c-vdt_calculation-button
+                                last-calculation-date={_calculation.calculationDate}
+                                calculation-status={_calculation.status}
+                                oncalculate={handleCalculate}
+                            ></c-vdt_calculation-button>
                         </lightning-layout-item>
                     </template>
                 </lightning-layout>
