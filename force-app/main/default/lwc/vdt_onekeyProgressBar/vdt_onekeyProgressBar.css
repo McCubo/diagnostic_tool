@@ -1,12 +1,21 @@
 .bar-step {
-    position:absolute;
-    margin-top:-12px;
+    position:relative;
+    margin-top:-5px;
 	z-index:1;
     font-size:12px;
 }
 
 .label-line {
     background: #000;
-    height:16px;
+    height:7px;
 	width:1px;
+}
+
+.label-line:before {
+    content: attr(data-ref);
+    position: absolute;
+    left: -25px;
+    top: -250%;
+    color: #888;
+    text-align: center;
 }

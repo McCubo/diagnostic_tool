@@ -17,7 +17,7 @@ export default class Vdt_onekeyProgressBar extends LightningElement {
     get actualValueLabel() {
         let label = this.actualValue;
         if (this.actualValue != 'N/A') {
-            label += ' %';
+            label = 'Actual: ' + this.actualValue + '%';
         }
         return label;
     }
