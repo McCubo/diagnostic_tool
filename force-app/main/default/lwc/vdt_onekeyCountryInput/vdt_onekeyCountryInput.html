@@ -5,9 +5,11 @@
                     <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
                 </template>
                 <lightning-layout>
-                    <lightning-layout-item size="1">
-                        <lightning-helptext content={textHelp}></lightning-helptext>
-                    </lightning-layout-item>
+                    <template if:true={isTextField}>
+                        <lightning-layout-item size="1">
+                            <lightning-helptext content={textHelp}></lightning-helptext>
+                        </lightning-layout-item>
+                    </template>
                     <lightning-layout-item size="11">
                         <p class="input-label">Country</p>
                     </lightning-layout-item>
@@ -29,6 +31,7 @@
                         placeholder="Type Country Name" 
                         variant="label-hidden"
                         autocomplete="off"
+                        disabled={disabled}
                     ></lightning-input>
                 </template>
         </lightning-layout-item>

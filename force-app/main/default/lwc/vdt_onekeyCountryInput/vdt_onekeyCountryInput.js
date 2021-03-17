@@ -24,7 +24,8 @@ export default class Vdt_onekeyCountryInput extends LightningElement {
     }
 
     get textHelp() {
-        return `Select/Type All....`;
+        return `Type "All" for all contries calculation, or type the country name/code based on the Custom Metadata Type configuration. 
+                (for multiple countries separate each code by a comma)`;
     }
 
     @wire(getAccountCountryFieldType, {})
