@@ -30,6 +30,26 @@ public inherited sharing class VDT_CustomMetadataService {
         return countryField;
     }
 
+    public static String getAccountSpecialtyField() {
+        String specialtyField;
+        List<VDT_General_Setting__mdt> defaultSettings;
+        if (!customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {        
+            defaultSettings = [
+                SELECT  VDT_Default_Specialty_Field__c
+                FROM    VDT_General_Setting__mdt
+                WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
+                WITH    SECURITY_ENFORCED
+            ];
+        } else {
+            defaultSettings = customMetadataWithRecords.get(VDT_GENERAL_SETTINGS);
+        }
+
+        if (!defaultSettings.isEmpty()) {
+            specialtyField = defaultSettings[0].VDT_Default_Specialty_Field__c;
+        }        
+        return specialtyField;
+    }
+
     public static String getDefaultCountryField() {
         String countryField;
 
