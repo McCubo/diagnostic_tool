@@ -3,11 +3,19 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
     private String countryField;
     private String specialtyField;
     private MasterAnalysisSummary analysisData = new MasterAnalysisSummary();
+    private Set<String> specialties = new Set<String>();
     private List<Account> records = new List<Account>();
 
     public VDT_MasterAnalysisCalculationBuilder(String countryField, String specialtyField) {
         this.countryField = countryField;
         this.specialtyField = specialtyField;
+    }
+
+    public VDT_MasterAnalysisCalculationBuilder withValidOptions(List<VDT_OptionWrapper> activeSpecialties) {
+        for (VDT_OptionWrapper specialty : activeSpecialties) {
+            this.specialties.add(specialty.value);
+        }
+        return this;
     }
 
     public VDT_MasterAnalysisCalculationBuilder withRecords(List<Account> records) {
@@ -19,6 +27,7 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         for (Account acc : records) {
             String country = acc.get(this.countryField).toString();
             String specialty = acc.get(this.specialtyField).toString();
+            analysisData.recordTypes.add(acc.RecordType.Name);
             if (analysisData.calculations.containsKey(specialty)) {
                 SpecialtySummary specialtySummary = analysisData.calculations.get(specialty);
                 specialtySummary.totalAccounts += 1;
@@ -39,16 +48,20 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
                     specialtySummary.recordTypeUsageSummary.put(acc.RecordType.Name, recordTypeSummary);
                 }
             } else {
-                SpecialtySummary specialtySummary = new SpecialtySummary('1', specialty);
+                SpecialtySummary specialtySummary = new SpecialtySummary(specialty, this.specialties.contains(specialty));
                 RecordTypeUsageSummary recordTypeSummary = new RecordTypeUsageSummary();
                 recordTypeSummary.name = acc.RecordType.Name;
                 CountryUsageSummary countrySummary = updateCountrySummary(acc, new CountryUsageSummary());
                 recordTypeSummary.countryUsageSummary.put(country, countrySummary);
                 specialtySummary.recordTypeUsageSummary.put(acc.RecordType.Name, recordTypeSummary);
                 analysisData.calculations.put(specialty, specialtySummary);
-                analysisData.specialties.add(specialty);
+                analysisData.specialties.add(specialty);                
             }
         }
+        return this;
+    }
+
+    public VDT_MasterAnalysisCalculationBuilder calculateKpiInformation() {
         return this;
     }
 
@@ -70,15 +83,30 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         public Map<String, SpecialtySummary> calculations = new Map<String, SpecialtySummary>();
 
         public Set<String> specialties = new Set<String>();
+
+        public Set<String> recordTypes = new Set<String>();
+        
+    }
+
+    public class KPISummary {
+
+        public Integer id;
+        public String name;
+        public String help;
+        public String formula;
+        public String type;
+        public Integer default_target;
+        public Map<String, KPICountryUsage> countryUsageSummary = new Map<String, KPICountryUsage>();
         
     }
 
     public class SpecialtySummary {
 
-        public SpecialtySummary(String id, String specialty) {
-            this.id = id;
+        public SpecialtySummary(String specialty, Boolean isActive) {
+            this.id = specialty;
             this.specialty = specialty;
             this.totalAccounts = 1;
+            this.isActive = isActive;
         }
 
         public String id;
@@ -114,6 +142,14 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         public Decimal noAddress = 0;
 
         public Decimal notAlignedToTerritories = 0;
+
+    }
+
+    public class KPICountryUsage {
+
+        public Integer numerator = 0;
+        public Integer denominator = 0;
+        public Integer target;
 
     }
 }

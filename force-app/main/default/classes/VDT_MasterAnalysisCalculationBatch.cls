@@ -20,6 +20,7 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
         try {
             String countryField = VDT_CustomMetadataService.getCountryFieldForObject('Account');
             String specialtyField = VDT_CustomMetadataService.getAccountSpecialtyField();
+            List<VDT_OptionWrapper> activeSpecialties = VDT_ObjectService.getPicklistOptionsBySObjectName(SObjectType.Account, specialtyField);
             List<String> countries = this.dataCalculationRecord.VDT_Country__c.split(DELIMITER_CHARACTER);
             List<String> countryCriterias = new List<String>();
             String countryClause = '';
@@ -42,7 +43,7 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
                 }
             );
 
-            this.builder = new VDT_MasterAnalysisCalculationBuilder(countryField, specialtyField);
+            this.builder = new VDT_MasterAnalysisCalculationBuilder(countryField, specialtyField).withValidOptions(activeSpecialties);
             this.dataCalculationRecord.VDT_Job_Start_Date__c = Datetime.now();
             update this.dataCalculationRecord;
             return Database.getQueryLocator(query);

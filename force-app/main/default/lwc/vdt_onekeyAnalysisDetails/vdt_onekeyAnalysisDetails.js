@@ -43,25 +43,13 @@ export default class Vdt_onekeyAnalysisDetails extends LightningElement {
     set calculationData(val) {
         this._rawData = val;
         let data = JSON.parse(val);
+        this._specialityOptions = data.specialties.map(specialty => {
+            return { label: specialty, value: specialty };
+        });
+        this._recordTypeOptions = data.recordTypes.map(recordType => {
+            return { label: recordType, value: recordType };
+        });
         this._calculationData = this.parseData(data);
-    }
-
-    @wire(fetchAccountRecordTypeOptions, {})
-    fetchAccountRecordTypeOptionsCallback ({error, data}) {
-        if (error) {
-            console.log('error', error);
-        } else if (data) {
-            this._recordTypeOptions = JSON.parse(JSON.stringify(data));
-        }
-    }
-
-    @wire(fetchAccountSpecialtyOptions, {})
-    fetchAccountSpecialtyOptionsCallback ({error, data}) {
-        if (error) {
-            console.log('error', error);
-        } else if (data) {
-            this._specialityOptions = JSON.parse(JSON.stringify(data));
-        }
     }
 
     parseData(data) {
