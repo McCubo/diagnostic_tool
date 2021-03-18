@@ -1,7 +1,6 @@
 public inherited sharing class VDT_DataCalculationService {
 
     public static final String MASTER_DATA_ANALYSIS_SUMMARY_FILE_NAME = 'onekey_analysis_summary';
-    public static final String MASTER_DATA_ANALYSIS_DETAIL_FILE_NAME = 'onekey_analysis_detail';
 
     public static final String STATUS_COMPLETED = 'Completed';
     public static final String STATUS_ERROR = 'Error';
@@ -111,6 +110,7 @@ public inherited sharing class VDT_DataCalculationService {
         );
         return dataCalculationRecord;
     }
+    
     public static DataCalculation getExistingCalculationMasterAnalysis(CalculationAnalysisParameters searchParameters) {
         List<VDT_Data_Calculation__c> calculations = new VDT_DataCalculationSelector().withLimit(1).getByAnalysisCalculationParameters(searchParameters);
         
@@ -124,15 +124,8 @@ public inherited sharing class VDT_DataCalculationService {
                 calculations[0].Id
             );
 
-            Attachment attDetail = VDT_AttachmentService.getAttachmentForRecord(
-                VDT_DataCalculationService.MASTER_DATA_ANALYSIS_DETAIL_FILE_NAME,
-                VDT_AttachmentService.JSON_FORMAT, 
-                calculations[0].Id
-            );
-
-            if (att != null && attDetail != null) {
+            if (att != null) {
                 calculation.data = att.Body.toString();
-                calculation.detailData = attDetail.Body.toString();
             }
         }
         return calculation;

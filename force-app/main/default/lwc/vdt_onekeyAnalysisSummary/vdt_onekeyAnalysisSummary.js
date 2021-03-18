@@ -60,7 +60,9 @@ export default class Vdt_onekeyAnalysisSummary extends LightningElement {
                     kpiEntry.totalDenominator += kpi.countryUsageSummary[countryCode].denominator;
                 }
                 if (this.countries && this.countries.length == 1 && this.countries.includes(countryCode) && this.countries[0] != 'All') {
-                    kpiEntry.targetValue = kpi.countryUsageSummary[countryCode].target;
+                    if (kpi.countryUsageSummary[countryCode].target) {
+                        kpiEntry.targetValue = kpi.countryUsageSummary[countryCode].target;
+                    }
                 }
             });
             parsedData.push(kpiEntry);

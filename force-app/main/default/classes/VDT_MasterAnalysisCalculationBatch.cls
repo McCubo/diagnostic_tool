@@ -21,6 +21,9 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
             String countryField = VDT_CustomMetadataService.getCountryFieldForObject('Account');
             String specialtyField = VDT_CustomMetadataService.getAccountSpecialtyField();
             List<VDT_OptionWrapper> activeSpecialties = VDT_ObjectService.getPicklistOptionsBySObjectName(SObjectType.Account, specialtyField);
+            List<VDT_KPI_Configuration__mdt> activeKpis = VDT_CustomMetadataService.getActiveKpiConfigurations();
+            Map<String, List<String>> accountRecordTypesByType = VDT_CustomMetadataService.getAccountRecordTypesByType();
+            Map<String, Decimal> targetByCountryAndKpi = VDT_CustomMetadataService.getCountryKpiConfigurations();
             List<String> countries = this.dataCalculationRecord.VDT_Country__c.split(DELIMITER_CHARACTER);
             List<String> countryCriterias = new List<String>();
             String countryClause = '';
@@ -43,7 +46,11 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
                 }
             );
 
-            this.builder = new VDT_MasterAnalysisCalculationBuilder(countryField, specialtyField).withValidOptions(activeSpecialties);
+            this.builder = new VDT_MasterAnalysisCalculationBuilder(countryField, specialtyField)
+            .withValidOptions(activeSpecialties)
+            .initKpis(activeKpis)
+            .withRecordTypesByType(accountRecordTypesByType)
+            .withCustomTargets(targetByCountryAndKpi);
             this.dataCalculationRecord.VDT_Job_Start_Date__c = Datetime.now();
             update this.dataCalculationRecord;
             return Database.getQueryLocator(query);
@@ -74,21 +81,21 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
             update this.dataCalculationRecord;
 
             Attachment currentAttachment = VDT_AttachmentService.getAttachmentForRecord(
-                VDT_DataCalculationService.MASTER_DATA_ANALYSIS_DETAIL_FILE_NAME,
+                VDT_DataCalculationService.MASTER_DATA_ANALYSIS_SUMMARY_FILE_NAME,
                 VDT_AttachmentService.JSON_FORMAT, 
                 this.dataCalculationRecord.Id
             );
             if (currentAttachment == null) {
                 VDT_AttachmentService.createAttachmentForRecord(
                     JSON.serialize(this.builder.build()), 
-                    VDT_DataCalculationService.MASTER_DATA_ANALYSIS_DETAIL_FILE_NAME,
+                    VDT_DataCalculationService.MASTER_DATA_ANALYSIS_SUMMARY_FILE_NAME,
                     VDT_AttachmentService.JSON_FORMAT,
                     this.dataCalculationRecord.Id
                 );
             } else {
                 VDT_AttachmentService.updateAttachmentForRecord(
                     JSON.serialize(this.builder.build()), 
-                    VDT_DataCalculationService.MASTER_DATA_ANALYSIS_DETAIL_FILE_NAME,
+                    VDT_DataCalculationService.MASTER_DATA_ANALYSIS_SUMMARY_FILE_NAME,
                     VDT_AttachmentService.JSON_FORMAT,
                     this.dataCalculationRecord.Id
                 );

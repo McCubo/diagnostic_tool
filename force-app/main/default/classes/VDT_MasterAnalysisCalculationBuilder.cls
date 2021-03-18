@@ -3,8 +3,20 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
     private String countryField;
     private String specialtyField;
     private MasterAnalysisSummary analysisData = new MasterAnalysisSummary();
+    private Map<String, List<String>> accountRecordTypesByType = null;
+    Map<String, Decimal> targetByCountryAndKpi = new Map<String, Decimal>();
     private Set<String> specialties = new Set<String>();
     private List<Account> records = new List<Account>();
+    private final String ACCOUNT_TYPE_EXTERNAL = 'External_Customers';
+    private final String ACCOUNT_TYPE_INTERNAL = 'Internal_Customers';
+    private final String ONEKEY_VS_NON_ONE_KEY_KPI_ID = 'Onekey_vs_Non_One_Key';
+    private final String ONEKEY_ALIGNED_TO_TERRITORIES_KPI_ID = 'Onekey_aligned_to_territories';
+    private final String ONEKEY_WITHOUT_VISIT_KPI_ID = 'Onekey_Without_visit';
+    private final String ONEKEY_WITHOUT_RATINGS_KPI_ID = 'Onekey_Without_ratings';
+    private final String ONEKEY_WITHOUT_CYCLE_PLAN_KPI_ID = 'Onekey_Without_cycle_plan';
+    private final String ONEKEY_WITHOUT_VISIT_AND_CYCLE_PLAN_KPI_ID = 'OneKey_Without_Visit_and_Cycle_Plan';
+    private final String ONEKEY_WITHOUT_ADDRESS = 'Onekey_without_address';
+    
 
     public VDT_MasterAnalysisCalculationBuilder(String countryField, String specialtyField) {
         this.countryField = countryField;
@@ -18,6 +30,30 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         return this;
     }
 
+    public VDT_MasterAnalysisCalculationBuilder initKpis(List<VDT_KPI_Configuration__mdt> activeKpis) {
+        for (VDT_KPI_Configuration__mdt kpi : activeKpis) {
+            this.analysisData.kpi_numbers.put(kpi.DeveloperName, new KPISummary(
+                Integer.valueOf(kpi.VDT_Display_Order__c), 
+                kpi.Description__c, 
+                kpi.VDT_Help_Text__c, 
+                kpi.VDT_Formula_Text__c, 
+                kpi.VDT_Type__c, 
+                Integer.valueOf(kpi.VDT_Default_Target__c))
+            );
+        }
+        return this;
+    }
+
+    public VDT_MasterAnalysisCalculationBuilder withRecordTypesByType(Map<String, List<String>> accountRecordTypesByType) {
+        this.accountRecordTypesByType = accountRecordTypesByType;
+        return this;
+    }
+
+    public VDT_MasterAnalysisCalculationBuilder withCustomTargets(Map<String, Decimal> targetByCountryAndKpi) {
+        this.targetByCountryAndKpi = targetByCountryAndKpi;
+        return this;
+    }
+
     public VDT_MasterAnalysisCalculationBuilder withRecords(List<Account> records) {
         this.records = records;
         return this;
@@ -27,9 +63,21 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         for (Account acc : records) {
             String country = acc.get(this.countryField).toString();
             String specialty = acc.get(this.specialtyField).toString();
-            analysisData.recordTypes.add(acc.RecordType.Name);
-            if (analysisData.calculations.containsKey(specialty)) {
-                SpecialtySummary specialtySummary = analysisData.calculations.get(specialty);
+            this.analysisData.recordTypes.add(acc.RecordType.Name);
+            Boolean isExternal = accountRecordTypesByType.get(ACCOUNT_TYPE_EXTERNAL).contains(acc.RecordType.Name);
+            Boolean hasNoAddress = acc.Address_vod__r.isEmpty();
+            this.updateKpiForCountry(ONEKEY_VS_NON_ONE_KEY_KPI_ID, country, isExternal ? 1 : 0, 1);
+            this.updateKpiForCountry(ONEKEY_WITHOUT_ADDRESS, country, hasNoAddress ? 1 : 0, 1);
+            if (isExternal) {
+                Boolean hasNoVisits = acc.Call2_vod__r.isEmpty();
+                this.updateKpiForCountry(ONEKEY_WITHOUT_VISIT_KPI_ID, country, hasNoVisits ? 1 : 0, 1);
+                Boolean hasNoCyclePlanTargets = acc.MC_Cycle_Plan_Targets_vod__r.isEmpty();
+                this.updateKpiForCountry(ONEKEY_WITHOUT_CYCLE_PLAN_KPI_ID, country, hasNoCyclePlanTargets ? 1 : 0, 1);
+                Boolean hasNoVisitNorTargets = acc.Call2_vod__r.isEmpty() && acc.MC_Cycle_Plan_Targets_vod__r.isEmpty();
+                this.updateKpiForCountry(ONEKEY_WITHOUT_VISIT_AND_CYCLE_PLAN_KPI_ID, country, hasNoVisitNorTargets ? 1 : 0, 1);
+            }
+            if (this.analysisData.calculations.containsKey(specialty)) {
+                SpecialtySummary specialtySummary = this.analysisData.calculations.get(specialty);
                 specialtySummary.totalAccounts += 1;
                 if (specialtySummary.recordTypeUsageSummary.containsKey(acc.RecordType.Name)) {
                     RecordTypeUsageSummary recordTypeSummary = specialtySummary.recordTypeUsageSummary.get(acc.RecordType.Name);
@@ -54,8 +102,8 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
                 CountryUsageSummary countrySummary = updateCountrySummary(acc, new CountryUsageSummary());
                 recordTypeSummary.countryUsageSummary.put(country, countrySummary);
                 specialtySummary.recordTypeUsageSummary.put(acc.RecordType.Name, recordTypeSummary);
-                analysisData.calculations.put(specialty, specialtySummary);
-                analysisData.specialties.add(specialty);                
+                this.analysisData.calculations.put(specialty, specialtySummary);
+                this.analysisData.specialties.add(specialty);                
             }
         }
         return this;
@@ -67,6 +115,24 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
 
     public MasterAnalysisSummary build() {
         return this.analysisData;
+    }
+
+    private void updateKpiForCountry(String kpiKey, String country, Integer numerator, Integer denominator) {
+        if (this.analysisData.kpi_numbers.containsKey(kpiKey)) {
+            KPISummary kpiSummary = this.analysisData.kpi_numbers.get(kpiKey);
+            KPICountryUsage countryUsage = new KPICountryUsage();
+            if (kpiSummary.countryUsageSummary.containsKey(country)) {
+                countryUsage = kpiSummary.countryUsageSummary.get(country);
+            } else {
+                String key = country + '_' + kpiKey;
+                if (this.targetByCountryAndKpi.containsKey(key)) {
+                    countryUsage.target = Integer.valueOf(this.targetByCountryAndKpi.get(key));
+                }
+            }
+            countryUsage.numerator += numerator;
+            countryUsage.denominator += denominator;
+            kpiSummary.countryUsageSummary.put(country, countryUsage);
+        }
     }
 
     private CountryUsageSummary updateCountrySummary(Account account, CountryUsageSummary countrySummary) {
@@ -85,10 +151,21 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         public Set<String> specialties = new Set<String>();
 
         public Set<String> recordTypes = new Set<String>();
+
+        public Map<String, KPISummary> kpi_numbers = new Map<String, KPISummary>();
         
     }
 
     public class KPISummary {
+
+        public KPISummary(Integer id, String name, String help, String formula, String type, Integer default_target) {
+            this.id =id;
+            this.name = name;
+            this.help = help;
+            this.formula = formula;
+            this.type = type;
+            this.default_target = default_target;
+        }
 
         public Integer id;
         public String name;
@@ -98,6 +175,14 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         public Integer default_target;
         public Map<String, KPICountryUsage> countryUsageSummary = new Map<String, KPICountryUsage>();
         
+    }
+
+    public class KPICountryUsage {
+
+        public Integer numerator = 0;
+        public Integer denominator = 0;
+        public Integer target;
+
     }
 
     public class SpecialtySummary {
@@ -145,11 +230,4 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
 
     }
 
-    public class KPICountryUsage {
-
-        public Integer numerator = 0;
-        public Integer denominator = 0;
-        public Integer target;
-
-    }
 }
