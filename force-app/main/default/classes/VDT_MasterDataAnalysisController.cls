@@ -75,4 +75,19 @@ public inherited sharing class VDT_MasterDataAnalysisController {
             throw new AuraHandledException(e.getMessage());
         }
     }
+
+    @AuraEnabled
+    public static void recalculateMasterAnalysis(String jsonSearchParameters) {
+        try {
+            VDT_DataCalculationService.CalculationAnalysisParameters calculationParameters = (VDT_DataCalculationService.CalculationAnalysisParameters)JSON.deserialize(
+                jsonSearchParameters, 
+                VDT_DataCalculationService.CalculationAnalysisParameters.class
+            );
+            VDT_DataCalculationService.triggerMasterAnalysisCalculation(calculationParameters);
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
 }
