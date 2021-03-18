@@ -7,6 +7,8 @@ public inherited sharing class VDT_DataCalculationService {
     public static final String STATUS_ERROR = 'Error';
     public static final String STATUS_IN_PROGRESS = 'In Progress';
     public static final String STATUS_IN_QUEUE = 'In Queue';
+    
+    public static final String MASTER_ANALYSIS_RECORD_TYPE_DEV = 'VDT_Master_Data_Analysis';
 
     @TestVisible
     private static List<String> inProgressCalculationStatuses = new List<String>{
@@ -68,6 +70,47 @@ public inherited sharing class VDT_DataCalculationService {
         );
     }
 
+    public static void triggerMasterAnalysisCalculation(CalculationAnalysisParameters searchParameters) {
+        Integer maxRunningCalculations = VDT_CustomMetadataService.getMaxNumberOfRunningCalculations();
+        List<VDT_Data_Calculation__c> inProgressCalculations = new VDT_DataCalculationSelector().getDataCalculationsByStatus(
+                                                                    new List<String>{ VDT_DataCalculationService.STATUS_IN_PROGRESS });
+
+        List<VDT_Data_Calculation__c> calculations = new VDT_DataCalculationSelector().withLimit(1).getByAnalysisCalculationParameters(searchParameters);
+        
+        if (inProgressCalculations.size() < maxRunningCalculations) {
+            searchParameters.status = STATUS_IN_PROGRESS;
+        } else {
+            searchParameters.status = STATUS_IN_QUEUE;
+        }
+
+        VDT_Data_Calculation__c dataCalculationRecord = initRecordForMasterAnalysis(searchParameters);
+        if (!calculations.isEmpty()) {
+            dataCalculationRecord.Id = calculations[0].Id;
+        }
+        upsert dataCalculationRecord;
+
+        if (dataCalculationRecord.Status__c == STATUS_IN_PROGRESS) {
+            Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject('Account');
+            List<String> additionalFields = new List<String>{'VDT_Country__c', 'Start_Date__c', 'End_Date__c'};
+            List<VDT_Data_Calculation__c> records = new VDT_DataCalculationSelector().withAdditionalFields(additionalFields).getById(dataCalculationRecord.Id);
+            VDT_MasterAnalysisCalculationBatch masterAnalysisBatch = new VDT_MasterAnalysisCalculationBatch(records[0]); 
+            Database.executeBatch(masterAnalysisBatch, 1);
+        }
+    }
+
+    public static VDT_Data_Calculation__c initRecordForMasterAnalysis(CalculationAnalysisParameters searchParameters) {
+        List<RecordType> recordTypes = VDT_RecordTypeService.getRecordTypeByObjectAndName('VDT_Data_Calculation__c', MASTER_ANALYSIS_RECORD_TYPE_DEV);
+        VDT_Data_Calculation__c dataCalculationRecord = new VDT_Data_Calculation__c(
+            VDT_Country__c = String.join(searchParameters.countries, ','),
+            Status__c = searchParameters.status, 
+            Start_Year__c = searchParameters.startYear,
+            Start_Month__c = searchParameters.startMonth,
+            End_Year__c = searchParameters.endYear,
+            End_Month__c = searchParameters.endMonth,
+            RecordTypeId = recordTypes[0].Id
+        );
+        return dataCalculationRecord;
+    }
     public static DataCalculation getExistingCalculationMasterAnalysis(CalculationAnalysisParameters searchParameters) {
         List<VDT_Data_Calculation__c> calculations = new VDT_DataCalculationSelector().withLimit(1).getByAnalysisCalculationParameters(searchParameters);
         

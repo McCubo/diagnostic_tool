@@ -1,6 +1,7 @@
 public inherited sharing class VDT_DataCalculationSelector {
     
     private Integer limitValue;
+    private List<String> additionalFields = new List<String>();
     private static final String MASTER_ANALYSIS_RECORD_TYPE = 'Master Data Analysis';
 
     public String getObjectName() {
@@ -16,11 +17,20 @@ public inherited sharing class VDT_DataCalculationSelector {
     }
 
     public String getFieldListString() {
-        return String.join(this.getFieldList(), ',');
+        List<String> fields = this.getFieldList();
+        if (!this.additionalFields.isEmpty()) {
+            fields.addAll(this.additionalFields);
+        }
+        return String.join(fields, ',');
     }
 
     public VDT_DataCalculationSelector withLimit(Integer limitValue) {
         this.limitValue = limitValue;
+        return this;
+    }
+
+    public VDT_DataCalculationSelector withAdditionalFields(List<String> additionalFields) {
+        this.additionalFields = additionalFields;
         return this;
     }
 
@@ -59,6 +69,38 @@ public inherited sharing class VDT_DataCalculationSelector {
         );
 
         system.debug(query);
+
+        return Database.query(query);
+    }
+
+    public List<VDT_Data_Calculation__c> getById(String recordId) {
+        String query = String.format(
+            'SELECT {0} FROM {1} ' + 
+            'WHERE Id = :recordId ' +
+            'WITH SECURITY_ENFORCED ' +
+            '{2}', 
+            new List<String>{
+                getFieldListString(),
+                getObjectName(),
+                getLimitString()
+            }
+        );
+
+        return Database.query(query);
+    }
+
+    public List<VDT_Data_Calculation__c> getByCountries(String countries) {
+        String query = String.format(
+            'SELECT {0} FROM {1} ' + 
+            'WHERE VDT_Country__c = :countries AND RecordType.Name = :MASTER_ANALYSIS_RECORD_TYPE ' +
+            'WITH SECURITY_ENFORCED ' +
+            '{2}', 
+            new List<String>{
+                getFieldListString(),
+                getObjectName(),
+                getLimitString()
+            }
+        );
 
         return Database.query(query);
     }
