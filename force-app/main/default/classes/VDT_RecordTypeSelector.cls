@@ -32,23 +32,6 @@ public inherited sharing class VDT_RecordTypeSelector {
         return limitString;
     }
 
-    public List<RecordType> getAllRecordTypesForSObject(String sobjectName) {
-        String whereString = 'SobjectType = :sobjectName AND IsActive = TRUE';
-        String query = String.format(
-            'SELECT {0} FROM {1} ' + 
-            'WHERE {2} '+
-            'WITH SECURITY_ENFORCED ' +
-            '{3}', 
-            new List<String>{
-                getFieldListString(),
-                getObjectName(),
-                whereString,
-                getLimitString()
-            }
-        );
-        return Database.query(query);
-    }
-
     public List<RecordType> getRecordTypeByObjectAndName(String sobjectName, String recordTypeDevName) {
         String whereString = 'SObjectType = :sobjectName AND DeveloperName = :recordTypeDevName';
         String query = String.format(

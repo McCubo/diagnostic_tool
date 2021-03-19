@@ -1,8 +1,6 @@
 import { LightningElement, wire, api } from 'lwc';
 import onekeyCountryChannel from '@salesforce/messageChannel/vdt_onekeyCountryChannel__c';
 import { subscribe, unsubscribe, APPLICATION_SCOPE, MessageContext } from 'lightning/messageService';
-import fetchAccountRecordTypeOptions from '@salesforce/apex/VDT_MasterDataAnalysisController.fetchAccountRecordTypeOptions';
-import fetchAccountSpecialtyOptions from '@salesforce/apex/VDT_MasterDataAnalysisController.fetchAccountSpecialtyOptions';
 
 import { downloadCSVFile } from 'c/vdt_csvUtil'
 
