@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>OneKey Without Visit and Cycle Plan</label>
+    <protected>false</protected>
+    <values>
+        <field>Description__c</field>
+        <value xsi:type="xsd:string">Percentage of OneKey/Extrennal Data provider customers Without Visit and cyle plan targets</value>
+    </values>
+    <values>
+        <field>VDT_Default_Target__c</field>
+        <value xsi:type="xsd:double">15.0</value>
+    </values>
+    <values>
+        <field>VDT_Display_Order__c</field>
+        <value xsi:type="xsd:double">6.0</value>
+    </values>
+    <values>
+        <field>VDT_Formula_Text__c</field>
+        <value xsi:type="xsd:string">Total Number of One Key Customers which are neither Visited and Targted/Total Number of One Key customers</value>
+    </values>
+    <values>
+        <field>VDT_Help_Text__c</field>
+        <value xsi:type="xsd:string">Measuring the share of the customers which are not Visited and not part of any target</value>
+    </values>
+    <values>
+        <field>VDT_Is_Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>VDT_Type__c</field>
+        <value xsi:type="xsd:string">lower</value>
+    </values>
+</CustomMetadata>

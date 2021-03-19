@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Onekey vs Non One Key</label>
+    <protected>false</protected>
+    <values>
+        <field>Description__c</field>
+        <value xsi:type="xsd:string">Percentage of Onekey/External Data Provider Vs Non One Key/External Customers</value>
+    </values>
+    <values>
+        <field>VDT_Default_Target__c</field>
+        <value xsi:type="xsd:double">95.0</value>
+    </values>
+    <values>
+        <field>VDT_Display_Order__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>VDT_Formula_Text__c</field>
+        <value xsi:type="xsd:string">Total Number of One key customers/Total number of accounts in CRM</value>
+    </values>
+    <values>
+        <field>VDT_Help_Text__c</field>
+        <value xsi:type="xsd:string">Measuring the percentage of the customer universe which is covered by Subscription</value>
+    </values>
+    <values>
+        <field>VDT_Is_Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>VDT_Type__c</field>
+        <value xsi:type="xsd:string">higher</value>
+    </values>
+</CustomMetadata>

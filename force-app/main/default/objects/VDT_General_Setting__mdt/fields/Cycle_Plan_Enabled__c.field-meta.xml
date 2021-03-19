@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Cycle_Plan_Enabled__c</fullName>
+    <defaultValue>true</defaultValue>
+    <description>Flag to indicate whether cycle plan should be calculated or not</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Flag to indicate whether cycle plan should be calculated or not</inlineHelpText>
+    <label>Cycle Plan Enabled</label>
+    <type>Checkbox</type>
+</CustomField>
