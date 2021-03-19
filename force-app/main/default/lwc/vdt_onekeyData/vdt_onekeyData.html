@@ -30,14 +30,10 @@
                         </template>
                         <template if:true={_showCalculation}>
                             <lightning-layout-item size="12" class="graphs">
-                                <lightning-layout multiple-rows>
-                                    <c-vdt_onekey-analysis-summary countries={countries} calculation-data={_calculation.data}></c-vdt_onekey-analysis-summary>
-                                </lightning-layout>
+                                <c-vdt_onekey-analysis-summary countries={countries} calculation-data={_calculation.data}></c-vdt_onekey-analysis-summary>
                             </lightning-layout-item>
                             <lightning-layout-item size="12" class="graphs">
-                                <lightning-layout multiple-rows>
-                                    <c-vdt_onekey-analysis-details countries={countries} calculation-data={_calculation.data}></c-vdt_onekey-analysis-details>
-                                </lightning-layout>
+                                <c-vdt_onekey-analysis-details countries={countries} calculation-data={_calculation.data}></c-vdt_onekey-analysis-details>
                             </lightning-layout-item>
                         </template>
                     </template>

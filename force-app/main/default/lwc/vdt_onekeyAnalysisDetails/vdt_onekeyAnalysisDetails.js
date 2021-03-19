@@ -8,7 +8,7 @@ import { downloadCSVFile } from 'c/vdt_csvUtil'
 
 const COLUMNS = [
     { type: 'text', fieldName: 'specialty', label: 'Specialty' },
-    { type: 'text', fieldName: 'recordtype', label: 'Record Type' },
+    { type: 'text', fieldName: 'recordtype', label: 'Record Type', wrapText: true },
     { type: 'boolean', fieldName: 'isActive', label: 'Is Speciality Active?' },
     { type: 'text', fieldName: 'totalAccounts', label: 'Total Accounts' },
     { type: 'text', fieldName: 'visitedCalled', label: 'Visited/Called' },
