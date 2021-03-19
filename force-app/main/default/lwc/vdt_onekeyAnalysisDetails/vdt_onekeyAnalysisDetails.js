@@ -1,4 +1,5 @@
 import { LightningElement, wire, api } from 'lwc';
+import isTerritoryManagementActive from '@salesforce/apex/VDT_MasterDataAnalysisController.isTerritoryManagementActive';
 import onekeyCountryChannel from '@salesforce/messageChannel/vdt_onekeyCountryChannel__c';
 import { subscribe, unsubscribe, APPLICATION_SCOPE, MessageContext } from 'lightning/messageService';
 
@@ -23,7 +24,19 @@ export default class Vdt_onekeyAnalysisDetails extends LightningElement {
     countries = [];
     _specialityOptions = [];
     _recordTypeOptions = [];
-    columns = COLUMNS;
+
+    get columns() {
+        console.log('this._isTerrytoryActive: %O', this._isTerrytoryActive.data)
+        return COLUMNS.filter(column => {
+            if (column.fieldName == 'notAlignedToTerritories' && !this._isTerrytoryActive.data) {
+                return false;
+            }            
+            return true;
+        })
+    }
+
+    @wire(isTerritoryManagementActive)
+    _isTerrytoryActive;
 
     _rawData = [];
     _calculationData = []
