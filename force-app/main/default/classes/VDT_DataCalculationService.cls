@@ -93,7 +93,7 @@ public inherited sharing class VDT_DataCalculationService {
             List<String> additionalFields = new List<String>{'VDT_Country__c', 'Start_Date__c', 'End_Date__c'};
             List<VDT_Data_Calculation__c> records = new VDT_DataCalculationSelector().withAdditionalFields(additionalFields).getById(dataCalculationRecord.Id);
             VDT_MasterAnalysisCalculationBatch masterAnalysisBatch = new VDT_MasterAnalysisCalculationBatch(records[0]); 
-            Database.executeBatch(masterAnalysisBatch, 1);
+            Database.executeBatch(masterAnalysisBatch, batchSize);
         }
     }
 

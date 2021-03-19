@@ -1,34 +1,35 @@
 import { LightningElement } from 'lwc';
 import fetchFinishedCalculations from '@salesforce/apex/VDT_CalculationLogsController.fetchFinishedCalculations';
 import { loadScript, } from 'lightning/platformResourceLoader';
-import MOMENT from '@salesforce/resourceUrl/vdt_moment';
 import { MONTH_NAMES } from 'c/vdt_utils';
+import MOMENT from '@salesforce/resourceUrl/vdt_moment';
 
-export default class Vdt_calculationLogs extends LightningElement {
+export default class Vdt_onekeyLogs extends LightningElement {
+
     _columns = [
-        { label: 'Object/Entity', fieldName: 'VDT_Object_Name__c' },
+        { label: 'Country', fieldName: 'VDT_Country__c' },
         { label: 'Calculation Range Start ', fieldName: 'startDateString', type: 'text' },
         { label: 'Calculation Range End', fieldName: 'endDateString', type: 'text' },
         { label: 'Job Start Date', fieldName: 'jobStartDateString', type: 'text' },
         { label: 'Job End Date', fieldName: 'jobEndDateString', type: 'text' },
         { label: 'Created By', fieldName: 'createdByName', type: 'text' },
-        { label: 'Status', fieldName: 'Status__c', type: 'text' },
+        { label: 'Status', fieldName: 'Status__c', type: 'text' }
     ];
+
     _logs;
     _filteredLogs;
     _showEmpty = false;
     _showTable = false;
     _dateRangeFormat = 'MMMM yyyy';
     _jobDateFormat = 'DD-MM-yyyy, hh:mm a';
-    _disableRefresh = false;
-
+    _disableRefresh = false;    
 
     handleFilterChange(evt) {
         let filter = evt.detail;
-
+        console.log('filter: %O', filter);
         this._filteredLogs = 
             this._logs
-            .filter(log => log.VDT_Object_Name__c.toLowerCase().indexOf(filter.objectName.toLowerCase()) >= 0)
+            .filter(log => log.VDT_Country__c.toLowerCase().indexOf(filter.country.toLowerCase()) >= 0)
             .filter(log => filter.jobStartDate ? moment(log.VDT_Job_Start_Date__c).isSame(moment(filter.jobStartDate), 'day') : true)
             .filter(log => filter.jobEndDate ? moment(log.VDT_Job_End_Date__c).isSame(moment(filter.jobEndDate), 'day') : true)
     }
@@ -41,8 +42,8 @@ export default class Vdt_calculationLogs extends LightningElement {
         this._disableRefresh = true;
         fetchFinishedCalculations()
         .then(data => {
-            this._logs = JSON.parse(JSON.stringify(data)).filter(log => {
-                return log.VDT_Object_Name__c != null && log.VDT_Object_Name__c != '';
+            this._logs = JSON.parse(JSON.stringify(data)).filter(logRecord => {
+                return logRecord.VDT_Country__c != null && logRecord.VDT_Country__c != '';
             });
             if (this._logs.length) {
                 this._logs.forEach(log => {
@@ -75,4 +76,5 @@ export default class Vdt_calculationLogs extends LightningElement {
             console.log(error.message);
         });
     }
+
 }

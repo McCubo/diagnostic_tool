@@ -61,7 +61,7 @@ export default class Vdt_onekeyAnalysisDetails extends LightningElement {
                     specialty: specialty.specialty,
                     recordtype: '',
                     isActive: specialty.isActive,
-                    totalAccounts: specialty.totalAccounts,
+                    totalAccounts: 0,
                     visitedCalled: 0,
                     partCyclePlan: 0,
                     notPartOfCyclePlan: 0,
@@ -71,14 +71,14 @@ export default class Vdt_onekeyAnalysisDetails extends LightningElement {
                 };
                 if (this._recordTypes.length == 0) {
                     specialtyEntry.recordtype = 'All';
-                }
-                if (this._recordTypes.length == 1) {
-                    specialtyEntry.recordtype = this._recordTypes[0];
+                } else {
+                    specialtyEntry.recordtype = this._recordTypes.join(', ');
                 }
                 Object.values(specialty.recordTypeUsageSummary).forEach(recordTypeInfo => {
                     if (this._recordTypes.length == 0 || this._recordTypes.includes(recordTypeInfo.name)) {
                         Object.keys(recordTypeInfo.countryUsageSummary).forEach(countryCode => {
                             if (this.countries.includes(countryCode) || this.countries.includes('All')) {
+                                specialtyEntry.totalAccounts += recordTypeInfo.countryUsageSummary[countryCode].totalAccounts;
                                 specialtyEntry.visitedCalled += recordTypeInfo.countryUsageSummary[countryCode].visitedCalled;
                                 specialtyEntry.partCyclePlan += recordTypeInfo.countryUsageSummary[countryCode].partCyclePlan;
                                 specialtyEntry.notPartOfCyclePlan += recordTypeInfo.countryUsageSummary[countryCode].notPartOfCyclePlan;

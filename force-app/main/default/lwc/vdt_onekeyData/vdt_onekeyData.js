@@ -1,7 +1,10 @@
-import { LightningElement, track } from 'lwc';
+import { LightningElement, track, wire } from 'lwc';
 import searchExistingCalculations from '@salesforce/apex/VDT_MasterDataAnalysisController.searchExistingCalculations';
 import recalculateMasterAnalysis from '@salesforce/apex/VDT_MasterDataAnalysisController.recalculateMasterAnalysis';
 import validateCanRunCalculation from '@salesforce/apex/VDT_ObjectsCalculationController.validateCanRunCalculation';
+
+import refreshMonitoringMessageChannel from '@salesforce/messageChannel/vdt_refreshMonitoring__c';
+import { publish, MessageContext } from 'lightning/messageService';
 
 import { showToast } from 'c/vdt_utils';
 export default class Vdt_onekeyData extends LightningElement {
@@ -12,6 +15,9 @@ export default class Vdt_onekeyData extends LightningElement {
     _calculationInProgress = false;
     _filter;
     countries = [];
+
+    @wire(MessageContext)
+    _messageContext;
 
     @track 
     _calculation = {};
@@ -52,6 +58,7 @@ export default class Vdt_onekeyData extends LightningElement {
                 recalculateMasterAnalysis({jsonSearchParameters: JSON.stringify(this._filter)})
                 .then(() => {
                     this._calculation.status = 'In Progress';
+                    publish(this._messageContext, refreshMonitoringMessageChannel);
                 })
                 .catch(error => {
                      console.log(error);

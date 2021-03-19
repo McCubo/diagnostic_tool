@@ -78,7 +78,6 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
             }
             if (this.analysisData.calculations.containsKey(specialty)) {
                 SpecialtySummary specialtySummary = this.analysisData.calculations.get(specialty);
-                specialtySummary.totalAccounts += 1;
                 if (specialtySummary.recordTypeUsageSummary.containsKey(acc.RecordType.Name)) {
                     RecordTypeUsageSummary recordTypeSummary = specialtySummary.recordTypeUsageSummary.get(acc.RecordType.Name);
                     if (recordTypeSummary.countryUsageSummary.containsKey(country)) {
@@ -136,6 +135,7 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
     }
 
     private CountryUsageSummary updateCountrySummary(Account account, CountryUsageSummary countrySummary) {
+        countrySummary.totalAccounts += 1;
         countrySummary.visitedCalled += account.Call2_vod__r.isEmpty() ? 0 : 1;
         countrySummary.partCyclePlan += account.MC_Cycle_Plan_Targets_vod__r.isEmpty() ? 0 : 1;
         countrySummary.notInProductMetrics += account.Product_Metrics_vod__r.isEmpty() ? 1 : 0;
@@ -190,15 +190,12 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         public SpecialtySummary(String specialty, Boolean isActive) {
             this.id = specialty;
             this.specialty = specialty;
-            this.totalAccounts = 1;
             this.isActive = isActive;
         }
 
         public String id;
 
         public String specialty;
-
-        public Integer totalAccounts = 0;
 
         public Boolean isActive = true;
 
@@ -215,6 +212,8 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
     }
 
     public class CountryUsageSummary {
+
+        public Integer totalAccounts = 0;
 
         public Integer visitedCalled = 0;
 

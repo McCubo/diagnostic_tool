@@ -164,6 +164,7 @@ public inherited sharing class VDT_DataCalculationSelector {
             VDT_Data_Calculation__c.End_Date__c.getDescribe().getName(),
             VDT_Data_Calculation__c.VDT_Job_Start_Date__c.getDescribe().getName(),
             VDT_Data_Calculation__c.VDT_Job_End_Date__c.getDescribe().getName(),
+            VDT_Data_Calculation__c.VDT_Country__c.getDescribe().getName(),
             'CreatedBy.Name'
         };
         String completedStatus = VDT_DataCalculationService.STATUS_COMPLETED;

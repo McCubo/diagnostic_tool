@@ -10,6 +10,7 @@ import refreshMonitoringMessageChannel from '@salesforce/messageChannel/vdt_refr
 export default class Vdt_calculationMonitoring extends LightningElement {
     _columns = [
         { label: 'Object/Entity', fieldName: 'VDT_Object_Name__c' },
+        { label: 'Country', fieldName: 'VDT_Country__c' },
         { label: 'Calculation Range Start ', fieldName: 'startDateString', type: 'text' },
         { label: 'Calculation Range End', fieldName: 'endDateString', type: 'text' },
         { label: 'Job Start Date', fieldName: 'jobStartDateString', type: 'datetime' },
