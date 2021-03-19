@@ -1,11 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
   <types>
-    <name>CustomApplication</name>
-    <members>Veeva_Diagnostic_Tool</members>
-  </types>
-  <types>
-    <name>ApexClass</name>
     <members>VDT_AnalysisDashboardFilterController</members>
     <members>VDT_AnalysisDashboardFilterCtrlTest</members>
     <members>VDT_AttachmentSelector</members>
@@ -43,90 +38,21 @@
     <members>VDT_ToolingPageLayoutResponse</members>
     <members>VDT_TriggerHandler</members>
     <members>VDT_VeevaUsersController</members>
+    <name>ApexClass</name>
   </types>
   <types>
-    <name>CustomMetadata</name>
-    <members>VDT_General_Setting.Default</members>
-    <members>VDT_Object_Country_Field_Mapping.Account</members>
+    <members>VDT_DataCalculationTrigger</members>
+    <members>VDT_LogTrigger</members>
+    <name>ApexTrigger</name>
   </types>
   <types>
-    <name>EmailTemplate</name>
-    <members>unfiled$public/VDT_FieldCamparisonCalculationFinished</members>
+    <members>Veeva_Diagnostic_Tool</members>
+    <name>CustomApplication</name>
   </types>
   <types>
-    <name>FlexiPage</name>
-    <members>Veeva_Diagnostic_Tool_UtilityBar</members>
-  </types>
-  <types>
-    <name>Layout</name>
-    <members>VDT_Data_Calculation__c-Data Calculation Layout</members>
-    <members>VDT_General_Setting__mdt-VDT General Setting Layout</members>
-    <members>VDT_Log_Event__c-Log Event Layout</members>
-    <members>VDT_Object_Batch_Size_Mapping__mdt-VDT Object Batch Size Mapping Layout</members>
-    <members>VDT_Object_Country_Field_Mapping__mdt-VDT Object Country Field Mapping Layout</members>
-  </types>
-  <types>
-    <name>LightningComponentBundle</name>    
-    <members>vdt_onekeyAnalysisDetails</members>
-    <members>vdt_onekeyProgressBar</members>
-    <members>vdt_enrichedText</members>
-    <members>vdt_datatable</members>
-    <members>vdt_onekeyAnalysisSummary</members>
-    <members>vdt_analysisDashboardFilter</members>
-    <members>vdt_app</members>
-    <members>vdt_autocompleteInput</members>
-    <members>vdt_calculationButton</members>
-    <members>vdt_calculationLogs</members>
-    <members>vdt_calculationLogsFilter</members>
-    <members>vdt_calculationMonitoring</members>
-    <members>vdt_csvUtil</members>
-    <members>vdt_dateRangePicker</members>
-    <members>vdt_fieldDetailLevelSummary</members>
-    <members>vdt_fieldsHighLevelSummary</members>
-    <members>vdt_home</members>
-    <members>vdt_homeGraphs</members>
-    <members>vdt_illustrationProvider</members>
-    <members>vdt_monthYearPicker</members>
-    <members>vdt_numberKpiIndicator</members>
-    <members>vdt_objects</members>
-    <members>vdt_objectsCalculation</members>
-    <members>vdt_objectsCalculationFilter</members>
-    <members>vdt_objectsDashboard</members>
-    <members>vdt_objectsFieldsUsageChart</members>
-    <members>vdt_onekeyData</members>
-    <members>vdt_onekeyFilters</members>
-    <members>vdt_onekeyGraphs</members>
-    <members>vdt_onekeyHcoFilters</members>
-    <members>vdt_onekeyHcpFilters</members>
-    <members>vdt_onekeyProductFilters</members>
-    <members>vdt_orgConnection</members>
-    <members>vdt_paginationItem</members>
-    <members>vdt_paginator</members>
-    <members>vdt_popover</members>
-    <members>vdt_productsAndHierarchy</members>
-    <members>vdt_profileIcon</members>
-    <members>vdt_profileOptions</members>
-    <members>vdt_sidebar</members>
-    <members>vdt_tabItem</members>
-    <members>vdt_tabs</members>
-    <members>vdt_unusedFieldsOnLayoutChart</members>
-    <members>vdt_utils</members>
-    <members>vdt_veevaUsers</members>
-    <members>vdt_workspace</members>
-  </types>
-  <types>
-    <name>LightningMessageChannel</name>
-    <members>vdt_hcoFilter</members>
-    <members>vdt_hcpFilter</members>
-    <members>vdt_productFilter</members>
-    <members>vdt_refreshMonitoring</members>
-    <members>vdt_tabs</members>
-    <members>vdt_onekeyCountryChannel</members>
-  </types>
-  <types>
-    <name>CustomField</name>
-	  <members>VDT_Calculation_Status_Update__e.Calculation_Id__c</members>
-	  <members>VDT_Calculation_Status_Update__e.Status__c</members>
+    <members>VDT_Account_Record_Type_Mapping__mdt.Account_Record_Types__c</members>
+    <members>VDT_Calculation_Status_Update__e.Calculation_Id__c</members>
+    <members>VDT_Calculation_Status_Update__e.Status__c</members>
     <members>VDT_Data_Calculation__c.End_Date__c</members>
     <members>VDT_Data_Calculation__c.End_Month__c</members>
     <members>VDT_Data_Calculation__c.End_Year__c</members>
@@ -142,6 +68,7 @@
     <members>VDT_Data_Calculation__c.VDT_Object_Name__c</members>
     <members>VDT_General_Setting__mdt.Apex_Async_Execution_Daily_Allocation__c</members>
     <members>VDT_General_Setting__mdt.Batch_Size__c</members>
+    <members>VDT_General_Setting__mdt.Cycle_Plan_Enabled__c</members>
     <members>VDT_General_Setting__mdt.Default_Country_Code_Field__c</members>
     <members>VDT_General_Setting__mdt.Maximum_Calculation_Requests__c</members>
     <members>VDT_General_Setting__mdt.Maximum_Running_Calculations__c</members>
@@ -157,9 +84,16 @@
     <members>VDT_Log__e.Severity__c</members>
     <members>VDT_Object_Batch_Size_Mapping__mdt.Batch_Size__c</members>
     <members>VDT_Object_Country_Field_Mapping__mdt.Country_Field_Reference__c</members>
+    <name>CustomField</name>
   </types>
   <types>
-    <name>CustomObject</name>
+    <members>VDT_Account_Record_Type_Mapping.External_Customers</members>
+    <members>VDT_General_Setting.Default</members>
+    <members>VDT_Object_Country_Field_Mapping.Account</members>
+    <name>CustomMetadata</name>
+  </types>
+  <types>
+    <members>VDT_Account_Record_Type_Mapping__mdt</members>
     <members>VDT_Calculation_Status_Update__e</members>
     <members>VDT_Data_Calculation__c</members>
     <members>VDT_General_Setting__mdt</members>
@@ -167,32 +101,101 @@
     <members>VDT_Log__e</members>
     <members>VDT_Object_Batch_Size_Mapping__mdt</members>
     <members>VDT_Object_Country_Field_Mapping__mdt</members>
+    <name>CustomObject</name>
   </types>
   <types>
-    <name>ValidationRule</name>
-    <members>VDT_General_Setting__mdt.Running_Calculations_Upper_Bound</members>
+    <members>Veeva_Diagnostic_Tool</members>
+    <name>CustomTab</name>
   </types>
   <types>
-    <name>Profile</name>
+    <members>unfiled$public/VDT_FieldCamparisonCalculationFinished</members>
+    <name>EmailTemplate</name>
+  </types>
+  <types>
+    <members>Veeva_Diagnostic_Tool_UtilityBar</members>
+    <name>FlexiPage</name>
+  </types>
+  <types>
+    <members>VDT_Data_Calculation__c-Data Calculation Layout</members>
+    <members>VDT_General_Setting__mdt-VDT General Setting Layout</members>
+    <members>VDT_Log_Event__c-Log Event Layout</members>
+    <members>VDT_Object_Batch_Size_Mapping__mdt-VDT Object Batch Size Mapping Layout</members>
+    <members>VDT_Object_Country_Field_Mapping__mdt-VDT Object Country Field Mapping Layout</members>
+    <name>Layout</name>
+  </types>
+  <types>
+    <members>vdt_analysisDashboardFilter</members>
+    <members>vdt_app</members>
+    <members>vdt_autocompleteInput</members>
+    <members>vdt_calculationButton</members>
+    <members>vdt_calculationLogs</members>
+    <members>vdt_calculationLogsFilter</members>
+    <members>vdt_calculationMonitoring</members>
+    <members>vdt_csvUtil</members>
+    <members>vdt_datatable</members>
+    <members>vdt_dateRangePicker</members>
+    <members>vdt_enrichedText</members>
+    <members>vdt_fieldDetailLevelSummary</members>
+    <members>vdt_fieldsHighLevelSummary</members>
+    <members>vdt_home</members>
+    <members>vdt_homeGraphs</members>
+    <members>vdt_illustrationProvider</members>
+    <members>vdt_monthYearPicker</members>
+    <members>vdt_numberKpiIndicator</members>
+    <members>vdt_objects</members>
+    <members>vdt_objectsCalculation</members>
+    <members>vdt_objectsCalculationFilter</members>
+    <members>vdt_objectsDashboard</members>
+    <members>vdt_objectsFieldsUsageChart</members>
+    <members>vdt_onekeyAnalysisDetails</members>
+    <members>vdt_onekeyAnalysisSummary</members>
+    <members>vdt_onekeyData</members>
+    <members>vdt_onekeyFilters</members>
+    <members>vdt_onekeyGraphs</members>
+    <members>vdt_onekeyHcoFilters</members>
+    <members>vdt_onekeyHcpFilters</members>
+    <members>vdt_onekeyProductFilters</members>
+    <members>vdt_onekeyProgressBar</members>
+    <members>vdt_orgConnection</members>
+    <members>vdt_paginationItem</members>
+    <members>vdt_paginator</members>
+    <members>vdt_popover</members>
+    <members>vdt_productsAndHierarchy</members>
+    <members>vdt_profileIcon</members>
+    <members>vdt_profileOptions</members>
+    <members>vdt_sidebar</members>
+    <members>vdt_tabItem</members>
+    <members>vdt_tabs</members>
+    <members>vdt_unusedFieldsOnLayoutChart</members>
+    <members>vdt_utils</members>
+    <members>vdt_veevaUsers</members>
+    <members>vdt_workspace</members>
+    <name>LightningComponentBundle</name>
+  </types>
+  <types>
+    <members>vdt_hcoFilter</members>
+    <members>vdt_hcpFilter</members>
+    <members>vdt_onekeyCountryChannel</members>
+    <members>vdt_productFilter</members>
+    <members>vdt_refreshMonitoring</members>
+    <members>vdt_tabs</members>
+    <name>LightningMessageChannel</name>
+  </types>
+  <types>
     <members>Admin</members>
+    <name>Profile</name>
   </types>
   <types>
-    <name>StaticResource</name>
     <members>vdt_chartjs</members>
     <members>vdt_d3</members>
     <members>vdt_moment</members>
-    <members>vdt_styles</members>
     <members>vdt_onekey_summary_table</members>
+    <members>vdt_styles</members>
+    <name>StaticResource</name>
   </types>
   <types>
-    <name>CustomTab</name>
-    <members>Veeva_Diagnostic_Tool</members>
-  </types>
-  <types>
-    <name>ApexTrigger</name>
-    <members>VDT_DataCalculationTrigger</members>
-    <members>VDT_LogTrigger</members>
+    <members>VDT_General_Setting__mdt.Running_Calculations_Upper_Bound</members>
+    <name>ValidationRule</name>
   </types>
   <version>50.0</version>
-  <fullName>VDT</fullName>
 </Package>
