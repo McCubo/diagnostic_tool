@@ -26,12 +26,17 @@
     <members>VDT_LogMessage</members>
     <members>VDT_LogSeverity</members>
     <members>VDT_LogTriggerHandler</members>
+    <members>VDT_MasterAnalysisCalculationBatch</members>
+    <members>VDT_MasterAnalysisCalculationBuilder</members>
+    <members>VDT_MasterDataAnalysisController</members>
     <members>VDT_ObjectCalculationBuilder</members>
     <members>VDT_ObjectService</members>
     <members>VDT_ObjectsCalculationController</members>
     <members>VDT_ObjectsCalculationFilterController</members>
     <members>VDT_OptionWrapper</members>
     <members>VDT_PageLayoutService</members>
+    <members>VDT_RecordTypeSelector</members>
+    <members>VDT_RecordTypeService</members>
     <members>VDT_ToolingAPICalloutMock</members>
     <members>VDT_ToolingAPIService</members>
     <members>VDT_ToolingCustomObjectResponse</members>
@@ -62,6 +67,7 @@
     <members>VDT_Data_Calculation__c.Status__c</members>
     <members>VDT_Data_Calculation__c.VDT_Calculation_Date__c</members>
     <members>VDT_Data_Calculation__c.VDT_Calculation_Result__c</members>
+    <members>VDT_Data_Calculation__c.VDT_Country__c</members>
     <members>VDT_Data_Calculation__c.VDT_Job_Created_Date__c</members>
     <members>VDT_Data_Calculation__c.VDT_Job_End_Date__c</members>
     <members>VDT_Data_Calculation__c.VDT_Job_Start_Date__c</members>
@@ -74,6 +80,17 @@
     <members>VDT_General_Setting__mdt.Maximum_Running_Calculations__c</members>
     <members>VDT_General_Setting__mdt.Standard_Field_Identifier__c</members>
     <members>VDT_General_Setting__mdt.Start_Date_Year_Decrement__c</members>
+    <members>VDT_General_Setting__mdt.VDT_Default_Specialty_Field__c</members>
+    <members>VDT_KPI_Configuration__mdt.Description__c</members>
+    <members>VDT_KPI_Configuration__mdt.VDT_Default_Target__c</members>
+    <members>VDT_KPI_Configuration__mdt.VDT_Display_Order__c</members>
+    <members>VDT_KPI_Configuration__mdt.VDT_Formula_Text__c</members>
+    <members>VDT_KPI_Configuration__mdt.VDT_Help_Text__c</members>
+    <members>VDT_KPI_Configuration__mdt.VDT_Is_Active__c</members>
+    <members>VDT_KPI_Configuration__mdt.VDT_Type__c</members>
+    <members>VDT_KPI_by_Country__mdt.VDT_Country__c</members>
+    <members>VDT_KPI_by_Country__mdt.VDT_KPI_Configuration__c</members>
+    <members>VDT_KPI_by_Country__mdt.VDT_Target__c</members>
     <members>VDT_Log_Event__c.Log_Data__c</members>
     <members>VDT_Log_Event__c.Quiddity__c</members>
     <members>VDT_Log_Event__c.Request_Id__c</members>
@@ -88,7 +105,16 @@
   </types>
   <types>
     <members>VDT_Account_Record_Type_Mapping.External_Customers</members>
+    <members>VDT_Account_Record_Type_Mapping.Internal_Customers</members>
     <members>VDT_General_Setting.Default</members>
+    <members>VDT_KPI_Configuration.OneKey_Without_Visit_and_Cycle_Plan</members>
+    <members>VDT_KPI_Configuration.Onekey_Without_cycle_plan</members>
+    <members>VDT_KPI_Configuration.Onekey_Without_ratings</members>
+    <members>VDT_KPI_Configuration.Onekey_Without_visit</members>
+    <members>VDT_KPI_Configuration.Onekey_aligned_to_territories</members>
+    <members>VDT_KPI_Configuration.Onekey_vs_Non_One_Key</members>
+    <members>VDT_KPI_Configuration.Onekey_without_address</members>
+    <members>VDT_KPI_by_Country.KPI_1_PL</members>
     <members>VDT_Object_Country_Field_Mapping.Account</members>
     <name>CustomMetadata</name>
   </types>
@@ -97,6 +123,8 @@
     <members>VDT_Calculation_Status_Update__e</members>
     <members>VDT_Data_Calculation__c</members>
     <members>VDT_General_Setting__mdt</members>
+    <members>VDT_KPI_Configuration__mdt</members>
+    <members>VDT_KPI_by_Country__mdt</members>
     <members>VDT_Log_Event__c</members>
     <members>VDT_Log__e</members>
     <members>VDT_Object_Batch_Size_Mapping__mdt</members>
@@ -117,6 +145,7 @@
   </types>
   <types>
     <members>VDT_Data_Calculation__c-Data Calculation Layout</members>
+    <members>VDT_Data_Calculation__c-Master Data Analysis Layout</members>
     <members>VDT_General_Setting__mdt-VDT General Setting Layout</members>
     <members>VDT_Log_Event__c-Log Event Layout</members>
     <members>VDT_Object_Batch_Size_Mapping__mdt-VDT Object Batch Size Mapping Layout</members>
@@ -149,11 +178,14 @@
     <members>vdt_objectsFieldsUsageChart</members>
     <members>vdt_onekeyAnalysisDetails</members>
     <members>vdt_onekeyAnalysisSummary</members>
+    <members>vdt_onekeyCountryInput</members>
     <members>vdt_onekeyData</members>
     <members>vdt_onekeyFilters</members>
     <members>vdt_onekeyGraphs</members>
     <members>vdt_onekeyHcoFilters</members>
     <members>vdt_onekeyHcpFilters</members>
+    <members>vdt_onekeyLogs</members>
+    <members>vdt_onekeyLogsFilter</members>
     <members>vdt_onekeyProductFilters</members>
     <members>vdt_onekeyProgressBar</members>
     <members>vdt_orgConnection</members>
@@ -184,6 +216,11 @@
   <types>
     <members>Admin</members>
     <name>Profile</name>
+  </types>
+  <types>
+    <members>VDT_Data_Calculation__c.VDT_Master_Data_Analysis</members>
+    <members>VDT_Data_Calculation__c.VDT_Object_Field_Analysis</members>
+    <name>RecordType</name>
   </types>
   <types>
     <members>vdt_chartjs</members>
