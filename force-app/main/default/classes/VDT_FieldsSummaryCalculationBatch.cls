@@ -2,6 +2,8 @@ public with sharing class VDT_FieldsSummaryCalculationBatch implements Database.
     private VDT_ObjectCalculationBuilder calculationBuilder;
     private String countryField;
     private VDT_Data_Calculation__c dataCalculationRecord;
+    private Integer batchSize = 0;
+    private Integer recordCount = 0;
 
     public VDT_FieldsSummaryCalculationBatch(VDT_Data_Calculation__c dataCalculationRecord) {
         this.dataCalculationRecord = dataCalculationRecord;
@@ -47,6 +49,8 @@ public with sharing class VDT_FieldsSummaryCalculationBatch implements Database.
 
     public void execute(Database.BatchableContext bc, List<SObject> records){
         try {
+            this.batchSize = records.size();
+            this.recordCount += records.size();
             this.calculationBuilder
                 .withRecords(records)
                 .calculate();
@@ -64,6 +68,9 @@ public with sharing class VDT_FieldsSummaryCalculationBatch implements Database.
             this.dataCalculationRecord.VDT_Job_End_Date__c = Datetime.now();
             this.dataCalculationRecord.Status__c = VDT_DataCalculationService.STATUS_COMPLETED;
             this.dataCalculationRecord.VDT_Calculation_Date__c = Date.today();
+            if (this.batchSize > 0) {
+                this.dataCalculationRecord.Batches_Number__c = Math.ceil(this.recordCount / this.batchSize) + 2;
+            }
             update this.dataCalculationRecord;
 
             Attachment currentAttachment = VDT_AttachmentService.getAttachmentForRecord(

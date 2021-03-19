@@ -58,6 +58,21 @@ public inherited sharing class VDT_ObjectCalculationBuilder {
                 countryUsageSummary.totalRecords++;
                 countryUsageSummary.usagePercentage = 
                     (Decimal.valueOf(countryUsageSummary.usageNumber) / Decimal.valueOf(countryUsageSummary.totalRecords));
+                
+                if (fieldSummary.type == 'boolean') {
+                    if (countryUsageSummary.fieldValueOccurences.get('true') == null) {
+                        countryUsageSummary.fieldValueOccurences.put('true', 0);
+                    }
+                    if (countryUsageSummary.fieldValueOccurences.get('false') == null) {
+                        countryUsageSummary.fieldValueOccurences.put('false', 0);
+                    }
+                    
+                    if (record.get(field) == true) {
+                        countryUsageSummary.fieldValueOccurences.put('true', countryUsageSummary.fieldValueOccurences.get('true')+1);
+                    } else {
+                        countryUsageSummary.fieldValueOccurences.put('false', countryUsageSummary.fieldValueOccurences.get('false')+1);
+                    }
+                }
                 this.calculation.uniqueCountryCodes.add(countryCode);
             }
         }
@@ -124,5 +139,6 @@ public inherited sharing class VDT_ObjectCalculationBuilder {
         @AuraEnabled public Integer usageNumber = 0;
         @AuraEnabled public Integer totalRecords = 0;
         @AuraEnabled public Decimal usagePercentage = 0;
+        @AuraEnabled public Map<String, Decimal> fieldValueOccurences = new Map<String, Decimal>();
     }
 }

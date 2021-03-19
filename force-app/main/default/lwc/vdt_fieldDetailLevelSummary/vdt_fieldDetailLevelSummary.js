@@ -15,7 +15,7 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
         { label: 'Available On Page Layout', fieldName: 'onPageLayout' },
         { label: 'Page Layout Name', fieldName: 'pageLayoutsString' },
         { label: '# Records have value', fieldName: 'totalUsage' },
-        { label: '% Records have value', fieldName: 'totalUsagePercentage', type: 'percent' }
+        { label: '% Records have value', fieldName: 'totalUsagePercentage' }
     ];
 
     _rawData = [];
@@ -109,26 +109,44 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
                 onPageLayout: field.pageLayouts && field.pageLayouts.length > 0 ? 'Yes' : 'No',
                 pageLayoutsString: (field.pageLayouts && field.pageLayouts.length > 0) ? field.pageLayouts.join(',') : null,
                 totalUsage: 0,
+                totalUsageString: '',
                 totalRecords: 0,
-                totalUsagePercentage: 0
+                totalUsagePercentage: 0,
+                totalValueUsage: {}
             };
             Object.keys(field.countryUsageSummary).forEach(countryCode => {
                 if (countries && countries.length) {
                     if (countries.indexOf(countryCode) >= 0) {
-                        fieldEntry.totalUsage += field.countryUsageSummary[countryCode].usageNumber;
-                        fieldEntry.totalRecords += field.countryUsageSummary[countryCode].totalRecords;
-                        fieldEntry.totalUsagePercentage = (fieldEntry.totalUsage / fieldEntry.totalRecords).toFixed(2);
+                        this.parseForCountry(field, fieldEntry, countryCode);
                     }
                 } else {
-                    fieldEntry.totalUsage += field.countryUsageSummary[countryCode].usageNumber;
-                    fieldEntry.totalRecords += field.countryUsageSummary[countryCode].totalRecords;
-                    fieldEntry.totalUsagePercentage = (fieldEntry.totalUsage / fieldEntry.totalRecords).toFixed(2);
+                    this.parseForCountry(field, fieldEntry, countryCode);
                 }
             })
 
             parsedData.push(fieldEntry);
         })
         return parsedData;
+    }
+
+    parseForCountry(field, fieldEntry, countryCode) {
+        if (field.type.toLowerCase() === 'boolean') {
+            const trueValueUsage = field.countryUsageSummary[countryCode].fieldValueOccurences['true'] || 0;
+            const falseValueUsage = field.countryUsageSummary[countryCode].fieldValueOccurences['false'] || 0;
+            fieldEntry.totalRecords += field.countryUsageSummary[countryCode].totalRecords;
+            
+            fieldEntry.totalValueUsage.true ? fieldEntry.totalValueUsage.true+= trueValueUsage : fieldEntry.totalValueUsage.true = trueValueUsage;
+            fieldEntry.totalValueUsage.false ? fieldEntry.totalValueUsage.false+= falseValueUsage : fieldEntry.totalValueUsage.false = falseValueUsage;
+
+            fieldEntry.totalUsage = `${fieldEntry.totalValueUsage.true}/${fieldEntry.totalValueUsage.false}`;
+
+            fieldEntry.totalUsagePercentage = `${Math.floor((fieldEntry.totalValueUsage.true/fieldEntry.totalRecords)*100)}% / ${Math.floor((fieldEntry.totalValueUsage.false/fieldEntry.totalRecords)*100)}%`
+        } else {
+            fieldEntry.totalUsage += field.countryUsageSummary[countryCode].usageNumber;
+            fieldEntry.totalUsageString = fieldEntry.totalUsage + '';
+            fieldEntry.totalRecords += field.countryUsageSummary[countryCode].totalRecords;
+            fieldEntry.totalUsagePercentage = Math.floor((fieldEntry.totalUsage / fieldEntry.totalRecords)*100)+'%';
+        }
     }
 
     sortCalculationData(fieldsData) {
@@ -171,7 +189,7 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
                 countryData.forEach(data => {
                     data.country = country;
                     csvData.push(data);
-                    data.totalUsagePercentage = `${data.totalUsagePercentage * 100}%`;
+                    data.totalUsagePercentage = data.totalUsagePercentage;
                 });
             });
             let countrySummaryData = this.parseData(this._rawData, this._selectedCountries);
@@ -179,12 +197,12 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
             countrySummaryData.forEach(data => {
                 data.country = this._selectedCountries.join(',');
                 csvData.push(data);
-                data.totalUsagePercentage = `${data.totalUsagePercentage * 100}%`;
+                data.totalUsagePercentage = data.totalUsagePercentage ;
             });
         } else {
             csvData = JSON.parse(JSON.stringify(this._calculationData));
             csvData.forEach(data => {
-                data.totalUsagePercentage = `${data.totalUsagePercentage * 100}%`;
+                data.totalUsagePercentage = data.totalUsagePercentage;
                 data.pageLayoutsString = data.pageLayoutsString ? data.pageLayoutsString : '';
             });
         }

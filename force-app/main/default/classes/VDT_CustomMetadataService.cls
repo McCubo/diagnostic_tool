@@ -259,4 +259,25 @@ public inherited sharing class VDT_CustomMetadataService {
 
         return identifier;
     }
+
+    public static Decimal getDailyAsyncExecutionAllocation() {
+        Decimal allocation;
+
+        List<VDT_General_Setting__mdt> defaultSettings;
+        if (!customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {        
+            defaultSettings = [
+                SELECT  Apex_Async_Execution_Daily_Allocation__c
+                FROM    VDT_General_Setting__mdt
+                WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
+                WITH    SECURITY_ENFORCED
+            ]; 
+        } else {
+            defaultSettings = customMetadataWithRecords.get(VDT_GENERAL_SETTINGS);
+        }
+        if (defaultSettings.isEmpty() == false) {
+            allocation = defaultSettings[0].Apex_Async_Execution_Daily_Allocation__c;
+        }
+
+        return allocation;
+    }
 }

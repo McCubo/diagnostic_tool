@@ -74,7 +74,7 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
     setCountryColumns(data) {
         if (data.countryCodes && data.countryCodes.length > 0) {
             data.countryCodes.forEach(countryCode => {
-                    this._countryColumns.push({ label: countryCode, fieldName: countryCode, type: 'percent', initialWidth: 80});
+                    this._countryColumns.push({ label: countryCode, fieldName: countryCode, type: 'text', initialWidth: 80});
                 }
             );
             this._columns = this._columnsBase.concat(this._countryColumns);
@@ -90,7 +90,15 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
                 type: field.type.toLowerCase()
             };
             Object.keys(field.countryUsageSummary).forEach(countryCode => {
-                fieldEntry[countryCode] = field.countryUsageSummary[countryCode].usagePercentage;
+                if (field.type.toLowerCase() === 'boolean') {
+                    const trueValueUsage = field.countryUsageSummary[countryCode].fieldValueOccurences['true'] || 0;
+                    const falseValueUsage = field.countryUsageSummary[countryCode].fieldValueOccurences['false'] || 0;
+                    const totalRecords = field.countryUsageSummary[countryCode].totalRecords;
+                    fieldEntry[countryCode] = 
+                        `${Math.floor((trueValueUsage/totalRecords)*100)}% / ${Math.floor((falseValueUsage/totalRecords)*100)}%`;
+                } else {
+                    fieldEntry[countryCode] = `${field.countryUsageSummary[countryCode].usagePercentage*100 + '%'}`;
+                }
             })
 
             fieldsData.push(fieldEntry);
@@ -129,13 +137,6 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
     handleExportCSV() {
         let headers = {};
         let csvData = JSON.parse(JSON.stringify(this._calculationData));
-        this._countryColumns.forEach(column => {
-            csvData.forEach(data => {
-                if (data[column.fieldName]) {
-                    data[column.fieldName] = `${data[column.fieldName] * 100}%`;
-                }
-            })
-        })
         this._columns.forEach(col => headers[col.fieldName] = col.label);
         downloadCSVFile(headers, csvData, this.objectName+'_fields_high_level_summary');
     }
