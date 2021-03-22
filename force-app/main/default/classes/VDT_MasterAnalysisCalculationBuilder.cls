@@ -7,6 +7,7 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
     Map<String, Decimal> targetByCountryAndKpi = new Map<String, Decimal>();
     private Set<String> specialties = new Set<String>();
     private List<Account> records = new List<Account>();
+    private Set<Id> accountsWithTerritories = null;
     private final String ACCOUNT_TYPE_EXTERNAL = 'External_Customers';
     private final String ACCOUNT_TYPE_INTERNAL = 'Internal_Customers';
     private final String ONEKEY_VS_NON_ONE_KEY_KPI_ID = 'Onekey_vs_Non_One_Key';
@@ -59,6 +60,15 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         return this;
     }
 
+    public VDT_MasterAnalysisCalculationBuilder withTerritories() {
+        Set<Id> accountIds = (new Map<Id, Account>(this.records)).keySet();
+        this.accountsWithTerritories = new Set<Id>();
+        for (ObjectTerritory2Association territory : [SELECT ObjectId FROM ObjectTerritory2Association WHERE ObjectId IN :accountIds]) {
+            this.accountsWithTerritories.add(territory.ObjectId);
+        }
+        return this;
+    }
+
     public VDT_MasterAnalysisCalculationBuilder calculate() {
         for (Account acc : records) {
             String country = acc.get(this.countryField).toString();
@@ -76,7 +86,9 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
                 Boolean hasNoVisitNorTargets = acc.Call2_vod__r.isEmpty() && acc.MC_Cycle_Plan_Targets_vod__r.isEmpty();
                 this.updateKpiForCountry(ONEKEY_WITHOUT_VISIT_AND_CYCLE_PLAN_KPI_ID, country, hasNoVisitNorTargets ? 1 : 0, 1);
                 Boolean hasNoRatings = acc.Product_Metrics_vod__r.isEmpty();
-                this.updateKpiForCountry(ONEKEY_WITHOUT_RATINGS_KPI_ID, country, hasNoRatings ? 1 : 0, 1);                
+                this.updateKpiForCountry(ONEKEY_WITHOUT_RATINGS_KPI_ID, country, hasNoRatings ? 1 : 0, 1);
+                Integer territory = this.accountsWithTerritories.contains(acc.Id) ? 1 : 0;
+                this.updateKpiForCountry(ONEKEY_ALIGNED_TO_TERRITORIES_KPI_ID, country, territory, 1);
             }
             if (this.analysisData.calculations.containsKey(specialty)) {
                 SpecialtySummary specialtySummary = this.analysisData.calculations.get(specialty);
@@ -143,6 +155,7 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         countrySummary.notInProductMetrics += account.Product_Metrics_vod__r.isEmpty() ? 1 : 0;
         countrySummary.noAddress += account.Address_vod__r.isEmpty() ? 1 : 0;
         countrySummary.notPartOfCyclePlan += !account.Call2_vod__r.isEmpty() && account.MC_Cycle_Plan_Targets_vod__r.isEmpty() ? 1 : 0;
+        countrySummary.notAlignedToTerritories += this.accountsWithTerritories.contains(account.Id) ? 0 : 1;
         return countrySummary;
     }
 

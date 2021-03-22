@@ -64,7 +64,7 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
 
     public void execute(Database.BatchableContext bc, List<Account> records) {
         try {
-            this.builder.withRecords(records).calculate();
+            this.builder.withRecords(records).withTerritories().calculate();
         } catch (Exception e) {
             VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
             VDT_Log.get().publish();
