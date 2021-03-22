@@ -116,7 +116,7 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
                 recordTypeSummary.countryUsageSummary.put(country, countrySummary);
                 specialtySummary.recordTypeUsageSummary.put(acc.RecordType.Name, recordTypeSummary);
                 this.analysisData.calculations.put(specialty, specialtySummary);
-                this.analysisData.specialties.add(specialty);                
+                this.analysisData.specialties.add(specialty);
             }
         }
         return this;
