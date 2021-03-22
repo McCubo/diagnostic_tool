@@ -27,8 +27,7 @@ export default class Vdt_autocompleteInput extends LightningElement {
     }
 
     get _showSpinner() {
-        return  (!this.multiselect && this._options.length === 0) ||
-                (this.multiselect && this._options.length === 1);
+        return  this._options.length === 0;
     }
 
     get _labelVariant() {

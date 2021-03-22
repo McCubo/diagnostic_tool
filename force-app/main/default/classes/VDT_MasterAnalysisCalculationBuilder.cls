@@ -75,6 +75,8 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
                 this.updateKpiForCountry(ONEKEY_WITHOUT_CYCLE_PLAN_KPI_ID, country, hasNoCyclePlanTargets ? 1 : 0, 1);
                 Boolean hasNoVisitNorTargets = acc.Call2_vod__r.isEmpty() && acc.MC_Cycle_Plan_Targets_vod__r.isEmpty();
                 this.updateKpiForCountry(ONEKEY_WITHOUT_VISIT_AND_CYCLE_PLAN_KPI_ID, country, hasNoVisitNorTargets ? 1 : 0, 1);
+                Boolean hasNoRatings = acc.Product_Metrics_vod__r.isEmpty();
+                this.updateKpiForCountry(ONEKEY_WITHOUT_RATINGS_KPI_ID, country, hasNoRatings ? 1 : 0, 1);                
             }
             if (this.analysisData.calculations.containsKey(specialty)) {
                 SpecialtySummary specialtySummary = this.analysisData.calculations.get(specialty);

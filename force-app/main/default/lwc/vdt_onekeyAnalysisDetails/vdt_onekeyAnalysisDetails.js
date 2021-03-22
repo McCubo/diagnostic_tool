@@ -26,7 +26,6 @@ export default class Vdt_onekeyAnalysisDetails extends LightningElement {
     _recordTypeOptions = [];
 
     get columns() {
-        console.log('this._isTerrytoryActive: %O', this._isTerrytoryActive.data)
         return COLUMNS.filter(column => {
             if (column.fieldName == 'notAlignedToTerritories' && !this._isTerrytoryActive.data) {
                 return false;
