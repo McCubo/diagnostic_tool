@@ -38,8 +38,8 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
                 new List<String> {
                     countryField,
                     specialtyField,
-                    '(SELECT Id FROM Call2_vod__r WHERE Call_Date_vod__c >= :startDate AND Call_Date_vod__c <= :endDate)',
-                    '(SELECT Id FROM MC_Cycle_Plan_Targets_vod__r WHERE Cycle_Plan_vod__r.Start_Date_vod__c >= :startDate AND Cycle_Plan_vod__r.End_Date_vod__c <= :endDate)',
+                    '(SELECT Id FROM Call2_vod__r WHERE Call_Date_vod__c >= :startDate AND Call_Date_vod__c <= :endDate LIMIT 1)',
+                    '(SELECT Id FROM MC_Cycle_Plan_Targets_vod__r WHERE Cycle_Plan_vod__r.Start_Date_vod__c >= :startDate AND Cycle_Plan_vod__r.End_Date_vod__c <= :endDate LIMIT 1)',
                     '(SELECT Id FROM Product_Metrics_vod__r)',
                     '(SELECT Id FROM Address_vod__r)',
                     countryClause
