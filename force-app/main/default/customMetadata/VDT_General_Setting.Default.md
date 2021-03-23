@@ -11,6 +11,10 @@
         <value xsi:type="xsd:double">500.0</value>
     </values>
     <values>
+        <field>Cycle_Plan_Enabled__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
         <field>Default_Country_Code_Field__c</field>
         <value xsi:type="xsd:string">CreatedBy.Country</value>
     </values>
@@ -29,5 +33,9 @@
     <values>
         <field>Start_Date_Year_Decrement__c</field>
         <value xsi:type="xsd:double">4.0</value>
+    </values>
+    <values>
+        <field>VDT_Default_Specialty_Field__c</field>
+        <value xsi:type="xsd:string">Specialty_1_vod__c</value>
     </values>
 </CustomMetadata>
