@@ -81,6 +81,7 @@
     <members>VDT_General_Setting__mdt.Standard_Field_Identifier__c</members>
     <members>VDT_General_Setting__mdt.Start_Date_Year_Decrement__c</members>
     <members>VDT_General_Setting__mdt.VDT_Default_Specialty_Field__c</members>
+    <members>VDT_General_Setting__mdt.VDT_Is_Territory_Management_Active__c</members>
     <members>VDT_KPI_Configuration__mdt.Description__c</members>
     <members>VDT_KPI_Configuration__mdt.VDT_Default_Target__c</members>
     <members>VDT_KPI_Configuration__mdt.VDT_Display_Order__c</members>
