@@ -30,13 +30,25 @@ public with sharing class VDT_DataCalculationTriggerHandler extends VDT_TriggerH
             new VDT_DataCalculationSelector().withLimit(freeCalculationSlots)
                 .getDataCalculationsByStatus(new List<String>{ VDT_DataCalculationService.STATUS_IN_QUEUE});
             
+            List<RecordType> dataCalculationRecordTypes = VDT_RecordTypeService.getAllRecordTypesByObject('VDT_Data_Calculation__c');
+            Map<String, String> recordTypeNameById = new Map<String, String>();
+            for (RecordType dataCalculationRecordType : dataCalculationRecordTypes) {
+                recordTypeNameById.put(dataCalculationRecordType.Id, dataCalculationRecordType.DeveloperName);
+            }
             for (VDT_Data_Calculation__c queuedCalculation : queuedCalculations) {
-                queuedCalculation.Status__c = 'In Progress';
-                Integer batchSize = 
-                    VDT_CustomMetadataService.getBatchSizeForObject(queuedCalculation.VDT_Object_Name__c);
-                VDT_FieldsSummaryCalculationBatch fieldSummaryBatch = 
-                    new VDT_FieldsSummaryCalculationBatch(queuedCalculation);
-                Database.executeBatch(fieldSummaryBatch, batchSize);
+                if (recordTypeNameById.containsKey(queuedCalculation.RecordTypeId)) {
+                    queuedCalculation.Status__c = 'In Progress';
+                    if (recordTypeNameById.get(queuedCalculation.RecordTypeId) == VDT_DataCalculationService.OBJECT_ANALYSIS_RECORD_TYPE_DEV) {                        
+                        Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject(queuedCalculation.VDT_Object_Name__c);
+                        VDT_FieldsSummaryCalculationBatch fieldSummaryBatch = new VDT_FieldsSummaryCalculationBatch(queuedCalculation);
+                        Database.executeBatch(fieldSummaryBatch, batchSize);
+                    } else if (recordTypeNameById.get(queuedCalculation.RecordTypeId) == VDT_DataCalculationService.MASTER_ANALYSIS_RECORD_TYPE_DEV) {
+                        Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject('Account');
+                        VDT_MasterAnalysisCalculationBatch masterAnalysisBatch = new VDT_MasterAnalysisCalculationBatch(queuedCalculation);
+                        Database.executeBatch(masterAnalysisBatch, batchSize);
+                    }
+                }
+
             }
 
             update queuedCalculations;

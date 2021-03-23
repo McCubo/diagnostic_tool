@@ -8,6 +8,7 @@ public inherited sharing class VDT_DataCalculationService {
     public static final String STATUS_IN_QUEUE = 'In Queue';
     
     public static final String MASTER_ANALYSIS_RECORD_TYPE_DEV = 'VDT_Master_Data_Analysis';
+    public static final String OBJECT_ANALYSIS_RECORD_TYPE_DEV = 'VDT_Object_Field_Analysis';
 
     @TestVisible
     private static List<String> inProgressCalculationStatuses = new List<String>{
