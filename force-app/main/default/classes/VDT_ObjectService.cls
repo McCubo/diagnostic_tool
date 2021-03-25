@@ -85,9 +85,32 @@ public inherited sharing class VDT_ObjectService {
     }
 
     public static String getFieldTypeBySObjectName(String objectName, String fieldName) {
+        if (fieldName.contains('__r')) {
+            return 'REFERENCE';
+        }
         SObjectType sobjectType = ((SObject)(Type.forName('Schema.' + objectName).newInstance())).getSObjectType();
         DescribeSObjectResult describeResult = sobjectType.getDescribe();
         return String.valueOf(describeResult.fields.getMap().get(fieldName).getDescribe().getType());
+    }
+
+    public static List<VDT_OptionWrapper> getPicklistOptionsByReference(String objectName, String fieldName) {
+        List<VDT_OptionWrapper> options = new List<VDT_OptionWrapper>();
+        SObjectType sobjectType = ((SObject)(Type.forName('Schema.' + objectName).newInstance())).getSObjectType();
+        DescribeSObjectResult describeResult = sobjectType.getDescribe();
+        
+        List<String> fieldParts = fieldName.split('\\.');
+        String fieldApiName = fieldParts.get(0).replace('__r', '__c');
+        
+        List<Schema.sObjectType> references = describeResult.fields.getMap().get(fieldApiName).getDescribe().getReferenceTo();
+        
+        if (references.get(0).getDescribe().isAccessible()) {
+            String sobjectName = references.get(0).getDescribe().getName();
+            String query = String.format('SELECT Name FROM {0} WITH SECURITY_ENFORCED', new List<String>{ sobjectName });
+            for (SObject obj : Database.query(query)) {
+                options.add(new VDT_OptionWrapper(obj.get('Name').toString(), obj.get('Name').toString()));
+            }
+        }
+        return options;
     }
 
 }

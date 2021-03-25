@@ -5,6 +5,8 @@
  */
 public inherited sharing class VDT_MasterDataAnalysisController {
 
+    private static final String ACCOUNT_SOBJECT = 'Account';
+
     @AuraEnabled
     public static VDT_DataCalculationService.DataCalculation searchExistingCalculations(String jsonSearchParameters) {
         try {
@@ -24,9 +26,8 @@ public inherited sharing class VDT_MasterDataAnalysisController {
     @AuraEnabled(cacheable=true)
     public static String getAccountCountryFieldType() {
         try {
-            String accountSObject = 'Account';
-            String countryFieldName = VDT_CustomMetadataService.getCountryFieldForObject(accountSObject);
-            return VDT_ObjectService.getFieldTypeBySObjectName(accountSObject, countryFieldName);
+            String countryFieldName = VDT_CustomMetadataService.getCountryFieldForObject(ACCOUNT_SOBJECT);
+            return VDT_ObjectService.getFieldTypeBySObjectName(ACCOUNT_SOBJECT, countryFieldName);
         } catch (Exception e) {
             VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
             VDT_Log.get().publish();
@@ -37,9 +38,20 @@ public inherited sharing class VDT_MasterDataAnalysisController {
     @AuraEnabled
     public static List<VDT_OptionWrapper> getCountryOptions() {
         try {
-            String accountSObject = 'Account';
-            String countryFieldName = VDT_CustomMetadataService.getCountryFieldForObject(accountSObject);
+            String countryFieldName = VDT_CustomMetadataService.getCountryFieldForObject(ACCOUNT_SOBJECT);
             return VDT_ObjectService.getPicklistOptionsBySObjectName(SObjectType.Account, countryFieldName);
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled
+    public static List<VDT_OptionWrapper> getCountryOptionFromReference() {
+        try {
+            String countryFieldName = VDT_CustomMetadataService.getCountryFieldForObject(ACCOUNT_SOBJECT);
+            return VDT_ObjectService.getPicklistOptionsByReference(ACCOUNT_SOBJECT, countryFieldName);
         } catch (Exception e) {
             VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
             VDT_Log.get().publish();

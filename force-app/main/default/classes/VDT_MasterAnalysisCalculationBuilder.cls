@@ -71,7 +71,14 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
 
     public VDT_MasterAnalysisCalculationBuilder calculate() {
         for (Account acc : records) {
-            String country = acc.get(this.countryField).toString();
+            String country = null;
+            if (this.countryField.contains('.')) {
+                String relationship = this.countryField.split('\\.').get(0);
+                String relatedField = this.countryField.split('\\.').get(1);
+                country = acc.getSObject(relationship).get(relatedField).toString();
+            } else {
+                country = acc.get(this.countryField).toString();
+            }
             String specialty = acc.get(this.specialtyField).toString();
             this.analysisData.recordTypes.add(acc.RecordType.Name);
             Boolean isExternal = accountRecordTypesByType.get(ACCOUNT_TYPE_EXTERNAL).contains(acc.RecordType.Name);

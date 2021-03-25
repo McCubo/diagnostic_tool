@@ -1,6 +1,7 @@
 import { api, LightningElement, track, wire } from 'lwc';
-import getAccountCountryFieldType from '@salesforce/apex/VDT_MasterDataAnalysisController.getAccountCountryFieldType'
-import getCountryOptions from '@salesforce/apex/VDT_MasterDataAnalysisController.getCountryOptions'
+import getAccountCountryFieldType from '@salesforce/apex/VDT_MasterDataAnalysisController.getAccountCountryFieldType';
+import getCountryOptions from '@salesforce/apex/VDT_MasterDataAnalysisController.getCountryOptions';
+import getCountryOptionFromReference from '@salesforce/apex/VDT_MasterDataAnalysisController.getCountryOptionFromReference';
 
 import { showToast } from 'c/vdt_utils';
 
@@ -16,7 +17,7 @@ export default class Vdt_onekeyCountryInput extends LightningElement {
     _countries = [];
 
     get isPicklistField() {
-        return this._fieldType == 'PICKLIST';
+        return this._fieldType == 'PICKLIST' || this._fieldType == 'REFERENCE';
     }
 
     get isTextField() {
@@ -42,6 +43,13 @@ export default class Vdt_onekeyCountryInput extends LightningElement {
                 .catch(error => {
                     this.dispatchEvent(showToast(error, 'error'));
                 })
+            } else if (response == 'REFERENCE') {
+                getCountryOptionFromReference().then(countryOptions => {
+                    countryOptions.unshift({ label: 'All', value: 'All', selected: false})
+                    this._countryCodeOptions = countryOptions;
+                }).catch(error => {
+                    this.dispatchEvent(showToast(error, 'error'));
+                });
             }
         })
         .catch(error => {
