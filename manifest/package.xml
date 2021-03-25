@@ -43,6 +43,7 @@
     <members>VDT_ToolingPageLayoutResponse</members>
     <members>VDT_TriggerHandler</members>
     <members>VDT_VeevaUsersController</members>
+    <members>VDT_ProductAdoptionController</members>
     <name>ApexClass</name>
   </types>
   <types>
@@ -137,7 +138,8 @@
     <name>CustomTab</name>
   </types>
   <types>
-    <members>unfiled$public/VDT_FieldCamparisonCalculationFinished</members>
+    <members>VDT_EmailTemplates/VDT_FieldCamparisonCalculationFinished</members>
+    <members>VDT_EmailTemplates/VDT_MasterAnalysisCalculationFinished</members>
     <name>EmailTemplate</name>
   </types>
   <types>

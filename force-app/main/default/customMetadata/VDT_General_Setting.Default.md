@@ -38,4 +38,8 @@
         <field>VDT_Default_Specialty_Field__c</field>
         <value xsi:type="xsd:string">Specialty_1_vod__c</value>
     </values>
+    <values>
+        <field>VDT_Is_Territory_Management_Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
 </CustomMetadata>
