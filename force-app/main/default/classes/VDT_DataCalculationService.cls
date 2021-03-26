@@ -1,14 +1,12 @@
 public inherited sharing class VDT_DataCalculationService {
 
     public static final String MASTER_DATA_ANALYSIS_SUMMARY_FILE_NAME = 'onekey_analysis_summary';
+    public static final String PRODUCT_ADOPTION_FILE_NAME = 'product_adoption_summary';
 
     public static final String STATUS_COMPLETED = 'Completed';
     public static final String STATUS_ERROR = 'Error';
     public static final String STATUS_IN_PROGRESS = 'In Progress';
     public static final String STATUS_IN_QUEUE = 'In Queue';
-    
-    public static final String MASTER_ANALYSIS_RECORD_TYPE_DEV = 'VDT_Master_Data_Analysis';
-    public static final String OBJECT_ANALYSIS_RECORD_TYPE_DEV = 'VDT_Object_Field_Analysis';
 
     @TestVisible
     private static List<String> inProgressCalculationStatuses = new List<String>{
@@ -70,6 +68,33 @@ public inherited sharing class VDT_DataCalculationService {
         );
     }
 
+    public static void triggerProductAdoptionCalculation(ProductAdoptionParameters searchParameters) {
+        Integer maxRunningCalculations = VDT_CustomMetadataService.getMaxNumberOfRunningCalculations();
+        List<VDT_Data_Calculation__c> inProgressCalculations = new VDT_DataCalculationSelector().getDataCalculationsByStatus(new List<String>{ VDT_DataCalculationService.STATUS_IN_PROGRESS });
+
+        List<VDT_Data_Calculation__c> calculations = new VDT_DataCalculationSelector().withLimit(1).getByProductAdoptionParameters(searchParameters);
+        
+        if (inProgressCalculations.size() < maxRunningCalculations) {
+            searchParameters.status = STATUS_IN_PROGRESS;
+        } else {
+            searchParameters.status = STATUS_IN_QUEUE;
+        }
+
+        VDT_Data_Calculation__c dataCalculationRecord = initRecordForProductAdoption(searchParameters);
+        if (!calculations.isEmpty()) {
+            dataCalculationRecord.Id = calculations[0].Id;
+        }
+        upsert dataCalculationRecord;
+
+        if (dataCalculationRecord.Status__c == STATUS_IN_PROGRESS) {
+            Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject('Product_vod__c');
+            List<String> additionalFields = new List<String>{'Start_Date__c', 'End_Date__c'};
+            List<VDT_Data_Calculation__c> records = new VDT_DataCalculationSelector().withAdditionalFields(additionalFields).getById(dataCalculationRecord.Id);
+            VDT_ProductAdoptionBatch productAdoptionBatch = new VDT_ProductAdoptionBatch(records[0]); 
+            Database.executeBatch(productAdoptionBatch, batchSize);
+        }
+    }
+
     public static void triggerMasterAnalysisCalculation(CalculationAnalysisParameters searchParameters) {
         Integer maxRunningCalculations = VDT_CustomMetadataService.getMaxNumberOfRunningCalculations();
         List<VDT_Data_Calculation__c> inProgressCalculations = new VDT_DataCalculationSelector().getDataCalculationsByStatus(
@@ -98,8 +123,21 @@ public inherited sharing class VDT_DataCalculationService {
         }
     }
 
+    public static VDT_Data_Calculation__c initRecordForProductAdoption(ProductAdoptionParameters searchParameters) {
+        List<RecordType> recordTypes = VDT_RecordTypeService.getRecordTypeByObjectAndName('VDT_Data_Calculation__c', VDT_DataCalculationSelector.PRODUCT_ADOPTION_RECORD_TYPE_DEV);
+        VDT_Data_Calculation__c dataCalculationRecord = new VDT_Data_Calculation__c(
+            Status__c = searchParameters.status, 
+            Start_Year__c = searchParameters.startYear,
+            Start_Month__c = searchParameters.startMonth,
+            End_Year__c = searchParameters.endYear,
+            End_Month__c = searchParameters.endMonth,
+            RecordTypeId = recordTypes[0].Id
+        );
+        return dataCalculationRecord;
+    }
+
     public static VDT_Data_Calculation__c initRecordForMasterAnalysis(CalculationAnalysisParameters searchParameters) {
-        List<RecordType> recordTypes = VDT_RecordTypeService.getRecordTypeByObjectAndName('VDT_Data_Calculation__c', MASTER_ANALYSIS_RECORD_TYPE_DEV);
+        List<RecordType> recordTypes = VDT_RecordTypeService.getRecordTypeByObjectAndName('VDT_Data_Calculation__c', VDT_DataCalculationSelector.MASTER_ANALYSIS_RECORD_TYPE_DEV);
         VDT_Data_Calculation__c dataCalculationRecord = new VDT_Data_Calculation__c(
             VDT_Country__c = String.join(searchParameters.countries, ','),
             Status__c = searchParameters.status, 
@@ -111,7 +149,7 @@ public inherited sharing class VDT_DataCalculationService {
         );
         return dataCalculationRecord;
     }
-    
+
     public static DataCalculation getExistingCalculationMasterAnalysis(CalculationAnalysisParameters searchParameters) {
         List<VDT_Data_Calculation__c> calculations = new VDT_DataCalculationSelector().withLimit(1).getByAnalysisCalculationParameters(searchParameters);
         
@@ -130,6 +168,26 @@ public inherited sharing class VDT_DataCalculationService {
             }
         }
         return calculation;
+    }
+
+    public static DataCalculation getExistingCalculationProductAdoption(ProductAdoptionParameters searchParameters) {
+        List<VDT_Data_Calculation__c> calculations = new VDT_DataCalculationSelector().getByProductAdoptionParameters(searchParameters);
+        
+        DataCalculation calculation = new DataCalculation();
+        if (!calculations.isEmpty()) {
+            calculation.status = calculations[0].Status__c;
+            calculation.calculationDate = String.valueOf(calculations[0].VDT_Calculation_Date__c);
+            Attachment att = VDT_AttachmentService.getAttachmentForRecord(
+                VDT_DataCalculationService.PRODUCT_ADOPTION_FILE_NAME,
+                VDT_AttachmentService.JSON_FORMAT, 
+                calculations[0].Id
+            );
+
+            if (att != null) {
+                calculation.data = att.Body.toString();
+            }
+        }
+        return calculation;        
     }
 
     public static DataCalculation getExistingCalculation(CalculationParameters calculationParameters) {
@@ -250,9 +308,7 @@ public inherited sharing class VDT_DataCalculationService {
         public String status;
     }
 
-    public class CalculationAnalysisParameters {
-        @AuraEnabled
-        public List<String> countries;
+    public abstract class SearchParameters {
         @AuraEnabled
         public Integer startYear;
         @AuraEnabled
@@ -263,4 +319,14 @@ public inherited sharing class VDT_DataCalculationService {
         public Integer endMonth;
         public String status;
     }
+
+    public class CalculationAnalysisParameters extends SearchParameters {
+        @AuraEnabled
+        public List<String> countries;
+    }
+
+    public class ProductAdoptionParameters extends SearchParameters {
+
+    }
+
 }

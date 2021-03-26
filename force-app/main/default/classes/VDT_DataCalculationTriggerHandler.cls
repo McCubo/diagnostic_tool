@@ -38,11 +38,11 @@ public with sharing class VDT_DataCalculationTriggerHandler extends VDT_TriggerH
             for (VDT_Data_Calculation__c queuedCalculation : queuedCalculations) {
                 if (recordTypeNameById.containsKey(queuedCalculation.RecordTypeId)) {
                     queuedCalculation.Status__c = 'In Progress';
-                    if (recordTypeNameById.get(queuedCalculation.RecordTypeId) == VDT_DataCalculationService.OBJECT_ANALYSIS_RECORD_TYPE_DEV) {                        
+                    if (recordTypeNameById.get(queuedCalculation.RecordTypeId) == VDT_DataCalculationSelector.OBJECT_ANALYSIS_RECORD_TYPE_DEV) {                        
                         Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject(queuedCalculation.VDT_Object_Name__c);
                         VDT_FieldsSummaryCalculationBatch fieldSummaryBatch = new VDT_FieldsSummaryCalculationBatch(queuedCalculation);
                         Database.executeBatch(fieldSummaryBatch, batchSize);
-                    } else if (recordTypeNameById.get(queuedCalculation.RecordTypeId) == VDT_DataCalculationService.MASTER_ANALYSIS_RECORD_TYPE_DEV) {
+                    } else if (recordTypeNameById.get(queuedCalculation.RecordTypeId) == VDT_DataCalculationSelector.MASTER_ANALYSIS_RECORD_TYPE_DEV) {
                         Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject('Account');
                         VDT_MasterAnalysisCalculationBatch masterAnalysisBatch = new VDT_MasterAnalysisCalculationBatch(queuedCalculation);
                         Database.executeBatch(masterAnalysisBatch, batchSize);

@@ -2,7 +2,9 @@ public inherited sharing class VDT_DataCalculationSelector {
     
     private Integer limitValue;
     private List<String> additionalFields = new List<String>();
-    private static final String MASTER_ANALYSIS_RECORD_TYPE = 'Master Data Analysis';
+    public static final String MASTER_ANALYSIS_RECORD_TYPE_DEV = 'VDT_Master_Data_Analysis';
+    public static final String PRODUCT_ADOPTION_RECORD_TYPE_DEV = 'VDT_Product_Adoption';
+    public static final String OBJECT_ANALYSIS_RECORD_TYPE_DEV = 'VDT_Object_Field_Analysis';
 
     public String getObjectName() {
         return 'VDT_Data_Calculation__c';
@@ -92,7 +94,7 @@ public inherited sharing class VDT_DataCalculationSelector {
     public List<VDT_Data_Calculation__c> getByCountries(String countries) {
         String query = String.format(
             'SELECT {0} FROM {1} ' + 
-            'WHERE VDT_Country__c = :countries AND RecordType.Name = :MASTER_ANALYSIS_RECORD_TYPE ' +
+            'WHERE VDT_Country__c = :countries AND RecordType.DeveloperName = :MASTER_ANALYSIS_RECORD_TYPE_DEV ' +
             'WITH SECURITY_ENFORCED ' +
             '{2}', 
             new List<String>{
@@ -124,7 +126,38 @@ public inherited sharing class VDT_DataCalculationSelector {
         if (calculationParameters.endMonth != null) {
             whereString += ' AND End_Month__c = ' + calculationParameters.endMonth;
         }
-        whereString += ' AND RecordType.Name = :MASTER_ANALYSIS_RECORD_TYPE';
+        whereString += ' AND RecordType.DeveloperName = :MASTER_ANALYSIS_RECORD_TYPE_DEV';
+        String query = String.format(
+            'SELECT {0} FROM {1} ' + 
+            'WHERE {2} '+
+            'WITH SECURITY_ENFORCED ' +
+            '{3}', 
+            new List<String>{
+                getFieldListString(),
+                getObjectName(),
+                whereString,
+                getLimitString()
+            }
+        );
+        return Database.query(query);
+    }
+
+    public List<VDT_Data_Calculation__c> getByProductAdoptionParameters(VDT_DataCalculationService.ProductAdoptionParameters calculationParameters) {
+        List<String> whereClauses = new List<String>();
+        if (calculationParameters.startYear != null) {
+            whereClauses.add('Start_Year__c = ' + calculationParameters.startYear);
+        }
+        if (calculationParameters.startMonth != null) {
+            whereClauses.add('Start_Month__c = ' + calculationParameters.startMonth);
+        }
+        if (calculationParameters.endYear != null) {
+            whereClauses.add('End_Year__c = ' + calculationParameters.endYear);
+        }
+        if (calculationParameters.endMonth != null) {
+            whereClauses.add('End_Month__c = ' + calculationParameters.endMonth);
+        }
+        whereClauses.add('RecordType.DeveloperName = :PRODUCT_ADOPTION_RECORD_TYPE_DEV');
+        String whereString = String.join(whereClauses, ' AND ');
         String query = String.format(
             'SELECT {0} FROM {1} ' + 
             'WHERE {2} '+
