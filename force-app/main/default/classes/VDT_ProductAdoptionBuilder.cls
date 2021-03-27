@@ -3,11 +3,12 @@ public with sharing class VDT_ProductAdoptionBuilder {
     private ProductAdoptionSummary adoptionData = new ProductAdoptionSummary();
     private List<Product_vod__c> records = new List<Product_vod__c>();
     private Set<String> productIds = new Set<String>();
-    private Map<String, Integer> keyMessagesByProduct = new Map<String, Integer>();
-    private Map<String, Integer> presentationsByProduct = new Map<String, Integer>();
-    private Map<String, Integer> approvedDocumentsByProduct = new Map<String, Integer>();
-    private Map<String, Integer> sentEmailsByProduct = new Map<String, Integer>();
-    private Map<String, Integer> productMetricsByProduct = new Map<String, Integer>();
+    private Set<String> countries = new Set<String>();
+    private Map<String, Map<String, Integer>> keyMessagesByProduct = new Map<String, Map<String, Integer>>();
+    private Map<String, Map<String, Integer>> presentationsByProduct = new Map<String, Map<String, Integer>>();
+    private Map<String, Map<String, Integer>> approvedDocumentsByProduct = new Map<String, Map<String, Integer>>();
+    private Map<String, Map<String, Integer>> sentEmailsByProduct = new Map<String, Map<String, Integer>>();
+    private Map<String, Map<String, Integer>> productMetricsByProduct = new Map<String, Map<String, Integer>>();
     private Map<String, Integer> callsByProduct = new Map<String, Integer>();
     private Map<String, String> countryFieldByObject = new Map<String, String>();
     private final String PRESENTATION_STATUS_APPROVED = 'Approved_vod';
@@ -41,9 +42,8 @@ public with sharing class VDT_ProductAdoptionBuilder {
 
         AggregateResult[] keyMessagesByProductCounts = (AggregateResult[]) Database.query(query);
         for (AggregateResult keyMessageProduct : keyMessagesByProductCounts)  {
-            String key = keyMessageProduct.get('productid').toString() + KEY_DELIMITER + keyMessageProduct.get('countryname').toString();
-            keyMessagesByProduct.put(key, Integer.valueOf(keyMessageProduct.get('counter')));
-        }                                                  
+            addValueToProductAndCountry(keyMessagesByProduct, keyMessageProduct);
+        }
         return this;
     }
 
@@ -53,17 +53,15 @@ public with sharing class VDT_ProductAdoptionBuilder {
 
         String query = String.format('SELECT Product_vod__c productid, {0} countryname, COUNT(Id) counter'
                         + ' FROM Clm_Presentation_vod__c'
-                        + ' WHERE Status_vod__c = {1} AND End_Date_vod__c > TODAY'
+                        + ' WHERE Status_vod__c = :PRESENTATION_STATUS_APPROVED AND End_Date_vod__c > TODAY'
                         + ' AND Product_vod__c IN :productIds'
                         + ' GROUP BY Product_vod__c, {0}', new List<String>{
-                            countryField,
-                            PRESENTATION_STATUS_APPROVED
+                            countryField                            
                         });
 
         AggregateResult[] CLMByProductCounts = (AggregateResult[]) Database.query(query);
         for (AggregateResult CLMProduct : CLMByProductCounts) {
-            String key = CLMProduct.get('productid').toString() + KEY_DELIMITER + CLMProduct.get('countryname').toString();
-            presentationsByProduct.put(key, Integer.valueOf(CLMProduct.get('counter')));
+            addValueToProductAndCountry(presentationsByProduct, CLMProduct);
         }
         return this;
     }
@@ -74,17 +72,15 @@ public with sharing class VDT_ProductAdoptionBuilder {
 
         String query = String.format('SELECT Product_vod__c productid, {0} countryname, COUNT(Id) counter'
                                 + ' FROM Approved_Document_vod__c'
-                                + ' WHERE Status_vod__c = {1}'
+                                + ' WHERE Status_vod__c = :APPROVED_DOCUMENT_STATUS_APPROVED'
                                 + ' AND Product_vod__c IN :productIds'
                                 + ' GROUP BY Product_vod__c, {0}', new List<String>{
-                                    countryField,
-                                    APPROVED_DOCUMENT_STATUS_APPROVED
+                                    countryField                                    
                                 });
 
         AggregateResult[] approvedDocumentCounts = (AggregateResult[]) Database.query(query);
         for (AggregateResult approvedDocument : approvedDocumentCounts)  {
-            String key = approvedDocument.get('productid').toString() + KEY_DELIMITER + approvedDocument.get('countryname').toString();
-            approvedDocumentsByProduct.put(key, Integer.valueOf(approvedDocument.get('counter')));
+            addValueToProductAndCountry(approvedDocumentsByProduct, approvedDocument);
         }
         return this;
     }
@@ -103,13 +99,12 @@ public with sharing class VDT_ProductAdoptionBuilder {
         
         AggregateResult[] sentEmailCounts = (AggregateResult[]) Database.query(query);
         for (AggregateResult sentEmail : sentEmailCounts)  {
-            String key = sentEmail.get('productid').toString() + KEY_DELIMITER + sentEmail.get('countryname').toString();
-            sentEmailsByProduct.put(key, Integer.valueOf(sentEmail.get('counter')));
+            addValueToProductAndCountry(sentEmailsByProduct, sentEmail);
         }                                                  
         return this;
     }    
 
-    public VDT_ProductAdoptionBuilder withProductMetrics() {        
+    public VDT_ProductAdoptionBuilder withProductMetrics() {
         productMetricsByProduct.clear();
         String countryField = this.countryFieldByObject.get('Account');
 
@@ -121,9 +116,8 @@ public with sharing class VDT_ProductAdoptionBuilder {
                                 });
         AggregateResult[] productMetricCounts = (AggregateResult[]) Database.query(query);
         for (AggregateResult productMetric : productMetricCounts) {
-            String key = productMetric.get('productid').toString() + KEY_DELIMITER + productMetric.get('countryname').toString();
-            productMetricsByProduct.put(key, Integer.valueOf(productMetric.get('counter')));
-        }                                                  
+            addValueToProductAndCountry(productMetricsByProduct, productMetric);
+        }
         return this;
     }
 
@@ -140,12 +134,53 @@ public with sharing class VDT_ProductAdoptionBuilder {
         return this;
     }
 
-    public VDT_ProductAdoptionBuilder calculate() {
-        String productCountryField = this.countryFieldByObject.get('Product_vod__c');
-        for (Product_vod__c product : this.records) {
-            if (this.adoptionData.product_adoption.containsKey(product.Name)) {
+    private void addValueToProductAndCountry(Map<String, Map<String, Integer>> genericMap, AggregateResult aggregateResult) {
+        String productId = aggregateResult.get('productid').toString();
+        String country = aggregateResult.get('countryname').toString();
+        Integer counter = Integer.valueOf(aggregateResult.get('counter'));
+        this.countries.add(country);
+        if (genericMap.containsKey(productId)) {
+            Map<String, Integer> countryValue = genericMap.get(productId);
+            countryValue.put(country, counter);
+        } else {
+            Map<String, Integer> countryValue = new Map<String, Integer>{ country => counter };
+            genericMap.put(productId, countryValue);
+        }
+    }
 
+    public VDT_ProductAdoptionBuilder calculate() {
+        for (Product_vod__c product : this.records) {
+            ProductSummary prodSummary = new ProductSummary(product.Name, product.Product_Type_vod__c);            
+            for (String country : this.countries) {
+                CountryUsageSummary countryUsage = new CountryUsageSummary();
+                Map<String, Integer> keyMessageCount = this.keyMessagesByProduct.get(product.Id);
+                if (keyMessageCount != null && keyMessageCount.containsKey(country)) {
+                    countryUsage.activeKeyMessages = keyMessageCount.get(country);
+                }
+                Map<String, Integer> activePresentationCount = this.presentationsByProduct.get(product.Id);
+                if (activePresentationCount != null && activePresentationCount.containsKey(country)) {
+                    countryUsage.activeCLM = activePresentationCount.get(country);
+                }
+                Map<String, Integer> approvedDocumentsCount = this.approvedDocumentsByProduct.get(product.Id);
+                if (approvedDocumentsCount != null && approvedDocumentsCount.containsKey(country)) {
+                    countryUsage.approvedDocuments = approvedDocumentsCount.get(country);
+                }
+                Map<String, Integer> sentEmailsCount = this.sentEmailsByProduct.get(product.Id);
+                if (sentEmailsCount != null && sentEmailsCount.containsKey(country)) {
+                    countryUsage.sentEmail = sentEmailsCount.get(country);
+                }
+                Map<String, Integer> productMetricsCount = this.productMetricsByProduct.get(product.Id);
+                if (productMetricsCount != null && productMetricsCount.containsKey(country)) {
+                    countryUsage.productMetric = productMetricsCount.get(country);
+                }
+                if (countryUsage.isSet()) {
+                    prodSummary.countryUsageSummary.put(country, countryUsage);
+                }
             }
+            if (this.callsByProduct.containsKey(product.Id)) {
+                prodSummary.callsVisits = callsByProduct.get(product.Id);
+            }
+            this.adoptionData.product_adoption.put(product.Name, prodSummary);
         }
         return this;
     }
@@ -163,22 +198,35 @@ public with sharing class VDT_ProductAdoptionBuilder {
 
     public class ProductSummary {
         
+        public ProductSummary(String name, String type) {
+            this.name = name;
+            this.type = type;
+        }
+
         public String name;
         public String type;
+        public Decimal callsVisits;
         public Map<String, CountryUsageSummary> countryUsageSummary = new Map<String, CountryUsageSummary>();
 
     }
 
     public class CountryUsageSummary {
 
-        public Integer activeKeyMessages {get; set;}
-        public Integer activeCLM {get; set;}
-        public Integer approvedDocuments {get; set;}
-        public Decimal sentEmail {get; set;}
-        public Decimal productMetric {get; set;}
-        public Decimal callsVisits {get; set;}
-        public Decimal events {get; set;}
+        public Integer activeKeyMessages = 0;
+        public Integer activeCLM = 0;
+        public Integer approvedDocuments = 0;
+        public Decimal sentEmail = 0;
+        public Decimal productMetric = 0;
+        public Decimal events = 0;
 
+        public Boolean isSet() {
+            return this.activeKeyMessages > 0 
+                    || this.activeCLM > 0 
+                    || this.approvedDocuments > 0 
+                    || this.sentEmail > 0
+                    || this.productMetric > 0
+                    || this.events > 0;
+        }
     }
 
 }
