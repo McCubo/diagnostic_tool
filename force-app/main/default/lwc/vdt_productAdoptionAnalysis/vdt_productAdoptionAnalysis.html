@@ -1,0 +1,39 @@
+<template>
+    <lightning-accordion allow-multiple-sections-open>
+        <lightning-accordion-section name="product_table" label="Product Adoption Analysis">
+            <lightning-layout multiple-rows>
+                <lightning-layout-item size="12">
+                    <lightning-layout horizontal-align="spread">
+                        <lightning-layout-item size="10">
+                            <c-vdt_product-adoption-table-filters onshowinfo={handleShowInfo} disabled={_filterDisabled}></c-vdt_product-adoption-table-filters>
+                        </lightning-layout-item>
+                        <template if:true={_showCalculationButton}>
+                            <lightning-layout-item>
+                                <c-vdt_calculation-button
+                                    last-calculation-date={_calculation.calculationDate}
+                                    calculation-status={_calculation.status}
+                                    oncalculate={handleCalculate}
+                                ></c-vdt_calculation-button>
+                            </lightning-layout-item>
+                        </template>                        
+                    </lightning-layout>
+                </lightning-layout-item>
+                <template if:true={_showCalculationSection}>
+                    <template if:true={_showEmpty}>
+                        <lightning-layout-item size="12">
+                            <c-vdt_illustration-provider
+                                svgname="lakeMountain"
+                                message={_emptyMessage}
+                            ></c-vdt_illustration-provider>
+                        </lightning-layout-item>                        
+                    </template>
+                    <template if:true={_showCalculation}>
+                        <lightning-layout-item size="12" class="slds-m-top_medium">
+                            <c-vdt_product-adoption-table calculation-data={_calculation.data}></c-vdt_product-adoption-table>
+                        </lightning-layout-item>
+                    </template>                    
+                </template>
+            </lightning-layout>
+        </lightning-accordion-section>
+    </lightning-accordion>
+</template>

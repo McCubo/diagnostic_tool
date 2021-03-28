@@ -1,0 +1,25 @@
+<template>
+    <lightning-layout multiple-rows>
+        <lightning-layout-item size="6" class="slds-m-top_large">
+            <p class="bold-text">Apply date range on transactional records</p>
+            <c-vdt_date-range-picker
+                class="validate range-picker"
+                onrangechange={handleDateRangeChange}
+                disabled={disabled}></c-vdt_date-range-picker>
+        </lightning-layout-item>
+    </lightning-layout>
+    <lightning-layout>
+        <lightning-layout-item class="search-button">
+            <template if:true={disabled}>
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </template>
+            <lightning-button
+                variant="brand"
+                name="display-info"
+                label='Show Product Adoption'
+                onclick={handleDisplayInfoClick}
+                disabled={disabled}
+            ></lightning-button>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>

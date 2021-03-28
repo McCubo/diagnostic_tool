@@ -48,7 +48,6 @@ public with sharing class VDT_ProductAdoptionBatch implements Database.Batchable
     }
 
     public void finish(Database.BatchableContext bc) {
-        System.debug(JSON.serialize(this.builder.build()));
         try {
             this.dataCalculationRecord.VDT_Job_End_Date__c = Datetime.now();
             this.dataCalculationRecord.Status__c = VDT_DataCalculationService.STATUS_COMPLETED;
@@ -62,14 +61,14 @@ public with sharing class VDT_ProductAdoptionBatch implements Database.Batchable
             );
             if (currentAttachment == null) {
                 VDT_AttachmentService.createAttachmentForRecord(
-                    JSON.serialize('this.builder.build()'), 
+                    JSON.serialize(this.builder.build()), 
                     VDT_DataCalculationService.PRODUCT_ADOPTION_FILE_NAME,
                     VDT_AttachmentService.JSON_FORMAT,
                     this.dataCalculationRecord.Id
                 );
             } else {
                 VDT_AttachmentService.updateAttachmentForRecord(
-                    JSON.serialize('this.builder.build()'), 
+                    JSON.serialize(this.builder.build()), 
                     VDT_DataCalculationService.PRODUCT_ADOPTION_FILE_NAME,
                     VDT_AttachmentService.JSON_FORMAT,
                     this.dataCalculationRecord.Id

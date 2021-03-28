@@ -150,7 +150,8 @@ public with sharing class VDT_ProductAdoptionBuilder {
 
     public VDT_ProductAdoptionBuilder calculate() {
         for (Product_vod__c product : this.records) {
-            ProductSummary prodSummary = new ProductSummary(product.Name, product.Product_Type_vod__c);            
+            adoptionData.productTypes.add(product.Product_Type_vod__c);
+            ProductSummary prodSummary = new ProductSummary(product.Id, product.Name, product.Product_Type_vod__c);            
             for (String country : this.countries) {
                 CountryUsageSummary countryUsage = new CountryUsageSummary();
                 Map<String, Integer> keyMessageCount = this.keyMessagesByProduct.get(product.Id);
@@ -198,14 +199,16 @@ public with sharing class VDT_ProductAdoptionBuilder {
 
     public class ProductSummary {
         
-        public ProductSummary(String name, String type) {
+        public ProductSummary(String id, String name, String type) {
+            this.id = id;
             this.name = name;
             this.type = type;
         }
 
+        public String id;
         public String name;
         public String type;
-        public Decimal callsVisits;
+        public Decimal callsVisits = 0;
         public Map<String, CountryUsageSummary> countryUsageSummary = new Map<String, CountryUsageSummary>();
 
     }
