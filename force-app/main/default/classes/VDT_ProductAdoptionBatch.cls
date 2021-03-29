@@ -24,12 +24,15 @@ public with sharing class VDT_ProductAdoptionBatch implements Database.Batchable
         .addCountryForObject('Approved_Document_vod__c', approvedDocumentCountry)
         .addCountryForObject('Clm_Presentation_vod__c', clmPresentationCountry);
         this.dataCalculationRecord.VDT_Job_Start_Date__c = Datetime.now();
+        this.dataCalculationRecord.Batches_Number__c = 0;
         update this.dataCalculationRecord;
         return Database.getQueryLocator(query);
     }
 
     public void execute(Database.BatchableContext bc, List<Product_vod__c> records) {
         try {
+            this.dataCalculationRecord.Batches_Number__c += 1;
+            update this.dataCalculationRecord;
             this.builder
             .withRecords(records)
             .withKeyMessages()

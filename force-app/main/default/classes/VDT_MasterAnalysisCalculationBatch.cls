@@ -52,6 +52,7 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
             .withRecordTypesByType(accountRecordTypesByType)
             .withCustomTargets(targetByCountryAndKpi);
             this.dataCalculationRecord.VDT_Job_Start_Date__c = Datetime.now();
+            this.dataCalculationRecord.Batches_Number__c = 0;
             update this.dataCalculationRecord;
             return Database.getQueryLocator(query);
         } catch (Exception e) {
@@ -64,6 +65,8 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
 
     public void execute(Database.BatchableContext bc, List<Account> records) {
         try {
+            this.dataCalculationRecord.Batches_Number__c += 1;
+            update this.dataCalculationRecord;
             this.builder.withRecords(records).withTerritories().calculate();
         } catch (Exception e) {
             VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);

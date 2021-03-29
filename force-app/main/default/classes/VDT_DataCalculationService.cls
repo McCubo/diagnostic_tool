@@ -71,8 +71,6 @@ public inherited sharing class VDT_DataCalculationService {
     public static void triggerProductAdoptionCalculation(ProductAdoptionParameters searchParameters) {
         Integer maxRunningCalculations = VDT_CustomMetadataService.getMaxNumberOfRunningCalculations();
         List<VDT_Data_Calculation__c> inProgressCalculations = new VDT_DataCalculationSelector().getDataCalculationsByStatus(new List<String>{ VDT_DataCalculationService.STATUS_IN_PROGRESS });
-
-        List<VDT_Data_Calculation__c> calculations = new VDT_DataCalculationSelector().withLimit(1).getByProductAdoptionParameters(searchParameters);
         
         if (inProgressCalculations.size() < maxRunningCalculations) {
             searchParameters.status = STATUS_IN_PROGRESS;
@@ -81,10 +79,7 @@ public inherited sharing class VDT_DataCalculationService {
         }
 
         VDT_Data_Calculation__c dataCalculationRecord = initRecordForProductAdoption(searchParameters);
-        if (!calculations.isEmpty()) {
-            dataCalculationRecord.Id = calculations[0].Id;
-        }
-        upsert dataCalculationRecord;
+        insert dataCalculationRecord;
 
         if (dataCalculationRecord.Status__c == STATUS_IN_PROGRESS) {
             Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject('Product_vod__c');
@@ -99,8 +94,6 @@ public inherited sharing class VDT_DataCalculationService {
         Integer maxRunningCalculations = VDT_CustomMetadataService.getMaxNumberOfRunningCalculations();
         List<VDT_Data_Calculation__c> inProgressCalculations = new VDT_DataCalculationSelector().getDataCalculationsByStatus(
                                                                     new List<String>{ VDT_DataCalculationService.STATUS_IN_PROGRESS });
-
-        List<VDT_Data_Calculation__c> calculations = new VDT_DataCalculationSelector().withLimit(1).getByAnalysisCalculationParameters(searchParameters);
         
         if (inProgressCalculations.size() < maxRunningCalculations) {
             searchParameters.status = STATUS_IN_PROGRESS;
@@ -109,10 +102,7 @@ public inherited sharing class VDT_DataCalculationService {
         }
 
         VDT_Data_Calculation__c dataCalculationRecord = initRecordForMasterAnalysis(searchParameters);
-        if (!calculations.isEmpty()) {
-            dataCalculationRecord.Id = calculations[0].Id;
-        }
-        upsert dataCalculationRecord;
+        insert dataCalculationRecord;
 
         if (dataCalculationRecord.Status__c == STATUS_IN_PROGRESS) {
             Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject('Account');
