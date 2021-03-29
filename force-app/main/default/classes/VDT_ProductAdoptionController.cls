@@ -34,4 +34,15 @@ public inherited sharing class VDT_ProductAdoptionController {
             throw new AuraHandledException(e.getMessage());
         }
     }
+
+    @AuraEnabled
+    public static List<VDT_ProductService.ProductCatalogTreeItem> getProductCatalogTree() {
+        try {
+            return VDT_ProductService.getProductTreeInformation();
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
 }
