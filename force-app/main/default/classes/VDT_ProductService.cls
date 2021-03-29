@@ -2,34 +2,39 @@ public with sharing class VDT_ProductService {
 
     public static List<ProductCatalogTreeItem> getProductTreeInformation() {
         List<ProductCatalogTreeItem> productTree = new List<ProductCatalogTreeItem>();
-        String productCountry = VDT_CustomMetadataService.getCountryFieldForObject('Product_vod_c');
+        String productCountry = VDT_CustomMetadataService.getCountryFieldForObject('Product_vod__c');
         List<Product_vod__c> products = new VDT_ProductSelector()
                                         .withAdditionalFields(new List<String> {
-                                            '(SELECT Id FROM Child_products_vod__r)',
+                                            Product_vod__c.Parent_Product_vod__c.getDescribe().getName(),
                                             productCountry
                                         })
-                                        .addWhereClause('Parent_Product_vod__c = NULL')
                                         .query();
-                                        
-        productTree = getProductCatalogTree(products, productCountry);
+
+        Map<Id, List<Product_vod__c>> childProductsByParent = new Map<Id, List<Product_vod__c>>();        
+        for (Product_vod__c product : products) {
+            if (String.isNotBlank(product.Parent_Product_vod__c)) {
+                if (childProductsByParent.containsKey(product.Parent_Product_vod__c)) {
+                    childProductsByParent.get(product.Parent_Product_vod__c).add(product);
+                } else {
+                    childProductsByParent.put(product.Parent_Product_vod__c, new List<Product_vod__c> {product});
+                }        
+            }
+        }                                        
+        productTree = getProductCatalogTree(products, childProductsByParent, productCountry, true);
         return productTree;
     }
 
-    private static List<ProductCatalogTreeItem> getProductCatalogTree(List<Product_vod__c> products, String productCountry) {
+    private static List<ProductCatalogTreeItem> getProductCatalogTree(List<Product_vod__c> products, Map<Id, List<Product_vod__c>> childProductsByParent, String productCountry, Boolean isRootNode) {
         List<ProductCatalogTreeItem> productCatalogTree = new List<ProductCatalogTreeItem>();
         for (Product_vod__c product : products) {
-            ProductCatalogTreeItem productTreeItem = new ProductCatalogTreeItem(product.Name, product.Id, product.Product_Type_vod__c, product.Country__c).setMetatext();
-            if (product.Child_products_vod__r != null && !product.Child_products_vod__r.isEmpty()) {
-                List<Product_vod__c> childProducts = new VDT_ProductSelector()
-                                        .withAdditionalFields(new List<String> {
-                                            '(SELECT Id FROM Child_products_vod__r)',
-                                            Product_vod__c.Country__c.getDescribe().getName()
-                                        })
-                                        .addWhereClause('Parent_Product_vod__c = \'' + product.Id + '\'')
-                                        .query();
-                productTreeItem.items = getProductCatalogTree(childProducts, productCountry);
+            ProductCatalogTreeItem productTreeItem = new ProductCatalogTreeItem(product.Name, product.Id, product.Product_Type_vod__c, String.valueOf(product.get(productCountry))).setMetatext();
+            if (childProductsByParent.containsKey(product.Id)) {
+                List<Product_vod__c> childProducts = childProductsByParent.get(product.Id);
+                productTreeItem.items = getProductCatalogTree(childProducts, childProductsByParent, productCountry, false);
             }
-            productCatalogTree.add(productTreeItem);
+            if ((isRootNode && String.isBlank(product.Parent_Product_vod__c)) || !isRootNode) {
+                productCatalogTree.add(productTreeItem);
+            }
         }
         return productCatalogTree;
     }

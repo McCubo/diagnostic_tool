@@ -27,8 +27,7 @@ public with sharing class VDT_ProductSelector {
         return new List<String>{
             Product_vod__c.Id.getDescribe().getName(),
             Product_vod__c.Name.getDescribe().getName(),
-            Product_vod__c.Product_Type_vod__c.getDescribe().getName(),
-            Product_vod__c.Parent_Product_vod__c.getDescribe().getName()
+            Product_vod__c.Product_Type_vod__c.getDescribe().getName()
         };
     }
 
