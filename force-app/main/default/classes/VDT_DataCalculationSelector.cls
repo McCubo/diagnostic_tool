@@ -46,7 +46,8 @@ public inherited sharing class VDT_DataCalculationSelector {
 
     public List<VDT_Data_Calculation__c> getByCalculationParameters(VDT_DataCalculationService.CalculationParameters calculationParameters) {
         system.debug('calculationParameters: ' + calculationParameters);
-        String whereString = 'VDT_Object_Name__c = \'' + String.escapeSingleQuotes(calculationParameters.objectName) +'\'';
+        String fieldAnalysisRT = VDT_RecordTypeService.getRecordTypeByObjectAndName('VDT_Data_Calculation__c', 'VDT_Object_Field_Analysis')[0].Id;
+        String whereString = 'RecordTypeId = :fieldAnalysisRT AND VDT_Object_Name__c = \'' + String.escapeSingleQuotes(calculationParameters.objectName) +'\'';
         if (calculationParameters.startYear != null) {
             whereString += ' AND Start_Year__c = ' + calculationParameters.startYear;
         }
@@ -62,7 +63,7 @@ public inherited sharing class VDT_DataCalculationSelector {
         String query = String.format(
             'SELECT {0} FROM {1} ' + 
             'WHERE {2} '+
-            'WITH   SECURITY_ENFORCED ', 
+            'WITH   SECURITY_ENFORCED ORDER BY VDT_Job_End_Date__c DESC', 
             new List<String>{
                 getFieldListString(),
                 getObjectName(),

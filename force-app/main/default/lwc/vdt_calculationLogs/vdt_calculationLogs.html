@@ -34,6 +34,9 @@
                                     key-field="id"
                                     data={_filteredLogs}
                                     columns={_columns}
+                                    onsort={updateColumnSorting}
+                                    sorted-direction={_sortDirection}
+                                    sorted-by={_sortedBy}
                                     hide-checkbox-column
                                 ></lightning-datatable>
                             </div>

@@ -4,6 +4,7 @@ public with sharing class VDT_FieldsSummaryCalculationBatch implements Database.
     private VDT_Data_Calculation__c dataCalculationRecord;
     private Integer batchSize = 0;
     private Integer recordCount = 0;
+    private Integer batchCount = 0;
 
     public VDT_FieldsSummaryCalculationBatch(VDT_Data_Calculation__c dataCalculationRecord) {
         this.dataCalculationRecord = dataCalculationRecord;
@@ -32,9 +33,10 @@ public with sharing class VDT_FieldsSummaryCalculationBatch implements Database.
                 query += ',' + countryField;
             }
 
-            query += ' FROM ' + this.dataCalculationRecord.VDT_Object_Name__c + ' WHERE ' + countryField + ' != NULL LIMIT 6000';
+            query += ' FROM ' + this.dataCalculationRecord.VDT_Object_Name__c + ' WHERE ' + countryField + ' != NULL LIMIT 7500';
 
             this.dataCalculationRecord.VDT_Job_Start_Date__c = Datetime.now();
+            this.dataCalculationRecord.Batches_Number__c = 0;
             update this.dataCalculationRecord;
 
             return Database.getQueryLocator(query);
@@ -49,8 +51,10 @@ public with sharing class VDT_FieldsSummaryCalculationBatch implements Database.
 
     public void execute(Database.BatchableContext bc, List<SObject> records){
         try {
-            this.batchSize = records.size();
-            this.recordCount += records.size();
+            this.dataCalculationRecord.Batches_Number__c += 1;
+            update this.dataCalculationRecord;
+            // this.batchSize = records.size();
+            // this.recordCount += records.size();
             this.calculationBuilder
                 .withRecords(records)
                 .calculate();
@@ -68,9 +72,9 @@ public with sharing class VDT_FieldsSummaryCalculationBatch implements Database.
             this.dataCalculationRecord.VDT_Job_End_Date__c = Datetime.now();
             this.dataCalculationRecord.Status__c = VDT_DataCalculationService.STATUS_COMPLETED;
             this.dataCalculationRecord.VDT_Calculation_Date__c = Date.today();
-            if (this.batchSize > 0) {
-                this.dataCalculationRecord.Batches_Number__c = Math.ceil(this.recordCount / this.batchSize) + 2;
-            }
+            // if (this.batchSize > 0) {
+            //     this.dataCalculationRecord.Batches_Number__c = Math.ceil(this.recordCount / this.batchSize);
+            // }
             update this.dataCalculationRecord;
 
             Attachment currentAttachment = VDT_AttachmentService.getAttachmentForRecord(

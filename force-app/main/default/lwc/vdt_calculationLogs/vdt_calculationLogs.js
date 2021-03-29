@@ -1,4 +1,4 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, track } from 'lwc';
 import fetchFinishedCalculations from '@salesforce/apex/VDT_CalculationLogsController.fetchFinishedCalculations';
 import { loadScript, } from 'lightning/platformResourceLoader';
 import MOMENT from '@salesforce/resourceUrl/vdt_moment';
@@ -6,21 +6,23 @@ import { MONTH_NAMES } from 'c/vdt_utils';
 
 export default class Vdt_calculationLogs extends LightningElement {
     _columns = [
-        { label: 'Object/Entity', fieldName: 'VDT_Object_Name__c' },
+        { label: 'Object/Entity', fieldName: 'VDT_Object_Name__c', sortable: true },
         { label: 'Calculation Range Start ', fieldName: 'startDateString', type: 'text' },
         { label: 'Calculation Range End', fieldName: 'endDateString', type: 'text' },
         { label: 'Job Start Date', fieldName: 'jobStartDateString', type: 'text' },
-        { label: 'Job End Date', fieldName: 'jobEndDateString', type: 'text' },
+        { label: 'Job End Date', fieldName: 'jobEndDateString', type: 'text', sortable: true },
         { label: 'Created By', fieldName: 'createdByName', type: 'text' },
         { label: 'Status', fieldName: 'Status__c', type: 'text' },
     ];
     _logs;
-    _filteredLogs;
+    @track _filteredLogs;
     _showEmpty = false;
     _showTable = false;
     _dateRangeFormat = 'MMMM yyyy';
     _jobDateFormat = 'DD-MM-yyyy, hh:mm a';
     _disableRefresh = false;
+    _sortedBy = '';
+    _sortDirection = '';
 
 
     handleFilterChange(evt) {
@@ -64,6 +66,45 @@ export default class Vdt_calculationLogs extends LightningElement {
             console.log(error.message);
         })
         .finally(() => this._disableRefresh = false);
+    }
+
+    updateColumnSorting(event) {
+        this._sortedBy = event.detail.fieldName;
+        this._sortDirection = event.detail.sortDirection;
+
+        if (this._sortedBy === 'jobEndDateString') {
+            this.sortByEndDate();
+        } else if (this._sortedBy === 'VDT_Object_Name__c') {
+            this.sortByObjectName();
+        }
+    }
+
+    sortByObjectName() {
+        let toSort = JSON.parse(JSON.stringify(this._filteredLogs));
+        toSort.sort((a, b) => {
+            if (a.VDT_Object_Name__c < b.VDT_Object_Name__c) {
+                return this._sortDirection === 'asc' ? -1 : 1;
+            }
+            if (a.VDT_Object_Name__c > b.VDT_Object_Name__c) {
+                return this._sortDirection === 'asc' ? 1 : -1;
+            }
+            return 0;
+        });
+        this._filteredLogs = toSort;
+    }
+
+    sortByEndDate() {
+        let toSort = JSON.parse(JSON.stringify(this._filteredLogs));
+        toSort.sort((a, b) => {
+            if (moment(a.VDT_Job_End_Date__c).isBefore(moment(b.VDT_Job_End_Date__c))) {
+                return this._sortDirection === 'asc' ? -1 : 1;
+            }
+            if (moment(a.VDT_Job_End_Date__c).isAfter(moment(b.VDT_Job_End_Date__c))) {
+                return this._sortDirection === 'asc' ? 1 : -1;
+            }
+            return 0;
+        });
+        this._filteredLogs = toSort;
     }
 
     connectedCallback() {
