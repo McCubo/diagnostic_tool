@@ -36,7 +36,7 @@ public inherited sharing class VDT_ProductAdoptionController {
     }
 
     @AuraEnabled
-    public static List<VDT_ProductService.ProductCatalogTreeItem> getProductCatalogTree() {
+    public static VDT_ProductService.ProductAdoptionData getProductCatalogTree() {
         try {
             return VDT_ProductService.getProductTreeInformation();
         } catch (Exception e) {

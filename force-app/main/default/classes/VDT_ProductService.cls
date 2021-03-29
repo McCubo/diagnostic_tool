@@ -1,7 +1,7 @@
 public with sharing class VDT_ProductService {
 
-    public static List<ProductCatalogTreeItem> getProductTreeInformation() {
-        List<ProductCatalogTreeItem> productTree = new List<ProductCatalogTreeItem>();
+    public static ProductAdoptionData getProductTreeInformation() {
+        ProductAdoptionData productAdoption = new ProductAdoptionData();
         String productCountry = VDT_CustomMetadataService.getCountryFieldForObject('Product_vod__c');
         List<Product_vod__c> products = new VDT_ProductSelector()
                                         .withAdditionalFields(new List<String> {
@@ -12,6 +12,7 @@ public with sharing class VDT_ProductService {
 
         Map<Id, List<Product_vod__c>> childProductsByParent = new Map<Id, List<Product_vod__c>>();        
         for (Product_vod__c product : products) {
+            productAdoption.productTypes.add(product.Product_Type_vod__c);
             if (String.isNotBlank(product.Parent_Product_vod__c)) {
                 if (childProductsByParent.containsKey(product.Parent_Product_vod__c)) {
                     childProductsByParent.get(product.Parent_Product_vod__c).add(product);
@@ -20,8 +21,8 @@ public with sharing class VDT_ProductService {
                 }        
             }
         }                                        
-        productTree = getProductCatalogTree(products, childProductsByParent, productCountry, true);
-        return productTree;
+        productAdoption.treeItems = getProductCatalogTree(products, childProductsByParent, productCountry, true);
+        return productAdoption;
     }
 
     private static List<ProductCatalogTreeItem> getProductCatalogTree(List<Product_vod__c> products, Map<Id, List<Product_vod__c>> childProductsByParent, String productCountry, Boolean isRootNode) {
@@ -37,6 +38,15 @@ public with sharing class VDT_ProductService {
             }
         }
         return productCatalogTree;
+    }
+
+    public class ProductAdoptionData {
+
+        @AuraEnabled
+        public List<String> productTypes = new List<String>();
+        @AuraEnabled
+        public List<ProductCatalogTreeItem> treeItems = new List<ProductCatalogTreeItem>();
+
     }
 
     public class ProductCatalogTreeItem {
@@ -64,7 +74,7 @@ public with sharing class VDT_ProductService {
         public List<ProductCatalogTreeItem> items = new List<ProductCatalogTreeItem>();        
 
         public ProductCatalogTreeItem setMetatext() {
-            this.metatext = String.format('Product Type: {0} | Country: {1}', new List<String> { this.label, this.country });
+            this.metatext = String.format('Product Type: {0} | Country: {1}', new List<String> { this.type, this.country });
             return this;
         }
     }

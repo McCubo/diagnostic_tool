@@ -26,6 +26,7 @@ export default class Vdt_productAdoptionTable extends LightningElement {
     _rawData = [];
     _productTypes = [];
     _selectedProductTypes = [];
+    @api
     countries = [];
     _subscription = null;
 
