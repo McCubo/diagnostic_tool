@@ -3,6 +3,7 @@ import { LightningElement, track } from 'lwc';
 import searchExistingCalculations from '@salesforce/apex/VDT_ProductAdoptionController.searchExistingCalculations';
 import recalculateProductAdoption from '@salesforce/apex/VDT_ProductAdoptionController.recalculateProductAdoption';
 import validateCanRunCalculation from '@salesforce/apex/VDT_ObjectsCalculationController.validateCanRunCalculation';
+import { showToast } from 'c/vdt_utils';
 
 export default class Vdt_productAdoptionAnalysis extends LightningElement {
 

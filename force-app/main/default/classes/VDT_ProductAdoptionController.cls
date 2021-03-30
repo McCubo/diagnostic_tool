@@ -45,4 +45,52 @@ public inherited sharing class VDT_ProductAdoptionController {
             throw new AuraHandledException(e.getMessage());
         }
     }
+
+    @AuraEnabled
+    public static String getProductCountryFieldType() {
+        try {
+            String countryFieldName = VDT_CustomMetadataService.getCountryFieldForObject('Product_vod__c');
+            return VDT_ObjectService.getFieldTypeBySObjectName('Product_vod__c', countryFieldName);
+        } catch (Exception e) {
+            System.debug('e: ' + e.getCause() + '  ' + e.getStackTraceString());
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled
+    public static List<VDT_OptionWrapper> getCountryOptions() {
+        try {
+            String countryFieldName = VDT_CustomMetadataService.getCountryFieldForObject('Product_vod__c');
+            return VDT_ObjectService.getPicklistOptionsBySObjectName(SObjectType.Product_vod__c, countryFieldName);
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled
+    public static List<VDT_OptionWrapper> getCountryOptionFromReference() {
+        try {
+            String countryFieldName = VDT_CustomMetadataService.getCountryFieldForObject('Product_vod__c');
+            return VDT_ObjectService.getPicklistOptionsByReference('Product_vod__c', countryFieldName);
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled
+    public static List<VDT_OptionWrapper> getCountryCodeFromProductSetup(){
+        try {
+            return VDT_CustomMetadataService.getDefaultCountries();
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
 }

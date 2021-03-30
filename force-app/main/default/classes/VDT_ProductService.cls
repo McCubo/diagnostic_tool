@@ -28,7 +28,8 @@ public with sharing class VDT_ProductService {
     private static List<ProductCatalogTreeItem> getProductCatalogTree(List<Product_vod__c> products, Map<Id, List<Product_vod__c>> childProductsByParent, String productCountry, Boolean isRootNode) {
         List<ProductCatalogTreeItem> productCatalogTree = new List<ProductCatalogTreeItem>();
         for (Product_vod__c product : products) {
-            ProductCatalogTreeItem productTreeItem = new ProductCatalogTreeItem(product.Name, product.Id, product.Product_Type_vod__c, String.valueOf(product.get(productCountry))).setMetatext();
+            String country = getCountryValue(product, productCountry);
+            ProductCatalogTreeItem productTreeItem = new ProductCatalogTreeItem(product.Name, product.Id, product.Product_Type_vod__c, country).setMetatext();
             if (childProductsByParent.containsKey(product.Id)) {
                 List<Product_vod__c> childProducts = childProductsByParent.get(product.Id);
                 productTreeItem.items = getProductCatalogTree(childProducts, childProductsByParent, productCountry, false);
@@ -40,6 +41,19 @@ public with sharing class VDT_ProductService {
         return productCatalogTree;
     }
 
+    private static String getCountryValue(Product_vod__c product, String countryField) {
+        String country = '';
+        if (countryField.contains('.')) {
+            String relationship = countryField.split('\\.').get(0);
+            String relatedField = countryField.split('\\.').get(1);
+            if (product.getSObject(relationship) != null) {
+                country = product.getSObject(relationship).get(relatedField).toString();
+            }
+        } else {
+            country = String.valueOf(product.get(countryField));
+        }
+        return country;
+    }
     public class ProductAdoptionData {
 
         @AuraEnabled

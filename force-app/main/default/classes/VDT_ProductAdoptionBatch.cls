@@ -17,11 +17,13 @@ public with sharing class VDT_ProductAdoptionBatch implements Database.Batchable
         String keyMessageCountry = VDT_CustomMetadataService.getCountryFieldForObject('Key_Message_vod__c');        
         String approvedDocumentCountry = VDT_CustomMetadataService.getCountryFieldForObject('Approved_Document_vod__c');
         String clmPresentationCountry = VDT_CustomMetadataService.getCountryFieldForObject('Clm_Presentation_vod__c');
+        String eventCountry = VDT_CustomMetadataService.getCountryFieldForObject('EM_Event_vod__c');
 
         this.builder = new VDT_ProductAdoptionBuilder()
         .addCountryForObject('Account', accountCountry)
         .addCountryForObject('Key_Message_vod__c', keyMessageCountry)        
         .addCountryForObject('Approved_Document_vod__c', approvedDocumentCountry)
+        .addCountryForObject('EM_Event_vod__c', eventCountry)
         .addCountryForObject('Clm_Presentation_vod__c', clmPresentationCountry);
         this.dataCalculationRecord.VDT_Job_Start_Date__c = Datetime.now();
         this.dataCalculationRecord.Batches_Number__c = 0;
@@ -41,6 +43,7 @@ public with sharing class VDT_ProductAdoptionBatch implements Database.Batchable
             .withSentEmails(this.startDate, this.endDate)
             .withProductMetrics()
             .withCallDetails(this.startDate, this.endDate)
+            .withEvents(this.startDate, this.endDate)
             .calculate();
         } catch (Exception e) {
             VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);

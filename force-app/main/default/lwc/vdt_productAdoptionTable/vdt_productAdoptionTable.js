@@ -99,7 +99,7 @@ export default class Vdt_productAdoptionTable extends LightningElement {
                     approvedDocuments: 0,
                     sentEmail: 0,
                     productMetric: 0,
-                    callsVisits: productType.callsVisits,
+                    callsVisits: 0,
                     events: 0
                 };
                 Object.keys(productType.countryUsageSummary).forEach(countryCode => {
@@ -109,6 +109,7 @@ export default class Vdt_productAdoptionTable extends LightningElement {
                         productTypeEntry.approvedDocuments += productType.countryUsageSummary[countryCode].approvedDocuments;
                         productTypeEntry.sentEmail += productType.countryUsageSummary[countryCode].sentEmail;
                         productTypeEntry.productMetric += productType.countryUsageSummary[countryCode].productMetric;
+                        productTypeEntry.callsVisits += productType.countryUsageSummary[countryCode].callsVisits;
                     }
                 });
                 parsedData.push(productTypeEntry);

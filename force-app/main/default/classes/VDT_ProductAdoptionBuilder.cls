@@ -9,7 +9,8 @@ public with sharing class VDT_ProductAdoptionBuilder {
     private Map<String, Map<String, Integer>> approvedDocumentsByProduct = new Map<String, Map<String, Integer>>();
     private Map<String, Map<String, Integer>> sentEmailsByProduct = new Map<String, Map<String, Integer>>();
     private Map<String, Map<String, Integer>> productMetricsByProduct = new Map<String, Map<String, Integer>>();
-    private Map<String, Integer> callsByProduct = new Map<String, Integer>();
+    private Map<String, Map<String, Integer>> eventsByProduct = new Map<String, Map<String, Integer>>();
+    private  Map<String, Map<String, Integer>> callsByProduct = new  Map<String, Map<String, Integer>>();
     private Map<String, String> countryFieldByObject = new Map<String, String>();
     private final String PRESENTATION_STATUS_APPROVED = 'Approved_vod';
     private final String APPROVED_DOCUMENT_STATUS_APPROVED = 'Approved_vod';
@@ -121,16 +122,37 @@ public with sharing class VDT_ProductAdoptionBuilder {
         return this;
     }
 
-    public VDT_ProductAdoptionBuilder withCallDetails(Date startDate, Date endDate) {        
+    public VDT_ProductAdoptionBuilder withEvents(Date startDate, Date endDate) {
+        eventsByProduct.clear();
+        String countryField = this.countryFieldByObject.get('EM_Event_vod__c');
+
+        String query = String.format('SELECT Product_vod__c productid, {0} countryname, COUNT(Id) counter'
+                                + ' FROM EM_Event_vod__c '
+                                + ' WHERE Product_vod__c IN :productIds AND Start_Time_vod__c >= :startDate AND End_Time_vod__c  <= :endDate'
+                                + ' GROUP BY Product_vod__c, {0}', new List<String>{
+                                    countryField
+                                });
+        AggregateResult[] eventsCount = (AggregateResult[]) Database.query(query);
+        for (AggregateResult eventData : eventsCount) {
+            addValueToProductAndCountry(eventsByProduct, eventData);
+        }
+        return this;
+    }
+
+    public VDT_ProductAdoptionBuilder withCallDetails(Date startDate, Date endDate) {
         callsByProduct.clear();
-        AggregateResult[] callCounts = [SELECT Product_vod__c, COUNT(Id) counter
-                                               FROM Call2_Detail_vod__c 
-                                               WHERE Call2_vod__r.Call_Date_vod__c >= :startDate AND Call2_vod__r.Call_Date_vod__c <= :endDate
-                                               AND Product_vod__c IN :productIds 
-                                               GROUP BY Product_vod__c];
+        String countryField = this.countryFieldByObject.get('Account');
+        String query = String.format('SELECT Product_vod__c productid, {0} countryname, COUNT(Id) counter'
+                                    + ' FROM Call2_Detail_vod__c'
+                                    + ' WHERE Call2_vod__r.Call_Date_vod__c >= :startDate AND Call2_vod__r.Call_Date_vod__c <= :endDate'
+                                    + ' AND Product_vod__c IN :productIds'
+                                    + ' GROUP BY Product_vod__c, {0}', new List<String>{
+                                        'Call2_vod__r.Account_vod__r.' + countryField
+                                    });
+        AggregateResult[] callCounts = (AggregateResult[]) Database.query(query);
         for (AggregateResult callDetail : callCounts)  {
-            callsByProduct.put(callDetail.get('Product_vod__c').toString(), Integer.valueOf(callDetail.get('counter')));
-        }                                                  
+            addValueToProductAndCountry(callsByProduct, callDetail);
+        }
         return this;
     }
 
@@ -174,12 +196,17 @@ public with sharing class VDT_ProductAdoptionBuilder {
                 if (productMetricsCount != null && productMetricsCount.containsKey(country)) {
                     countryUsage.productMetric = productMetricsCount.get(country);
                 }
+                Map<String, Integer> productEventsCount = this.eventsByProduct.get(product.Id);
+                if (productEventsCount != null && productEventsCount.containsKey(country)) {
+                    countryUsage.events = productEventsCount.get(country);
+                }
+                Map<String, Integer> callDetailsCount = this.callsByProduct.get(product.Id);
+                if (callDetailsCount != null && callDetailsCount.containsKey(country)) {
+                    countryUsage.callsVisits = callDetailsCount.get(country);
+                }
                 if (countryUsage.isSet()) {
                     prodSummary.countryUsageSummary.put(country, countryUsage);
                 }
-            }
-            if (this.callsByProduct.containsKey(product.Id)) {
-                prodSummary.callsVisits = callsByProduct.get(product.Id);
             }
             this.adoptionData.product_adoption.put(product.Name, prodSummary);
         }
@@ -207,8 +234,7 @@ public with sharing class VDT_ProductAdoptionBuilder {
 
         public String id;
         public String name;
-        public String type;
-        public Decimal callsVisits = 0;
+        public String type;        
         public Map<String, CountryUsageSummary> countryUsageSummary = new Map<String, CountryUsageSummary>();
 
     }
@@ -221,6 +247,7 @@ public with sharing class VDT_ProductAdoptionBuilder {
         public Decimal sentEmail = 0;
         public Decimal productMetric = 0;
         public Decimal events = 0;
+        public Decimal callsVisits = 0;
 
         public Boolean isSet() {
             return this.activeKeyMessages > 0 
@@ -228,7 +255,8 @@ public with sharing class VDT_ProductAdoptionBuilder {
                     || this.approvedDocuments > 0 
                     || this.sentEmail > 0
                     || this.productMetric > 0
-                    || this.events > 0;
+                    || this.events > 0
+                    || this.callsVisits > 0;
         }
     }
 

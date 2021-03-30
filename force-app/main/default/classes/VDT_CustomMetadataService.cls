@@ -9,6 +9,29 @@ public inherited sharing class VDT_CustomMetadataService {
     @TestVisible
     private static Map<String, List<SObject>> customMetadataWithRecords = new Map<String, List<SObject>>();
 
+    public static List<VDT_OptionWrapper> getDefaultCountries() {
+        List<VDT_OptionWrapper> options = new List<VDT_OptionWrapper>();
+        List<VDT_General_Setting__mdt> defaultSettings;
+        if (!customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {
+            defaultSettings = [
+                SELECT  VDT_Default_Countries__c
+                FROM    VDT_General_Setting__mdt
+                WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
+                WITH    SECURITY_ENFORCED
+            ];
+        } else {
+            defaultSettings = customMetadataWithRecords.get(VDT_GENERAL_SETTINGS);
+        }
+
+        if (!defaultSettings.isEmpty()) {
+            String countriesCsv = defaultSettings[0].VDT_Default_Countries__c;
+            for (String countryCode : countriesCsv.split(',')) {
+                options.add(new VDT_OptionWrapper(countryCode, countryCode));
+            }
+        }
+        return options;
+    }
+
     public static Boolean isTerritoryManagementActive() {
         Boolean isActive = false;
         List<VDT_General_Setting__mdt> defaultSettings;
