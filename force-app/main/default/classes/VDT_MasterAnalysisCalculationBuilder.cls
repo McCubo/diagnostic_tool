@@ -81,11 +81,11 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
             }
             String specialty = acc.get(this.specialtyField).toString();
             this.analysisData.recordTypes.add(acc.RecordType.Name);
-            Boolean isExternal = accountRecordTypesByType.get(ACCOUNT_TYPE_EXTERNAL).contains(acc.RecordType.Name);
-            Boolean hasNoAddress = acc.Address_vod__r.isEmpty();
-            this.updateKpiForCountry(ONEKEY_VS_NON_ONE_KEY_KPI_ID, country, isExternal ? 1 : 0, 1);
-            this.updateKpiForCountry(ONEKEY_WITHOUT_ADDRESS, country, hasNoAddress ? 1 : 0, 1);
+            Boolean isExternal = accountRecordTypesByType.get(ACCOUNT_TYPE_EXTERNAL).contains(acc.RecordType.Name);            
+            this.updateKpiForCountry(ONEKEY_VS_NON_ONE_KEY_KPI_ID, country, isExternal ? 1 : 0, 1);            
             if (isExternal) {
+                Boolean hasNoAddress = acc.Address_vod__r.isEmpty();
+                this.updateKpiForCountry(ONEKEY_WITHOUT_ADDRESS, country, hasNoAddress ? 1 : 0, 1);
                 Boolean hasNoVisits = acc.Call2_vod__r.isEmpty();
                 this.updateKpiForCountry(ONEKEY_WITHOUT_VISIT_KPI_ID, country, hasNoVisits ? 1 : 0, 1);
                 Boolean hasNoCyclePlanTargets = acc.MC_Cycle_Plan_Targets_vod__r.isEmpty();

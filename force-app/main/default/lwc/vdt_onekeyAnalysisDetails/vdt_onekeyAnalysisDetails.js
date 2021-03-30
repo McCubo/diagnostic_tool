@@ -15,7 +15,7 @@ const COLUMNS = [
     { type: 'text', fieldName: 'notPartOfCyclePlan', label: 'Visited and Not part of Cycle plan' },
     { type: 'text', fieldName: 'notInProductMetrics', label: 'Not used in Product metric?' },
     { type: 'text', fieldName: 'noAddress', label: 'No Address' }, 
-    { type: 'text', fieldName: 'notAlignedToTerritories', label: 'Not Alinged to territories' }, 
+    { type: 'text', fieldName: 'notAlignedToTerritories', label: 'Not Aligned to territories' }, 
 ];
 
 export default class Vdt_onekeyAnalysisDetails extends LightningElement {
