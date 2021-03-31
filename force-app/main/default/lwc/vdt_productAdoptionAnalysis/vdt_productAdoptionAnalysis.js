@@ -1,11 +1,16 @@
-import { api, LightningElement, track } from 'lwc';
+import { api, LightningElement, track, wire } from 'lwc';
 
 import searchExistingCalculations from '@salesforce/apex/VDT_ProductAdoptionController.searchExistingCalculations';
 import recalculateProductAdoption from '@salesforce/apex/VDT_ProductAdoptionController.recalculateProductAdoption';
 import validateCanRunCalculation from '@salesforce/apex/VDT_ObjectsCalculationController.validateCanRunCalculation';
 import { showToast } from 'c/vdt_utils';
 
+import refreshMonitoringMessageChannel from '@salesforce/messageChannel/vdt_refreshMonitoring__c';
+import { publish, MessageContext } from 'lightning/messageService';
 export default class Vdt_productAdoptionAnalysis extends LightningElement {
+
+    @wire(MessageContext)
+    _messageContext;
 
     @api
     internationalCountry;
@@ -55,6 +60,7 @@ export default class Vdt_productAdoptionAnalysis extends LightningElement {
                 recalculateProductAdoption({jsonSearchParameters: JSON.stringify(this._filter)})
                 .then(() => {
                     this._calculation.status = 'In Progress';
+                    publish(this._messageContext, refreshMonitoringMessageChannel);
                 })
                 .catch(error => {
                      console.log(error);

@@ -6,6 +6,7 @@ import { downloadCSVFile } from 'c/vdt_csvUtil'
 const COLUMNS = [
     { label: 'Product', fieldName: 'name' },
     { label: 'Product Type', fieldName: 'type'},
+    { label: 'Country', fieldName: 'country'},
     { label: '#Active key messages', fieldName: 'activeKeyMessages', type: 'number' },
     { label: '#Active CLM', fieldName: 'activeCLM', type: 'number' },
     { label: '#Approved Document', fieldName: 'approvedDocuments', type: 'number' },
@@ -92,11 +93,14 @@ export default class Vdt_productAdoptionTable extends LightningElement {
     parseData(data) {
         let parsedData = [];
         Object.values(data.product_adoption).forEach(productType => {
-            if (this._selectedProductTypes.length == 0 || this._selectedProductTypes.includes(productType.type)) {
+            if ((this._selectedProductTypes.length == 0 || this._selectedProductTypes.includes(productType.type)) &&
+                (this.countries.length == 0 || this.countries.includes(productType.country) || productType.country == this.internationalCountry)
+            ) {
                 let productTypeEntry = {
                     id: productType.id,
                     name: productType.name,
                     type: productType.type,
+                    country: productType.country,
                     activeKeyMessages: 0,
                     activeCLM: 0,
                     approvedDocuments: 0,
@@ -106,7 +110,7 @@ export default class Vdt_productAdoptionTable extends LightningElement {
                     events: 0
                 };
                 Object.keys(productType.countryUsageSummary).forEach(countryCode => {
-                    if (this.countries.length == 0 || this.countries.includes(countryCode) || this.countries.includes('All') || countryCode == this.internationalCountry) {
+                    if (this.countries.length == 0 || this.countries.includes(countryCode)) {
                         productTypeEntry.activeKeyMessages += productType.countryUsageSummary[countryCode].activeKeyMessages;
                         productTypeEntry.activeCLM += productType.countryUsageSummary[countryCode].activeCLM;
                         productTypeEntry.approvedDocuments += productType.countryUsageSummary[countryCode].approvedDocuments;

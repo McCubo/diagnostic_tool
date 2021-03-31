@@ -1,19 +1,29 @@
 <template>
-    <lightning-layout>
-        <lightning-layout-item size="4">
-            <c-vdt_autocomplete-input
-                multiselect
-                label="Country"
-                placeholder="Select Countries"
-                options={_countryOptions}
-                onoptionselect={handleCountryChange}
-            ></c-vdt_autocomplete-input>
-        </lightning-layout-item>
-    </lightning-layout>
-    <div class="slds-m-top_medium slds-m-bottom_x-large">
-        <c-vdt_product-adoption-tree></c-vdt_product-adoption-tree>
-    </div>
-    <div class="slds-m-top_medium">
-        <c-vdt_product-adoption-analysis international-country={internationalCountry.data}></c-vdt_product-adoption-analysis>
-    </div>
+    <lightning-tabset>
+        <lightning-tab label="Analysis">
+            <lightning-layout>
+                <lightning-layout-item size="4">
+                    <c-vdt_autocomplete-input
+                        multiselect
+                        label="Country"
+                        placeholder="Select Countries"
+                        options={_countryOptions}
+                        onoptionselect={handleCountryChange}
+                    ></c-vdt_autocomplete-input>
+                </lightning-layout-item>
+            </lightning-layout>
+            <div class="slds-m-top_medium slds-m-bottom_x-large">
+                <c-vdt_product-adoption-tree></c-vdt_product-adoption-tree>
+            </div>
+            <div class="slds-m-top_medium">
+                <c-vdt_product-adoption-analysis international-country={internationalCountry.data}></c-vdt_product-adoption-analysis>
+            </div>
+        </lightning-tab>
+        <lightning-tab label="Monitoring">
+            <c-vdt_calculation-monitoring></c-vdt_calculation-monitoring>
+        </lightning-tab>
+        <lightning-tab label="Logs">
+            <c-vdt_product-adoption-logs></c-vdt_product-adoption-logs>
+        </lightning-tab>
+    </lightning-tabset>
 </template>

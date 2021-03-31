@@ -200,7 +200,8 @@ public inherited sharing class VDT_DataCalculationSelector {
             VDT_Data_Calculation__c.VDT_Job_End_Date__c.getDescribe().getName(),
             VDT_Data_Calculation__c.VDT_Country__c.getDescribe().getName(),
             VDT_Data_Calculation__c.RecordTypeId.getDescribe().getName(),
-            'CreatedBy.Name'
+            'CreatedBy.Name',
+            'RecordType.DeveloperName'
         };
         String completedStatus = VDT_DataCalculationService.STATUS_COMPLETED;
         String errorStatus = VDT_DataCalculationService.STATUS_ERROR;

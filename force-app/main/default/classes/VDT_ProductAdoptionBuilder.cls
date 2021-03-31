@@ -15,10 +15,11 @@ public with sharing class VDT_ProductAdoptionBuilder {
     private Map<String, String> productFieldByObject = new Map<String, String>();
     private final String PRESENTATION_STATUS_APPROVED = 'Approved_vod';
     private final String APPROVED_DOCUMENT_STATUS_APPROVED = 'Approved_vod';
-    private final String KEY_DELIMITER = '_';
 
-    public VDT_ProductAdoptionBuilder addCountryForObject(String sobjectName, String countryField) {
-        this.countryFieldByObject.put(sobjectName, countryField);
+    public VDT_ProductAdoptionBuilder addCountriesForObjects(Map<String, String> countryFieldByObject) {
+        for (String objectName : countryFieldByObject.keySet()) {
+            this.countryFieldByObject.put(objectName, countryFieldByObject.get(objectName));
+        }
         return this;
     }
 
@@ -183,9 +184,11 @@ public with sharing class VDT_ProductAdoptionBuilder {
     }
 
     public VDT_ProductAdoptionBuilder calculate() {
+        String productCountryField = this.countryFieldByObject.get('Product_vod__c');
         for (Product_vod__c product : this.records) {
-            adoptionData.productTypes.add(product.Product_Type_vod__c);
-            ProductSummary prodSummary = new ProductSummary(product.Id, product.Name, product.Product_Type_vod__c);            
+            adoptionData.productTypes.add(product.Product_Type_vod__c);            
+            String countryValue = getPropertyValue(product, productCountryField);
+            ProductSummary prodSummary = new ProductSummary(product.Id, product.Name, countryValue, product.Product_Type_vod__c);            
             for (String country : this.countries) {
                 CountryUsageSummary countryUsage = new CountryUsageSummary();
                 Map<String, Integer> keyMessageCount = this.keyMessagesByProduct.get(product.Id);
@@ -229,6 +232,20 @@ public with sharing class VDT_ProductAdoptionBuilder {
         return this.adoptionData;
     }
 
+    private static String getPropertyValue(Product_vod__c product, String fieldName) {
+        String value = '';
+        if (fieldName.contains('.')) {
+            String relationship = fieldName.split('\\.').get(0);
+            String relatedField = fieldName.split('\\.').get(1);
+            if (product.getSObject(relationship) != null) {
+                value = product.getSObject(relationship).get(relatedField).toString();
+            }
+        } else {
+            value = String.valueOf(product.get(fieldName));
+        }
+        return value;
+    }
+
     public class ProductAdoptionSummary {
 
         public Set<String> productTypes = new Set<String>();
@@ -237,16 +254,18 @@ public with sharing class VDT_ProductAdoptionBuilder {
     }
 
     public class ProductSummary {
-        
-        public ProductSummary(String id, String name, String type) {
+
+        public ProductSummary(String id, String name, String country, String type) {
             this.id = id;
             this.name = name;
+            this.country = country;
             this.type = type;
         }
 
         public String id;
         public String name;
-        public String type;        
+        public String type;
+        public String country;
         public Map<String, CountryUsageSummary> countryUsageSummary = new Map<String, CountryUsageSummary>();
 
     }

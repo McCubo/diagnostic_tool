@@ -1,0 +1,26 @@
+<template>
+    <div class="container">
+        <lightning-layout>
+            <lightning-layout-item size="2">
+                <lightning-input 
+                    type="date" 
+                    variant="label-hidden"
+                    name="jobstart"
+                    placeholder="Find Job Start Date"
+                    value={_filter.jobStartDate}
+                    onchange={handleJobStartDateChange}
+                ></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="2">
+                <lightning-input 
+                    type="date" 
+                    variant="label-hidden"
+                    name="jobend"
+                    placeholder="Find Job End Date"
+                    value={_filter.jobEndDate}
+                    onchange={handleJobEndDateChange}
+                ></lightning-input>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

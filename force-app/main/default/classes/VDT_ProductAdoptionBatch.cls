@@ -12,7 +12,10 @@ public with sharing class VDT_ProductAdoptionBatch implements Database.Batchable
     }
 
     public Database.QueryLocator start(Database.BatchableContext bc) {
-        String query = String.format('SELECT Id, Name, Product_Type_vod__c FROM Product_vod__c', new List<String>{});
+        String productCountryField = VDT_CustomMetadataService.getCountryFieldForObject('Product_vod__c');
+        String query = String.format('SELECT Id, Name, Product_Type_vod__c, {0} FROM Product_vod__c', new List<String> {
+            productCountryField
+        });
         String accountCountry = VDT_CustomMetadataService.getCountryFieldForObject('Account');
         String keyMessageCountry = VDT_CustomMetadataService.getCountryFieldForObject('Key_Message_vod__c');        
         String approvedDocumentCountry = VDT_CustomMetadataService.getCountryFieldForObject('Approved_Document_vod__c');
@@ -21,12 +24,17 @@ public with sharing class VDT_ProductAdoptionBatch implements Database.Batchable
         String eventProductField = VDT_CustomMetadataService.getProductFieldForObject('EM_Event_vod__c');
 
         this.builder = new VDT_ProductAdoptionBuilder()
-        .addCountryForObject('Account', accountCountry)
-        .addCountryForObject('Key_Message_vod__c', keyMessageCountry)        
-        .addCountryForObject('Approved_Document_vod__c', approvedDocumentCountry)
-        .addCountryForObject('EM_Event_vod__c', eventCountry)
-        .addCountryForObject('Clm_Presentation_vod__c', clmPresentationCountry)
-        .addProductFieldsByObject(new Map<String, String> { 'EM_Event_vod__c' => eventProductField});
+        .addCountriesForObjects(new Map<String, String> {
+            'Product_vod__c' => productCountryField,
+            'Account' => accountCountry,
+            'Key_Message_vod__c' => keyMessageCountry,
+            'Approved_Document_vod__c' => approvedDocumentCountry,
+            'EM_Event_vod__c' => eventCountry,
+            'Clm_Presentation_vod__c' => clmPresentationCountry
+        })
+        .addProductFieldsByObject(new Map<String, String> { 
+            'EM_Event_vod__c' => eventProductField
+        });
         this.dataCalculationRecord.VDT_Job_Start_Date__c = Datetime.now();
         this.dataCalculationRecord.Batches_Number__c = 0;
         update this.dataCalculationRecord;
