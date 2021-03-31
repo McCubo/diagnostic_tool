@@ -19,6 +19,10 @@
         <value xsi:type="xsd:string">CreatedBy.Country</value>
     </values>
     <values>
+        <field>International_Country__c</field>
+        <value xsi:type="xsd:string">International</value>
+    </values>
+    <values>
         <field>Maximum_Calculation_Requests__c</field>
         <value xsi:type="xsd:double">3.0</value>
     </values>
@@ -33,6 +37,10 @@
     <values>
         <field>Start_Date_Year_Decrement__c</field>
         <value xsi:type="xsd:double">4.0</value>
+    </values>
+    <values>
+        <field>VDT_Default_Countries__c</field>
+        <value xsi:type="xsd:string">BE,GE,GB,FR,SV,GT,CR,MX,US,IT,PL</value>
     </values>
     <values>
         <field>VDT_Default_Specialty_Field__c</field>

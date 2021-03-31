@@ -4,7 +4,7 @@
     <protected>false</protected>
     <values>
         <field>Description__c</field>
-        <value xsi:type="xsd:string">Percentage of Onekey/External Data Provider Without cycle plan targets</value>
+        <value xsi:type="xsd:string">Percentage of Onekey/External Data Provider Without Cycle Plan Targets</value>
     </values>
     <values>
         <field>VDT_Default_Target__c</field>

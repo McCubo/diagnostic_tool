@@ -72,6 +72,13 @@ public inherited sharing class VDT_ObjectCalculationBuilder {
                     } else {
                         countryUsageSummary.fieldValueOccurences.put('false', countryUsageSummary.fieldValueOccurences.get('false')+1);
                     }
+                } else if (fieldSummary.type == 'picklist') {
+                    String picklistValue = record.get(field) == null ? '' : String.valueOf(record.get(field));
+                    if (countryUsageSummary.fieldValueOccurences.get(picklistValue) == null) {
+                        countryUsageSummary.fieldValueOccurences.put(picklistValue, 1);
+                    } else {
+                        countryUsageSummary.fieldValueOccurences.put(picklistValue, countryUsageSummary.fieldValueOccurences.get(picklistValue) + 1);
+                    }
                 }
                 this.calculation.uniqueCountryCodes.add(countryCode);
             }

@@ -6,7 +6,7 @@ export const TABS = {
     home: {
         name: 'Home',
         icon: 'utility:home',
-        active: true
+        active: false
     },
     onekey: {
         name: 'Master Data Analysis',
@@ -26,7 +26,7 @@ export const TABS = {
     products: {
         name: 'Product Hierarchy and Adoption',
         icon: 'utility:hierarchy',
-        active: false
+        active: true
     },
     settings: {
         name: 'Settings',
@@ -34,7 +34,7 @@ export const TABS = {
         active: false
     }
 }
-export const DEFAULT_TAB = TABS.home;
+export const DEFAULT_TAB = TABS.products;
 
 export default class Vdt_tabs extends LightningElement {
     _currentTab = DEFAULT_TAB;

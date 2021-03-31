@@ -4,7 +4,7 @@
     <protected>false</protected>
     <values>
         <field>Description__c</field>
-        <value xsi:type="xsd:string">Percentage of OneKey/Extrennal Data provider customers Without Visit and cyle plan targets</value>
+        <value xsi:type="xsd:string">Percentage of OneKey/Extrennal Data provider customers Without Visits/Calls and Without Cycle Plan Targets</value>
     </values>
     <values>
         <field>VDT_Default_Target__c</field>

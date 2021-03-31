@@ -10,6 +10,8 @@
     <columns>End_Month__c</columns>
     <columns>Status__c</columns>
     <columns>CREATED_DATE</columns>
+    <columns>VDT_Job_End_Date__c</columns>
+    <columns>Batches_Number__c</columns>
     <filterScope>Everything</filterScope>
     <filters>
         <field>RECORDTYPE</field>

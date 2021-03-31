@@ -2,16 +2,25 @@ import { LightningElement, api } from 'lwc';
 import { downloadCSVFile } from 'c/vdt_csvUtil'
 
 export default class Vdt_fieldHighLevelSummary extends LightningElement {
+    _actions = [
+        { label: 'Export Field Breakdown', name: 'export_breakdown' }
+    ];
+
     _columnsBase = [
         { label: 'Field Label', fieldName: 'label' },
         { label: 'Field Name', fieldName: 'name' },
-        { label: 'Field Type', fieldName: 'type' }
+        { label: 'Field Type', fieldName: 'type' },
+        {
+            type: 'action',
+            typeAttributes: { rowActions: this.getRowActions },
+        }
     ];
-    _columns = [
-        { label: 'Field Label', fieldName: 'label' },
-        { label: 'Field Name', fieldName: 'name' },
-        { label: 'Field Type', fieldName: 'type' }
-    ];
+    // _columns = [
+    //     { label: 'Field Label', fieldName: 'label' },
+    //     { label: 'Field Name', fieldName: 'name' },
+    //     { label: 'Field Type', fieldName: 'type' }
+    // ];
+    _columns = [];
     _countryColumns = [];
 
     _calculationData = [];
@@ -74,7 +83,7 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
     setCountryColumns(data) {
         if (data.countryCodes && data.countryCodes.length > 0) {
             data.countryCodes.forEach(countryCode => {
-                    this._countryColumns.push({ label: countryCode, fieldName: countryCode, type: 'text', initialWidth: 80});
+                    this._countryColumns.push({ label: countryCode, fieldName: `${countryCode}_usagePercentage`, type: 'text', initialWidth: 80});
                 }
             );
             this._columns = this._columnsBase.concat(this._countryColumns);
@@ -94,10 +103,12 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
                     const trueValueUsage = field.countryUsageSummary[countryCode].fieldValueOccurences['true'] || 0;
                     const falseValueUsage = field.countryUsageSummary[countryCode].fieldValueOccurences['false'] || 0;
                     const totalRecords = field.countryUsageSummary[countryCode].totalRecords;
-                    fieldEntry[countryCode] = 
-                        `${Math.floor((trueValueUsage/totalRecords)*100)}% / ${Math.floor((falseValueUsage/totalRecords)*100)}%`;
+
+                    fieldEntry[`${countryCode}_usagePercentage`] = `${Math.floor((trueValueUsage/totalRecords)*100)}% / ${Math.floor((falseValueUsage/totalRecords)*100)}%`;
+                    fieldEntry[`${countryCode}_valueOccurences`] = field.countryUsageSummary[countryCode].fieldValueOccurences;
                 } else {
-                    fieldEntry[countryCode] = `${field.countryUsageSummary[countryCode].usagePercentage*100 + '%'}`;
+                    fieldEntry[`${countryCode}_usagePercentage`] = `${field.countryUsageSummary[countryCode].usagePercentage*100 + '%'}`;
+                    fieldEntry[`${countryCode}_valueOccurences`] = field.countryUsageSummary[countryCode].fieldValueOccurences;
                 }
             })
 
@@ -139,6 +150,46 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
         let csvData = JSON.parse(JSON.stringify(this._calculationData));
         this._columns.forEach(col => headers[col.fieldName] = col.label);
         downloadCSVFile(headers, csvData, this.objectName+'_fields_high_level_summary');
+    }
+
+    getRowActions(row, doneCallback) {
+        const actions = [];
+        actions.push({
+            'label': 'Export Field Breakdown',
+            'iconName': 'utility:list',
+            'name': 'export_breakdown',
+            'disabled': row.type !== 'picklist'
+        });
+        doneCallback(actions);
+    }
+
+    handleRowAction(evt) {
+        const action = evt.detail.action;
+        const row = evt.detail.row;
+        switch (action.name) {
+            case 'export_breakdown':
+                this.handleExportFieldBreakdown(row);
+                break;
+            default:
+                break;
+        }
+    }
+
+    handleExportFieldBreakdown(row) {
+        console.log(row);
+        let headers = {
+            [this._columns[1].fieldName]: this._columns[1].label,
+            'value': 'Field Value',
+        };
+        if (this._columns.length > 4) {
+            for (let i = 4; i < this._columns.length; i++) {
+                headers[this._columns[0].fieldName] = this._columns[0].label;
+            }
+        }
+        const fieldEntry = this._calculationData.find(entry => entry.name === row.name);
+        // let csvData = JSON.parse(JSON.stringify(this._calculationData));
+        // this._columns.forEach(col => headers[col.fieldName] = col.label);
+        // downloadCSVFile(headers, csvData, this.objectName+'_fields_high_level_summary');
     }
 
     handleFieldFilterInputChange(evt) {
