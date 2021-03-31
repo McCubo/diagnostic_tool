@@ -29,7 +29,7 @@
                     </template>
                     <template if:true={_showCalculation}>
                         <lightning-layout-item size="12" class="slds-m-top_medium">
-                            <c-vdt_product-adoption-table calculation-data={_calculation.data}></c-vdt_product-adoption-table>
+                            <c-vdt_product-adoption-table calculation-data={_calculation.data} international-country={internationalCountry}></c-vdt_product-adoption-table>
                         </lightning-layout-item>
                     </template>                    
                 </template>

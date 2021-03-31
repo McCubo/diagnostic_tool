@@ -28,6 +28,9 @@ export default class Vdt_productAdoptionTable extends LightningElement {
     _selectedProductTypes = [];
     @api
     countries = [];
+    @api
+    internationalCountry;
+
     _subscription = null;
 
     @api
@@ -103,7 +106,7 @@ export default class Vdt_productAdoptionTable extends LightningElement {
                     events: 0
                 };
                 Object.keys(productType.countryUsageSummary).forEach(countryCode => {
-                    if (this.countries.length == 0 || this.countries.includes(countryCode) || this.countries.includes('All')) {
+                    if (this.countries.length == 0 || this.countries.includes(countryCode) || this.countries.includes('All') || countryCode == this.internationalCountry) {
                         productTypeEntry.activeKeyMessages += productType.countryUsageSummary[countryCode].activeKeyMessages;
                         productTypeEntry.activeCLM += productType.countryUsageSummary[countryCode].activeCLM;
                         productTypeEntry.approvedDocuments += productType.countryUsageSummary[countryCode].approvedDocuments;

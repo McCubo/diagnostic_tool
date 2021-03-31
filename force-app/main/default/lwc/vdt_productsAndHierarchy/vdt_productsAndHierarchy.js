@@ -5,12 +5,16 @@ import getProductCountryFieldType from '@salesforce/apex/VDT_ProductAdoptionCont
 import getCountryOptions from '@salesforce/apex/VDT_ProductAdoptionController.getCountryOptions';
 import getCountryOptionFromReference from '@salesforce/apex/VDT_ProductAdoptionController.getCountryOptionFromReference';
 import getCountryCodeFromProductSetup from '@salesforce/apex/VDT_ProductAdoptionController.getCountryCodeFromProductSetup';
+import getInternationalCountryValue from '@salesforce/apex/VDT_ProductAdoptionController.getInternationalCountryValue';
 import { showToast } from 'c/vdt_utils';
 export default class Vdt_productsAndHierarchy extends LightningElement {
     
     @wire(MessageContext)
     messageContext;
 
+    @wire(getInternationalCountryValue)
+    internationalCountry;
+    
     _countryOptions = [];
 
     _countries = [];

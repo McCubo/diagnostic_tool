@@ -1,4 +1,4 @@
-import { LightningElement, track } from 'lwc';
+import { api, LightningElement, track } from 'lwc';
 
 import searchExistingCalculations from '@salesforce/apex/VDT_ProductAdoptionController.searchExistingCalculations';
 import recalculateProductAdoption from '@salesforce/apex/VDT_ProductAdoptionController.recalculateProductAdoption';
@@ -6,6 +6,9 @@ import validateCanRunCalculation from '@salesforce/apex/VDT_ObjectsCalculationCo
 import { showToast } from 'c/vdt_utils';
 
 export default class Vdt_productAdoptionAnalysis extends LightningElement {
+
+    @api
+    internationalCountry;
 
     _showCalculationButton = false;
     _showCalculationSection = false;

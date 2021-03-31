@@ -93,4 +93,15 @@ public inherited sharing class VDT_ProductAdoptionController {
             throw new AuraHandledException(e.getMessage());
         }
     }
+
+    @AuraEnabled(cacheable=true)
+    public static String getInternationalCountryValue(){
+        try {
+            return VDT_CustomMetadataService.getInternationalCountryValue();
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
 }

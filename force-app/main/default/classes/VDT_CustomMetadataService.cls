@@ -55,6 +55,26 @@ public inherited sharing class VDT_CustomMetadataService {
         return options;
     }
 
+    public static String getInternationalCountryValue() {
+        String intCountryVal;
+        List<VDT_General_Setting__mdt> defaultSettings;
+        if (!customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {        
+            defaultSettings = [
+                SELECT  International_Country__c
+                FROM    VDT_General_Setting__mdt
+                WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
+                WITH    SECURITY_ENFORCED
+            ];
+        } else {
+            defaultSettings = customMetadataWithRecords.get(VDT_GENERAL_SETTINGS);
+        }
+
+        if (!defaultSettings.isEmpty()) {
+            intCountryVal = defaultSettings[0].International_Country__c;
+        }        
+        return intCountryVal;
+    }
+
     public static Boolean isTerritoryManagementActive() {
         Boolean isActive = false;
         List<VDT_General_Setting__mdt> defaultSettings;
