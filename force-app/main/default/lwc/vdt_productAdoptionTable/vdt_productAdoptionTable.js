@@ -110,6 +110,7 @@ export default class Vdt_productAdoptionTable extends LightningElement {
                         productTypeEntry.sentEmail += productType.countryUsageSummary[countryCode].sentEmail;
                         productTypeEntry.productMetric += productType.countryUsageSummary[countryCode].productMetric;
                         productTypeEntry.callsVisits += productType.countryUsageSummary[countryCode].callsVisits;
+                        productTypeEntry.events += productType.countryUsageSummary[countryCode].events;
                     }
                 });
                 parsedData.push(productTypeEntry);

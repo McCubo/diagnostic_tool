@@ -12,12 +12,20 @@ public with sharing class VDT_ProductAdoptionBuilder {
     private Map<String, Map<String, Integer>> eventsByProduct = new Map<String, Map<String, Integer>>();
     private  Map<String, Map<String, Integer>> callsByProduct = new  Map<String, Map<String, Integer>>();
     private Map<String, String> countryFieldByObject = new Map<String, String>();
+    private Map<String, String> productFieldByObject = new Map<String, String>();
     private final String PRESENTATION_STATUS_APPROVED = 'Approved_vod';
     private final String APPROVED_DOCUMENT_STATUS_APPROVED = 'Approved_vod';
     private final String KEY_DELIMITER = '_';
 
     public VDT_ProductAdoptionBuilder addCountryForObject(String sobjectName, String countryField) {
         this.countryFieldByObject.put(sobjectName, countryField);
+        return this;
+    }
+
+    public VDT_ProductAdoptionBuilder addProductFieldsByObject(Map<String, String> productFieldByObject) {
+        for (String objectName : productFieldByObject.keySet()) {
+            this.productFieldByObject.put(objectName, productFieldByObject.get(objectName));
+        }
         return this;
     }
 
@@ -124,12 +132,16 @@ public with sharing class VDT_ProductAdoptionBuilder {
 
     public VDT_ProductAdoptionBuilder withEvents(Date startDate, Date endDate) {
         eventsByProduct.clear();
+        DateTime startDatetime = DateTime.newInstance(startDate.year(), startDate.month(), startDate.day());
+        DateTime endDatetime = DateTime.newInstance(endDate.year(), endDate.month(), endDate.day());
         String countryField = this.countryFieldByObject.get('EM_Event_vod__c');
+        String productField = this.productFieldByObject.get('EM_Event_vod__c');
 
-        String query = String.format('SELECT Product_vod__c productid, {0} countryname, COUNT(Id) counter'
+        String query = String.format('SELECT {0} productid, {1} countryname, COUNT(Id) counter'
                                 + ' FROM EM_Event_vod__c '
-                                + ' WHERE Product_vod__c IN :productIds AND Start_Time_vod__c >= :startDate AND End_Time_vod__c  <= :endDate'
-                                + ' GROUP BY Product_vod__c, {0}', new List<String>{
+                                + ' WHERE {0} IN :productIds AND Start_Time_vod__c >= :startDatetime AND End_Time_vod__c  <= :endDatetime'
+                                + ' GROUP BY {0}, {1}', new List<String>{
+                                    productField,
                                     countryField
                                 });
         AggregateResult[] eventsCount = (AggregateResult[]) Database.query(query);

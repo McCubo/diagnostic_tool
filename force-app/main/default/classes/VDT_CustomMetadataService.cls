@@ -2,12 +2,35 @@ public inherited sharing class VDT_CustomMetadataService {
     public static final String DEFAULT_APP_SETTINGS = 'Default';
     public static final String VDT_GENERAL_SETTINGS = 'VDT_General_Setting__mdt';
     public static final String VDT_COUNTRY_FIELD_MAPPING = 'VDT_Object_Country_Field_Mapping__mdt';
+    public static final String VDT_PRODUCT_FIELD_MAPPING = 'VDT_Object_Product_Field_Mapping__mdt';
     public static final String VDT_KPI_CONFIGURATIONS = 'VDT_KPI_Configuration__mdt';
     public static final String VDT_KPI_BY_COUNTRY_CONFIGURATIONS = 'VDT_KPI_by_Country__mdt';    
     public static final String VDT_ACCOUNT_RECORD_TYPE_CONFIGURATIONS = 'VDT_Account_Record_Type_Mapping__mdt';    
     public static final String VDT_BATCH_SIZE_MAPPING = 'VDT_Object_Batch_Size_Mapping__mdt';
     @TestVisible
     private static Map<String, List<SObject>> customMetadataWithRecords = new Map<String, List<SObject>>();
+
+    public static String getProductFieldForObject(String objectName) {
+        String productField;
+        List<VDT_Object_Product_Field_Mapping__mdt> productFieldMappings;
+        if (!customMetadataWithRecords.containsKey(VDT_COUNTRY_FIELD_MAPPING)) {        
+            productFieldMappings = [
+                SELECT  Id,
+                        Product_Field_Reference__c
+                FROM    VDT_Object_Product_Field_Mapping__mdt
+                WHERE   MasterLabel = :objectName
+                WITH    SECURITY_ENFORCED
+            ];
+        } else {
+            productFieldMappings = customMetadataWithRecords.get(VDT_PRODUCT_FIELD_MAPPING);
+        }
+
+        if (!productFieldMappings.isEmpty()) {
+            productField = productFieldMappings[0].Product_Field_Reference__c;
+        }
+
+        return productField;
+    }
 
     public static List<VDT_OptionWrapper> getDefaultCountries() {
         List<VDT_OptionWrapper> options = new List<VDT_OptionWrapper>();
