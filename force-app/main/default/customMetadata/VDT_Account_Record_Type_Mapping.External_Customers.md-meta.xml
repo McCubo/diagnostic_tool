@@ -4,6 +4,6 @@
     <protected>false</protected>
     <values>
         <field>Account_Record_Types__c</field>
-        <value xsi:type="xsd:string">MCO_vod,Laboratory_vod,Business_Professional_vod,Distributor_vod,Distributor Branch_vod,Person Account,Government_Agency_vod,Wholesaler_vod,KOL_vod,Publication_vod,Organization_vod</value>
+        <value xsi:type="xsd:string">MCO_vod,Hospital_vod,Laboratory_vod,Business_Professional_vod,Distributor_vod,Distributor Branch_vod,Person Account,Government_Agency_vod,Wholesaler_vod,KOL_vod,Publication_vod,Organization_vod</value>
     </values>
 </CustomMetadata>

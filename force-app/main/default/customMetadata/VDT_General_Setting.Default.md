@@ -20,7 +20,7 @@
     </values>
     <values>
         <field>International_Country__c</field>
-        <value xsi:type="xsd:string">International</value>
+        <value xsi:type="xsd:string">INT</value>
     </values>
     <values>
         <field>Maximum_Calculation_Requests__c</field>
