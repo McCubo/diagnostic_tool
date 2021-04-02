@@ -106,9 +106,11 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
 
                     fieldEntry[`${countryCode}_usagePercentage`] = `${Math.floor((trueValueUsage/totalRecords)*100)}% / ${Math.floor((falseValueUsage/totalRecords)*100)}%`;
                     fieldEntry[`${countryCode}_valueOccurences`] = field.countryUsageSummary[countryCode].fieldValueOccurences;
+                    fieldEntry[`${countryCode}_totalRecords`] = field.countryUsageSummary[countryCode].totalRecords;
                 } else {
                     fieldEntry[`${countryCode}_usagePercentage`] = `${field.countryUsageSummary[countryCode].usagePercentage*100 + '%'}`;
                     fieldEntry[`${countryCode}_valueOccurences`] = field.countryUsageSummary[countryCode].fieldValueOccurences;
+                    fieldEntry[`${countryCode}_totalRecords`] = field.countryUsageSummary[countryCode].totalRecords;
                 }
             })
 
@@ -176,20 +178,32 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
     }
 
     handleExportFieldBreakdown(row) {
-        console.log(row);
         let headers = {
             [this._columns[1].fieldName]: this._columns[1].label,
             'value': 'Field Value',
         };
+        const fieldEntry = this._calculationData.find(entry => entry.name === row.name);
+        let csvData = [];
         if (this._columns.length > 4) {
             for (let i = 4; i < this._columns.length; i++) {
-                headers[this._columns[0].fieldName] = this._columns[0].label;
+                let countryLabel = this._columns[i].label;
+                let valueOccurences = fieldEntry[`${countryLabel}_valueOccurences`];
+                if (valueOccurences) {
+                    let totalRecords = fieldEntry[`${countryLabel}_totalRecords`];
+                    Object.keys(valueOccurences).forEach(value => {
+                        let occurencesNum = valueOccurences[value];
+                        csvData.push({
+                            name: fieldEntry.name,
+                            value: value || '',
+                            [countryLabel]: `${Math.floor((occurencesNum/totalRecords)*100)}%`
+                        })
+                    })
+                }
+                headers[countryLabel] = countryLabel;
             }
         }
-        const fieldEntry = this._calculationData.find(entry => entry.name === row.name);
-        // let csvData = JSON.parse(JSON.stringify(this._calculationData));
-        // this._columns.forEach(col => headers[col.fieldName] = col.label);
-        // downloadCSVFile(headers, csvData, this.objectName+'_fields_high_level_summary');
+
+        downloadCSVFile(headers, csvData, `${this.objectName}_${row.name}_usage_breakdown`);
     }
 
     handleFieldFilterInputChange(evt) {

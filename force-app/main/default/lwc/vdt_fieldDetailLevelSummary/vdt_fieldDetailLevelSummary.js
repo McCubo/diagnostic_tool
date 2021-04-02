@@ -2,16 +2,14 @@ import { LightningElement, api, track } from 'lwc';
 import { downloadCSVFile } from 'c/vdt_csvUtil'
 
 export default class Vdt_fieldHighLevelSummary extends LightningElement {
-    _columnsBase = [
-        { label: 'Field Label', fieldName: 'label', initialWidth: 150 },
-        { label: 'Field Name', fieldName: 'name', initialWidth: 150 },
-        { label: 'Field Type', fieldName: 'type', initialWidth: 80 },
-        { label: 'Available On Page Layout', fieldName: 'onPageLayout', initialWidth: 80 }
-    ];
     _columns = [
         { label: 'Field Label', fieldName: 'label' },
         { label: 'Field Name', fieldName: 'name' },
         { label: 'Field Type', fieldName: 'type' },
+        {
+            type: 'action',
+            typeAttributes: { rowActions: this.getRowActions },
+        },
         { label: 'Available On Page Layout', fieldName: 'onPageLayout' },
         { label: 'Page Layout Name', fieldName: 'pageLayoutsString' },
         { label: '# Records have value', fieldName: 'totalUsage' },
@@ -87,17 +85,6 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
             this._pageNumbers.push(i);
         }
     }
-
-    setCountryColumns(data) {
-        if (data.countryCodes && data.countryCodes.length > 0) {
-            let columnsWithCountries = JSON.parse(JSON.stringify(this._columnsBase));
-            data.countryCodes.forEach(countryCode => {
-                    columnsWithCountries.push({ label: countryCode, fieldName: countryCode, type: 'percent', initialWidth: 80});
-                }
-            );
-            this._columns = columnsWithCountries;
-        }
-    }
     
     parseData(data, countries) {
         let parsedData = [];
@@ -112,7 +99,8 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
                 totalUsageString: '',
                 totalRecords: 0,
                 totalUsagePercentage: 0,
-                totalValueUsage: {}
+                totalValueUsage: {},
+                totalValueUsagePercentage: {}
             };
             Object.keys(field.countryUsageSummary).forEach(countryCode => {
                 if (countries && countries.length) {
@@ -146,6 +134,14 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
             fieldEntry.totalUsageString = fieldEntry.totalUsage + '';
             fieldEntry.totalRecords += field.countryUsageSummary[countryCode].totalRecords;
             fieldEntry.totalUsagePercentage = Math.floor((fieldEntry.totalUsage / fieldEntry.totalRecords)*100)+'%';
+            
+            let valueOccurences = field.countryUsageSummary[countryCode].fieldValueOccurences;
+            Object.keys(valueOccurences).forEach(value => {
+                fieldEntry.totalValueUsage[value] ? fieldEntry.totalValueUsage[value]++ : fieldEntry.totalValueUsage[value] = valueOccurences[value] || 0;
+            })
+            Object.keys(valueOccurences).forEach(value => {
+                fieldEntry.totalValueUsage[value] ? fieldEntry.totalValueUsagePercentage[value] = Math.floor((fieldEntry.totalValueUsage[value]/fieldEntry.totalUsage)*100) : 0;
+            })
         }
     }
 
@@ -174,6 +170,29 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
     handleNextClick() {
         if (this._currentPage < this._totalPages) {
             this._currentPage++;
+        }
+    }
+
+    getRowActions(row, doneCallback) {
+        const actions = [];
+        actions.push({
+            'label': 'Export Field Breakdown',
+            'iconName': 'utility:list',
+            'name': 'export_breakdown',
+            'disabled': row.type !== 'picklist'
+        });
+        doneCallback(actions);
+    }
+
+    handleRowAction(evt) {
+        const action = evt.detail.action;
+        const row = evt.detail.row;
+        switch (action.name) {
+            case 'export_breakdown':
+                this.handleExportFieldBreakdown(row);
+                break;
+            default:
+                break;
         }
     }
 
@@ -207,6 +226,68 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
             });
         }
         downloadCSVFile(headers, csvData, this.objectName + '_fields_country_detail_summary');
+    }
+
+    handleExportFieldBreakdown(row) {
+        let headers = {
+            [this._columns[1].fieldName]: this._columns[1].label,
+            value: 'Field Value',
+            valueUsage: 'Value Usage',
+            valueUsagePercentage: 'Value Usage Percentage',
+
+        };
+        let csvData = [];
+
+        
+        if (this._selectedCountries.length > 1) {
+            headers.country = 'country';
+            let fieldEntry = {};
+            this._selectedCountries.forEach(country => {
+                let countryData = this.parseData(this._rawData, [country]);
+                this.sortCalculationData(countryData);
+                fieldEntry = countryData.find(entry => entry.name === row.name);
+                Object.keys(fieldEntry.totalValueUsage).forEach(value => {
+                    csvData.push({
+                        name: row.name,
+                        value: value,
+                        valueUsage: value ? `${fieldEntry.totalValueUsage[value]}/${fieldEntry.totalUsage}` : `${fieldEntry.totalValueUsage[value]}/${fieldEntry.totalRecords}`,
+                        valueUsagePercentage: value ? `${fieldEntry.totalValueUsagePercentage[value]}%` : `${Math.floor(fieldEntry.totalValueUsage[value]/fieldEntry.totalRecords)*100}%`,
+                        country: country
+                    });
+                });
+            });
+            let countrySummaryData = this.parseData(this._rawData, this._selectedCountries);
+            this.sortCalculationData(countrySummaryData);
+            fieldEntry = countrySummaryData.find(entry => entry.name === row.name);
+            Object.keys(fieldEntry.totalValueUsage).forEach(value => {
+                if (value) {
+                    csvData.push({
+                        name: row.name,
+                        value: value,
+                        valueUsage: `${fieldEntry.totalValueUsage[value]}/${fieldEntry.totalUsage}`,
+                        valueUsagePercentage: `${fieldEntry.totalValueUsagePercentage[value]}%`,
+                        country: this._selectedCountries.join(',')
+                    });
+                }
+            });
+
+        } else {
+            const fieldEntry = this._calculationData.find(entry => entry.name === row.name);
+            if (fieldEntry.totalValueUsage) {
+                Object.keys(fieldEntry.totalValueUsage).forEach(value => {
+                    if (value) {
+                        csvData.push({
+                            name: row.name,
+                            value: value,
+                            valueUsage: `${fieldEntry.totalValueUsage[value]}/${fieldEntry.totalUsage}`,
+                            valueUsagePercentage: `${fieldEntry.totalValueUsagePercentage[value]}%`
+                        });
+                    }
+                });
+            }
+        }
+
+        downloadCSVFile(headers, csvData, `${this.objectName}_${row.name}_detail_usage_breakdown`);
     }
 
     handleFieldFilterInputChange(evt) {

@@ -37,7 +37,7 @@ function generateCsvString(headers, objArray) {
             if (row !== '') {
                 row += columnDelimiter;
             }
-            row += `${enclosingCharacter}${dataEntry[key]}${enclosingCharacter}`;
+            row += `${enclosingCharacter}${dataEntry[key]||''}${enclosingCharacter}`;
         });
         csvString += row + lineDelimiter;
     })
