@@ -34,19 +34,15 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
                 countryClause = 'AND (' + String.join(countryCriterias, ' OR ') + ')';
             }
             String query = String.format(
-                'SELECT Id, RecordType.Name, {0}, {1}, {2}, {3}, {4}, {5} FROM Account WHERE {0} != NULL AND {1} != NULL {6}', 
+                'SELECT Id, RecordType.Name, {0}, {1} FROM Account WHERE {0} != NULL AND {1} != NULL {2}', 
                 new List<String> {
                     countryField,
                     specialtyField,
-                    '(SELECT Id FROM Call2_vod__r WHERE Call_Date_vod__c >= :startDate AND Call_Date_vod__c <= :endDate LIMIT 1)',
-                    '(SELECT Id FROM MC_Cycle_Plan_Targets_vod__r WHERE Cycle_Plan_vod__r.Start_Date_vod__c >= :startDate AND Cycle_Plan_vod__r.End_Date_vod__c <= :endDate LIMIT 1)',
-                    '(SELECT Id FROM Product_Metrics_vod__r)',
-                    '(SELECT Id FROM Address_vod__r)',
                     countryClause
                 }
             );
 
-            this.builder = new VDT_MasterAnalysisCalculationBuilder(countryField, specialtyField)
+            this.builder = new VDT_MasterAnalysisCalculationBuilder(countryField, specialtyField, this.startDate, this.endDate)
             .withValidOptions(activeSpecialties)
             .initKpis(activeKpis)
             .withRecordTypesByType(accountRecordTypesByType)

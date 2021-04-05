@@ -2,6 +2,8 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
 
     private String countryField;
     private String specialtyField;
+    private Date startDate;
+    private Date endDate;
     private MasterAnalysisSummary analysisData = new MasterAnalysisSummary();
     private Map<String, List<String>> accountRecordTypesByType = null;
     Map<String, Decimal> targetByCountryAndKpi = new Map<String, Decimal>();
@@ -17,9 +19,14 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
     private final String ONEKEY_WITHOUT_CYCLE_PLAN_KPI_ID = 'Onekey_Without_cycle_plan';
     private final String ONEKEY_WITHOUT_VISIT_AND_CYCLE_PLAN_KPI_ID = 'OneKey_Without_Visit_and_Cycle_Plan';
     private final String ONEKEY_WITHOUT_ADDRESS = 'Onekey_without_address';
+    private Set<String> accountIds = new Set<String>();
+    private Map<String, Integer> addressByAccount = new Map<String, Integer>();
+    private Map<String, Integer> metricsByAccount = new Map<String, Integer>();
+    private Map<String, Integer> callsByAccount = new Map<String, Integer>();
+    private Map<String, Integer> cyclePlanTargetsByAccount = new Map<String,Integer>();
     
 
-    public VDT_MasterAnalysisCalculationBuilder(String countryField, String specialtyField) {
+    public VDT_MasterAnalysisCalculationBuilder(String countryField, String specialtyField, Date startDate, Date endDate) {
         this.countryField = countryField;
         this.specialtyField = specialtyField;
     }
@@ -56,7 +63,11 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
     }
 
     public VDT_MasterAnalysisCalculationBuilder withRecords(List<Account> records) {
+        this.accountIds.clear();
         this.records = records;
+        for (Account account : records) {
+            accountIds.add(account.Id);
+        }
         return this;
     }
 
@@ -70,30 +81,27 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
     }
 
     public VDT_MasterAnalysisCalculationBuilder calculate() {
+        this.addressByAccount = getAddressByAccount();
+        this.metricsByAccount = getMetricsByAccount();
+        this.callsByAccount = getCallsByAccount();
+        this.cyclePlanTargetsByAccount = getCyclePlanTargetsByAccount();
         for (Account acc : records) {
-            String country = null;
-            if (this.countryField.contains('.')) {
-                String relationship = this.countryField.split('\\.').get(0);
-                String relatedField = this.countryField.split('\\.').get(1);
-                country = acc.getSObject(relationship).get(relatedField).toString();
-            } else {
-                country = acc.get(this.countryField).toString();
-            }
+            String country = this.getPropertyValue(acc, this.countryField);
             String specialty = acc.get(this.specialtyField).toString();
             this.analysisData.recordTypes.add(acc.RecordType.Name);
             Boolean isExternal = accountRecordTypesByType.get(ACCOUNT_TYPE_EXTERNAL).contains(acc.RecordType.Name);            
             this.updateKpiForCountry(ONEKEY_VS_NON_ONE_KEY_KPI_ID, country, isExternal ? 1 : 0, 1);            
             if (isExternal) {
-                Boolean hasNoAddress = acc.Address_vod__r.isEmpty();
-                this.updateKpiForCountry(ONEKEY_WITHOUT_ADDRESS, country, hasNoAddress ? 1 : 0, 1);
-                Boolean hasNoVisits = acc.Call2_vod__r.isEmpty();
-                this.updateKpiForCountry(ONEKEY_WITHOUT_VISIT_KPI_ID, country, hasNoVisits ? 1 : 0, 1);
-                Boolean hasNoCyclePlanTargets = acc.MC_Cycle_Plan_Targets_vod__r.isEmpty();
-                this.updateKpiForCountry(ONEKEY_WITHOUT_CYCLE_PLAN_KPI_ID, country, hasNoCyclePlanTargets ? 1 : 0, 1);
-                Boolean hasNoVisitNorTargets = acc.Call2_vod__r.isEmpty() && acc.MC_Cycle_Plan_Targets_vod__r.isEmpty();
+                Boolean hasAddress = this.addressByAccount.containsKey(acc.Id) && this.addressByAccount.get(acc.Id) > 0;
+                this.updateKpiForCountry(ONEKEY_WITHOUT_ADDRESS, country, hasAddress ? 0 : 1, 1);
+                Boolean hasVisits = this.callsByAccount.containsKey(acc.Id) && this.callsByAccount.get(acc.id) > 0;
+                this.updateKpiForCountry(ONEKEY_WITHOUT_VISIT_KPI_ID, country, hasVisits ? 0 : 1, 1);
+                Boolean hasCyclePlanTargets = this.cyclePlanTargetsByAccount.containsKey(acc.Id) && this.cyclePlanTargetsByAccount.get(acc.id) > 0;
+                this.updateKpiForCountry(ONEKEY_WITHOUT_CYCLE_PLAN_KPI_ID, country, hasCyclePlanTargets ? 1 : 0, 1);
+                Boolean hasNoVisitNorTargets = !hasVisits && !hasCyclePlanTargets;
                 this.updateKpiForCountry(ONEKEY_WITHOUT_VISIT_AND_CYCLE_PLAN_KPI_ID, country, hasNoVisitNorTargets ? 1 : 0, 1);
-                Boolean hasNoRatings = acc.Product_Metrics_vod__r.isEmpty();
-                this.updateKpiForCountry(ONEKEY_WITHOUT_RATINGS_KPI_ID, country, hasNoRatings ? 1 : 0, 1);
+                Boolean hasRatings = this.metricsByAccount.containsKey(acc.Id) && this.metricsByAccount.get(acc.Id) > 0;
+                this.updateKpiForCountry(ONEKEY_WITHOUT_RATINGS_KPI_ID, country, hasRatings ? 0 : 1, 1);
                 Integer territory = this.accountsWithTerritories.contains(acc.Id) ? 1 : 0;
                 this.updateKpiForCountry(ONEKEY_ALIGNED_TO_TERRITORIES_KPI_ID, country, territory, 1);
             }
@@ -133,6 +141,66 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         return this;
     }
 
+    private String getPropertyValue(Account account, String fieldName) {
+        String value = '';
+        if (fieldName.contains('.')) {
+            String relationship = fieldName.split('\\.').get(0);
+            String relatedField = fieldName.split('\\.').get(1);
+            if (account.getSObject(relationship) != null) {
+                value = account.getSObject(relationship).get(relatedField).toString();
+            }
+        } else {
+            value = String.valueOf(account.get(fieldName));
+        }
+        return value;
+    }
+
+    private Map<String, Integer> getAddressByAccount() {
+        Map<String, Integer> addressByAccount = new Map<String, Integer>();
+        String query = String.format('SELECT Account_vod__c accountId, COUNT(Id) counter'
+                                    + ' FROM Address_vod__c'
+                                    + ' WHERE Account_vod__c IN :accountIds'
+                                    + ' GROUP BY Account_vod__c', new List<String>());
+        return this.getStatsByAccount(query);
+    }
+
+    private Map<String,Integer> getMetricsByAccount() {        
+        String query = String.format('SELECT Account_vod__c accountId, COUNT(Id) counter'
+                                    + ' FROM Product_Metrics_vod__c'
+                                    + ' WHERE Account_vod__c IN :accountIds'
+                                    + ' GROUP BY Account_vod__c', new List<String>());
+        return this.getStatsByAccount(query);
+    }
+
+    private Map<String,Integer> getCallsByAccount() {        
+        String query = String.format('SELECT Account_vod__c accountId, COUNT(Id) counter'
+                                    + ' FROM Call2_vod__c'
+                                    + ' WHERE Account_vod__c IN :accountIds'
+                                    + ' AND Call_Date_vod__c >= :startDate AND Call_Date_vod__c <= :endDate'
+                                    + ' GROUP BY Account_vod__c', new List<String>());
+        return this.getStatsByAccount(query);
+    }
+
+    private Map<String,Integer> getCyclePlanTargetsByAccount() {        
+        String query = String.format('SELECT Target_vod__c accountId, COUNT(Id) counter'
+                                    + ' FROM MC_Cycle_Plan_Target_vod__c'
+                                    + ' WHERE Target_vod__c IN :accountIds'
+                                    + ' AND Cycle_Plan_vod__r.Start_Date_vod__c >= :startDate AND Cycle_Plan_vod__r.End_Date_vod__c <= :endDate'
+                                    + ' GROUP BY Target_vod__c', new List<String>());
+        return this.getStatsByAccount(query);
+    }
+
+    private Map<String,Integer> getStatsByAccount(String query) {
+        Map<String, Integer> statsByAccount = new Map<String, Integer>();
+        AggregateResult[] statsCount = (AggregateResult[]) Database.query(query);
+        for (AggregateResult stat : statsCount)  {
+            String accountId = stat.get('accountId').toString();
+            Integer counter = Integer.valueOf(stat.get('counter'));
+            statsByAccount.put(accountId, counter);
+        }
+        return statsByAccount;
+    }
+
     public MasterAnalysisSummary build() {
         return this.analysisData;
     }
@@ -157,11 +225,13 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
 
     private CountryUsageSummary updateCountrySummary(Account account, CountryUsageSummary countrySummary) {
         countrySummary.totalAccounts += 1;
-        countrySummary.visitedCalled += account.Call2_vod__r.isEmpty() ? 0 : 1;
-        countrySummary.partCyclePlan += account.MC_Cycle_Plan_Targets_vod__r.isEmpty() ? 0 : 1;
-        countrySummary.notInProductMetrics += account.Product_Metrics_vod__r.isEmpty() ? 1 : 0;
-        countrySummary.noAddress += account.Address_vod__r.isEmpty() ? 1 : 0;
-        countrySummary.notPartOfCyclePlan += !account.Call2_vod__r.isEmpty() && account.MC_Cycle_Plan_Targets_vod__r.isEmpty() ? 1 : 0;
+        Boolean hasVisits = this.callsByAccount.containsKey(account.Id) && this.callsByAccount.get(account.Id) > 0;
+        countrySummary.visitedCalled += hasVisits ? 1 : 0;
+        Boolean hasCyclePlan = this.cyclePlanTargetsByAccount.containsKey(account.Id) && this.cyclePlanTargetsByAccount.get(account.Id) > 0;
+        countrySummary.partCyclePlan += hasCyclePlan ? 1 : 0;
+        countrySummary.notInProductMetrics += this.metricsByAccount.containsKey(account.Id) && this.metricsByAccount.get(account.id) > 0 ? 0 : 1;
+        countrySummary.noAddress += this.addressByAccount.containsKey(account.Id) && this.addressByAccount.get(account.Id) > 0 ? 0 : 1;
+        countrySummary.notPartOfCyclePlan += hasVisits  && !hasCyclePlan ? 1 : 0;
         countrySummary.notAlignedToTerritories += this.accountsWithTerritories.contains(account.Id) ? 0 : 1;
         return countrySummary;
     }
