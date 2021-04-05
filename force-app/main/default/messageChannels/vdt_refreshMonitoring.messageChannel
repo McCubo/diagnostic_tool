@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
-    <masterLabel>vdt_refreshMonitoring</masterLabel>
     <isExposed>true</isExposed>
+    <lightningMessageFields>
+        <description>channel used to inform about necessity of refreshing monitoring information</description>
+        <fieldName>selectedTab</fieldName>
+    </lightningMessageFields>
+    <masterLabel>vdt_refreshMonitoring</masterLabel>
 </LightningMessageChannel>
