@@ -17,16 +17,12 @@ public with sharing class VDT_ProductAdoptionBuilder {
     private final String APPROVED_DOCUMENT_STATUS_APPROVED = 'Approved_vod';
 
     public VDT_ProductAdoptionBuilder addCountriesForObjects(Map<String, String> countryFieldByObject) {
-        for (String objectName : countryFieldByObject.keySet()) {
-            this.countryFieldByObject.put(objectName, countryFieldByObject.get(objectName));
-        }
+        this.countryFieldByObject.putAll(countryFieldByObject);
         return this;
     }
 
     public VDT_ProductAdoptionBuilder addProductFieldsByObject(Map<String, String> productFieldByObject) {
-        for (String objectName : productFieldByObject.keySet()) {
-            this.productFieldByObject.put(objectName, productFieldByObject.get(objectName));
-        }
+        this.productFieldByObject.putAll(productFieldByObject);
         return this;
     }
 

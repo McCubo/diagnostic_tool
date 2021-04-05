@@ -97,7 +97,7 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
                 Boolean hasVisits = this.callsByAccount.containsKey(acc.Id) && this.callsByAccount.get(acc.id) > 0;
                 this.updateKpiForCountry(ONEKEY_WITHOUT_VISIT_KPI_ID, country, hasVisits ? 0 : 1, 1);
                 Boolean hasCyclePlanTargets = this.cyclePlanTargetsByAccount.containsKey(acc.Id) && this.cyclePlanTargetsByAccount.get(acc.id) > 0;
-                this.updateKpiForCountry(ONEKEY_WITHOUT_CYCLE_PLAN_KPI_ID, country, hasCyclePlanTargets ? 1 : 0, 1);
+                this.updateKpiForCountry(ONEKEY_WITHOUT_CYCLE_PLAN_KPI_ID, country, hasCyclePlanTargets ? 0 : 1, 1);
                 Boolean hasNoVisitNorTargets = !hasVisits && !hasCyclePlanTargets;
                 this.updateKpiForCountry(ONEKEY_WITHOUT_VISIT_AND_CYCLE_PLAN_KPI_ID, country, hasNoVisitNorTargets ? 1 : 0, 1);
                 Boolean hasRatings = this.metricsByAccount.containsKey(acc.Id) && this.metricsByAccount.get(acc.Id) > 0;

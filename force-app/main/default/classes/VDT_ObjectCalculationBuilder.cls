@@ -57,7 +57,7 @@ public inherited sharing class VDT_ObjectCalculationBuilder {
                 }
                 countryUsageSummary.totalRecords++;
                 countryUsageSummary.usagePercentage = 
-                    (Decimal.valueOf(countryUsageSummary.usageNumber) / Decimal.valueOf(countryUsageSummary.totalRecords));
+                    (Decimal.valueOf(countryUsageSummary.usageNumber) / Decimal.valueOf(countryUsageSummary.totalRecords)).setScale(2);
                 
                 if (fieldSummary.type == 'boolean') {
                     if (countryUsageSummary.fieldValueOccurences.get('true') == null) {

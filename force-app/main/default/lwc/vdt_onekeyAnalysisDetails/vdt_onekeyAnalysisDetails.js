@@ -1,4 +1,4 @@
-import { LightningElement, wire, api } from 'lwc';
+import { LightningElement, wire, api, track } from 'lwc';
 import isTerritoryManagementActive from '@salesforce/apex/VDT_MasterDataAnalysisController.isTerritoryManagementActive';
 import onekeyCountryChannel from '@salesforce/messageChannel/vdt_onekeyCountryChannel__c';
 import { subscribe, unsubscribe, APPLICATION_SCOPE, MessageContext } from 'lightning/messageService';
@@ -38,10 +38,16 @@ export default class Vdt_onekeyAnalysisDetails extends LightningElement {
     _isTerrytoryActive;
 
     _rawData = [];
+    @track
     _calculationData = []
     _recordTypes = [];
     _specialties = [];
     _subscription = null;
+
+    _recordsPerPage = 10;
+    _totalPages = 1;
+    _currentPage = 1;
+    _pageNumbers = [];
 
     @wire(MessageContext)
     messageContext;
@@ -60,6 +66,24 @@ export default class Vdt_onekeyAnalysisDetails extends LightningElement {
             return { label: recordType, value: recordType };
         });
         this._calculationData = this.parseData(data);
+        this.initializePaginator();
+    }
+
+    initializePaginator() {
+        this._totalPages = Math.ceil(this._calculationData.length / this._recordsPerPage);
+        this._pageNumbers = [];
+        this._currentPage = 1;
+        for (let i = 1; i <= this._totalPages; i++) {
+            this._pageNumbers.push(i);
+        }
+    }
+    
+    get _currentOffset() {
+        return (this._currentPage - 1) * this._recordsPerPage;
+    }
+
+    get _currentPageData() {
+        return this._calculationData.slice(this._currentOffset, this._currentPage * this._recordsPerPage);
     }
 
     parseData(data) {
@@ -145,10 +169,28 @@ export default class Vdt_onekeyAnalysisDetails extends LightningElement {
     handleSpecialityChange(evt) {
         this._specialties = evt.detail;
         this._calculationData = this.parseData(JSON.parse(this._rawData));
+        this.initializePaginator();
     }
 
     handleRecordTypeChange(evt) {
         this._recordTypes = evt.detail;
         this._calculationData = this.parseData(JSON.parse(this._rawData));
+        this.initializePaginator();
+    }
+
+    handlePreviousClick() {
+        if (this._currentPage > 1) {
+            this._currentPage--;
+        }
+    }
+    
+    handlePageClick(event) {
+        this._currentPage = event.detail;
+    }
+
+    handleNextClick() {
+        if (this._currentPage < this._totalPages) {
+            this._currentPage++;
+        }
     }
 }
