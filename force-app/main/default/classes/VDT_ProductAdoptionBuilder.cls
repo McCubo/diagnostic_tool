@@ -168,6 +168,9 @@ public with sharing class VDT_ProductAdoptionBuilder {
     private void addValueToProductAndCountry(Map<String, Map<String, Integer>> genericMap, AggregateResult aggregateResult) {
         String productId = aggregateResult.get('productid').toString();
         String country = aggregateResult.get('countryname').toString();
+        if (String.isBlank(country)) {
+            return;
+        }
         Integer counter = Integer.valueOf(aggregateResult.get('counter'));
         this.countries.add(country);
         if (genericMap.containsKey(productId)) {

@@ -148,6 +148,7 @@ export default class Vdt_onekeyAnalysisDetails extends LightningElement {
         if (message.countries) {
             this.countries = message.countries;
             this._calculationData = this.parseData(JSON.parse(this._rawData));
+            this.initializePaginator();
         }
     }
 

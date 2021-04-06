@@ -32,6 +32,11 @@ export default class Vdt_productAdoptionTable extends LightningElement {
     @api
     internationalCountry;
 
+    _recordsPerPage = 10;
+    _totalPages = 1;
+    _currentPage = 1;
+    _pageNumbers = [];
+
     _subscription = null;
 
     @api
@@ -46,6 +51,24 @@ export default class Vdt_productAdoptionTable extends LightningElement {
             return { label: productType, value: productType };
         });
         this._calculationData = this.parseData(data);
+        this.initializePaginator();
+    }
+
+    initializePaginator() {
+        this._totalPages = Math.ceil(this._calculationData.length / this._recordsPerPage);
+        this._pageNumbers = [];
+        this._currentPage = 1;
+        for (let i = 1; i <= this._totalPages; i++) {
+            this._pageNumbers.push(i);
+        }
+    }
+
+    get _currentOffset() {
+        return (this._currentPage - 1) * this._recordsPerPage;
+    }
+
+    get _currentPageData() {
+        return this._calculationData.slice(this._currentOffset, this._currentPage * this._recordsPerPage);
     }
 
     handleExportCSV() {
@@ -57,6 +80,7 @@ export default class Vdt_productAdoptionTable extends LightningElement {
     handleProductTypeChange(event) {
         this._selectedProductTypes = event.detail;
         this._calculationData = this.parseData(JSON.parse(this._rawData));
+        this.initializePaginator();
     }
 
     connectedCallback() {
@@ -78,6 +102,7 @@ export default class Vdt_productAdoptionTable extends LightningElement {
         if (message.countries) {
             this.countries = message.countries;
             this._calculationData = this.parseData(JSON.parse(this._rawData));
+            this.initializePaginator();
         }
     }
 
@@ -125,5 +150,21 @@ export default class Vdt_productAdoptionTable extends LightningElement {
 
         });
         return parsedData;
+    }
+
+    handlePreviousClick() {
+        if (this._currentPage > 1) {
+            this._currentPage--;
+        }
+    }
+    
+    handlePageClick(event) {
+        this._currentPage = event.detail;
+    }
+
+    handleNextClick() {
+        if (this._currentPage < this._totalPages) {
+            this._currentPage++;
+        }
     }
 }
