@@ -1,5 +1,5 @@
 <template>
-    <lightning-accordion class="example-accordion" allow-multiple-sections-open>
+    <lightning-accordion class="accordion" allow-multiple-sections-open>
         <lightning-accordion-section name="product_hierarchy" label="Product Hierarchy">
             <lightning-layout multiple-rows>
                 <lightning-layout-item size="4" class="slds-m-left_medium">
@@ -11,6 +11,15 @@
                         onoptionselect={handleProductTypeChange}
                     ></c-vdt_autocomplete-input>
                 </lightning-layout-item>
+                <lightning-layout-item size="4" class="slds-m-left_medium">
+                    <c-vdt_autocomplete-input
+                        multiselect
+                        label="Product Status"
+                        placeholder="Select Product Status"
+                        options={_productStatusOptions}
+                        onoptionselect={handleProductStatusChange}
+                    ></c-vdt_autocomplete-input>
+                </lightning-layout-item>                
                 <lightning-layout-item size="12">
                     <lightning-tree items={treeData}></lightning-tree>
                 </lightning-layout-item>

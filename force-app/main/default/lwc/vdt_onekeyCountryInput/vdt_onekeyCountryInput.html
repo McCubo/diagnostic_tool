@@ -5,35 +5,18 @@
                     <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
                 </template>
                 <lightning-layout>
-                    <template if:true={isTextField}>
-                        <lightning-layout-item size="1">
-                            <lightning-helptext content={textHelp}></lightning-helptext>
-                        </lightning-layout-item>
-                    </template>
                     <lightning-layout-item size="11">
                         <p class="input-label">Country</p>
                     </lightning-layout-item>
                 </lightning-layout>
-                <template if:true={isPicklistField}>
-                    <c-vdt_autocomplete-input
-                        multiselect
-                        placeholder="Select Country"
-                        class="validate"
-                        options={_countryCodeOptions}
-                        onoptionselect={handleCountryOptionSelect}
-                        disabled={disabled}
-                    ></c-vdt_autocomplete-input>
-                </template>
-                <template if:true={isTextField}>
-                    <lightning-input 
-                        type="text" 
-                        onchange={handleCountryTextChange} 
-                        placeholder="Type Country Name" 
-                        variant="label-hidden"
-                        autocomplete="off"
-                        disabled={disabled}
-                    ></lightning-input>
-                </template>
+                <c-vdt_autocomplete-input
+                    multiselect
+                    placeholder="Select Country"
+                    class="validate"
+                    options={_countryCodeOptions}
+                    onoptionselect={handleCountryOptionSelect}
+                    disabled={disabled}
+                ></c-vdt_autocomplete-input>
         </lightning-layout-item>
     </lightning-layout>
 </template>

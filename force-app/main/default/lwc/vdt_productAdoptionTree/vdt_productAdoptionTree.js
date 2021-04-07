@@ -14,16 +14,21 @@ export default class Vdt_productAdoptionTree extends LightningElement {
     _subscription = null;
 
     _productTypeOptions = [];
+    _productStatusOptions = [];
     treeData = [];
     _rawData = [];
     _selectedProductTypes = [];
+    _selectedProductStatuses = [];
     
     connectedCallback() {
         getProductCatalogTree()
         .then(response => {
             this._productTypeOptions = [... new Set(response.productTypes)].map(productType => {
                 return {label: productType, value: productType };
-            });            
+            });
+            this._productStatusOptions = [... new Set(response.productStatuses)].map(productStatus => {
+                return {label: productStatus, value: productStatus };
+            })
             this._rawData = JSON.stringify(response.treeItems);
             this.treeData = this.filterTreeData(JSON.parse(this._rawData));
         }).catch(error => {
@@ -64,22 +69,27 @@ export default class Vdt_productAdoptionTree extends LightningElement {
         this.treeData = this.filterTreeData(JSON.parse(this._rawData));
     }
 
+    handleProductStatusChange(event) {
+        this._selectedProductStatuses = event.detail;
+        this.treeData = this.filterTreeData(JSON.parse(this._rawData));
+    }
+
     filterTreeData(data) {
         let filtered = data.filter((recordRow) => {
+            let meetCriteria = true;
             if (recordRow.items && recordRow.items.length > 0) {
                 recordRow.items = this.filterTreeData(recordRow.items);
             }
-            if (this._selectedProductTypes.length > 0 && this.countries.length > 0) {
-                return this._selectedProductTypes.includes(recordRow.type) && this.countries.includes(recordRow.country);
-            } else if (this._selectedProductTypes.length == 0 && this.countries.length == 0) {
-                return true;
-            } else if (this._selectedProductTypes.length > 0) {
-                return this._selectedProductTypes.includes(recordRow.type)
-            } else if (this.countries.length > 0) {
-                return this.countries.includes(recordRow.country);
-            } else {
-                return false;
+            if (this._selectedProductTypes.length > 0) {
+                meetCriteria &= this._selectedProductTypes.includes(recordRow.type);
+            } 
+            if (this.countries.length > 0) {
+                meetCriteria &= this.countries.includes(recordRow.country);
+            } 
+            if (this._selectedProductStatuses.length > 0) {
+                meetCriteria &=  this._selectedProductStatuses.includes(recordRow.status);
             }
+            return meetCriteria;
         });
         return filtered;
     }
