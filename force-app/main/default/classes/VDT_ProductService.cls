@@ -1,18 +1,23 @@
 public with sharing class VDT_ProductService {
 
+    private static String statusField;
+
     public static ProductAdoptionData getProductTreeInformation() {
         ProductAdoptionData productAdoption = new ProductAdoptionData();
         String productCountry = VDT_CustomMetadataService.getCountryFieldForObject('Product_vod__c');
+        statusField = VDT_CustomMetadataService.getFieldNameForCustomObject('PRODUCT_VOD_STATUS');
         List<Product_vod__c> products = new VDT_ProductSelector()
                                         .withAdditionalFields(new List<String> {
                                             Product_vod__c.Parent_Product_vod__c.getDescribe().getName(),
-                                            productCountry
+                                            productCountry,
+                                            statusField
                                         })
                                         .query();
 
         Map<Id, List<Product_vod__c>> childProductsByParent = new Map<Id, List<Product_vod__c>>();        
         for (Product_vod__c product : products) {
             productAdoption.productTypes.add(product.Product_Type_vod__c);
+            productAdoption.productStatuses.add(getProductProperty(product, statusField));
             if (String.isNotBlank(product.Parent_Product_vod__c)) {
                 if (childProductsByParent.containsKey(product.Parent_Product_vod__c)) {
                     childProductsByParent.get(product.Parent_Product_vod__c).add(product);
@@ -28,8 +33,9 @@ public with sharing class VDT_ProductService {
     private static List<ProductCatalogTreeItem> getProductCatalogTree(List<Product_vod__c> products, Map<Id, List<Product_vod__c>> childProductsByParent, String productCountry, Boolean isRootNode) {
         List<ProductCatalogTreeItem> productCatalogTree = new List<ProductCatalogTreeItem>();
         for (Product_vod__c product : products) {
-            String country = getCountryValue(product, productCountry);
-            ProductCatalogTreeItem productTreeItem = new ProductCatalogTreeItem(product.Name, product.Id, product.Product_Type_vod__c, country).setMetatext();
+            String country = getProductProperty(product, productCountry);
+            String status = getProductProperty(product, statusField);
+            ProductCatalogTreeItem productTreeItem = new ProductCatalogTreeItem(product.Name, product.Id, product.Product_Type_vod__c, country, status);
             if (childProductsByParent.containsKey(product.Id)) {
                 List<Product_vod__c> childProducts = childProductsByParent.get(product.Id);
                 productTreeItem.items = getProductCatalogTree(childProducts, childProductsByParent, productCountry, false);
@@ -41,23 +47,25 @@ public with sharing class VDT_ProductService {
         return productCatalogTree;
     }
 
-    private static String getCountryValue(Product_vod__c product, String countryField) {
-        String country = '';
-        if (countryField.contains('.')) {
-            String relationship = countryField.split('\\.').get(0);
-            String relatedField = countryField.split('\\.').get(1);
+    private static String getProductProperty(Product_vod__c product, String fieldAPI) {
+        String value = '';
+        if (fieldAPI.contains('.')) {
+            String relationship = fieldAPI.split('\\.').get(0);
+            String relatedField = fieldAPI.split('\\.').get(1);
             if (product.getSObject(relationship) != null) {
-                country = product.getSObject(relationship).get(relatedField).toString();
+                value = product.getSObject(relationship).get(relatedField).toString();
             }
         } else {
-            country = String.valueOf(product.get(countryField));
+            value = String.valueOf(product.get(fieldAPI));
         }
-        return country;
+        return value;
     }
     public class ProductAdoptionData {
 
         @AuraEnabled
         public List<String> productTypes = new List<String>();
+        @AuraEnabled
+        public List<String> productStatuses = new List<String>();
         @AuraEnabled
         public List<ProductCatalogTreeItem> treeItems = new List<ProductCatalogTreeItem>();
 
@@ -65,11 +73,13 @@ public with sharing class VDT_ProductService {
 
     public class ProductCatalogTreeItem {
 
-        public ProductCatalogTreeItem(String label, String name, String type, String country) {
+        public ProductCatalogTreeItem(String label, String name, String type, String country, String status) {
             this.label = label;
             this.name = name;
             this.type = type;
             this.country = country;
+            this.status = status;
+            this.setMetatext();
         }
 
         @AuraEnabled
@@ -85,11 +95,12 @@ public with sharing class VDT_ProductService {
         @AuraEnabled
         public String metatext;
         @AuraEnabled
+        public String status;
+        @AuraEnabled
         public List<ProductCatalogTreeItem> items = new List<ProductCatalogTreeItem>();        
 
-        public ProductCatalogTreeItem setMetatext() {
-            this.metatext = String.format('Product Type: {0} | Country: {1}', new List<String> { this.type, this.country });
-            return this;
+        public void setMetatext() {
+            this.metatext = String.format('Product Type: {0} | Country: {1} | Status: {2}', new List<String> { this.type, this.country, this.status });
         }
     }
 }

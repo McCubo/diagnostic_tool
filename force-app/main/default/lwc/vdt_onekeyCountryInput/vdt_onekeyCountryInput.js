@@ -21,8 +21,7 @@ export default class Vdt_onekeyCountryInput extends LightningElement {
     getAccountCountryFieldTypeCallback() {
         getAccountCountryFieldType()
         .then(response => {
-            this._fieldType = response;            
-            console.log('response: %O', response);
+            this._fieldType = response;
             if (response == 'PICKLIST') {
                 getCountryOptions()
                 .then(countryOptions => {

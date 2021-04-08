@@ -3,6 +3,7 @@ public inherited sharing class VDT_CustomMetadataService {
     public static final String VDT_GENERAL_SETTINGS = 'VDT_General_Setting__mdt';
     public static final String VDT_COUNTRY_FIELD_MAPPING = 'VDT_Object_Country_Field_Mapping__mdt';
     public static final String VDT_PRODUCT_FIELD_MAPPING = 'VDT_Object_Product_Field_Mapping__mdt';
+    public static final String VDT_CUSTOM_OBJECT_FIELD_MAPPING = 'VDT_Custom_Objects_Field_Mapping__mdt';
     public static final String VDT_KPI_CONFIGURATIONS = 'VDT_KPI_Configuration__mdt';
     public static final String VDT_KPI_BY_COUNTRY_CONFIGURATIONS = 'VDT_KPI_by_Country__mdt';    
     public static final String VDT_ACCOUNT_RECORD_TYPE_CONFIGURATIONS = 'VDT_Account_Record_Type_Mapping__mdt';    
@@ -10,18 +11,37 @@ public inherited sharing class VDT_CustomMetadataService {
     @TestVisible
     private static Map<String, List<SObject>> customMetadataWithRecords = new Map<String, List<SObject>>();
 
+    public static String getFieldNameForCustomObject(String mappingName) {
+        String fieldName;
+        List<VDT_Custom_Objects_Field_Mapping__mdt> objectFieldMappings;       
+        objectFieldMappings = [
+            SELECT  Id,
+                    Field_API_Name__c
+            FROM    VDT_Custom_Objects_Field_Mapping__mdt
+            WHERE   DeveloperName = :mappingName
+            WITH    SECURITY_ENFORCED
+        ];
+        if (customMetadataWithRecords.containsKey(VDT_CUSTOM_OBJECT_FIELD_MAPPING)) {
+            objectFieldMappings = customMetadataWithRecords.get(VDT_CUSTOM_OBJECT_FIELD_MAPPING);
+        }
+
+        if (!objectFieldMappings.isEmpty()) {
+            fieldName = objectFieldMappings[0].Field_API_Name__c;
+        }        
+        return fieldName;
+    }
+
     public static String getProductFieldForObject(String objectName) {
         String productField;
         List<VDT_Object_Product_Field_Mapping__mdt> productFieldMappings;
-        if (!customMetadataWithRecords.containsKey(VDT_COUNTRY_FIELD_MAPPING)) {        
-            productFieldMappings = [
-                SELECT  Id,
-                        Product_Field_Reference__c
-                FROM    VDT_Object_Product_Field_Mapping__mdt
-                WHERE   MasterLabel = :objectName
-                WITH    SECURITY_ENFORCED
-            ];
-        } else {
+        productFieldMappings = [
+            SELECT  Id,
+                    Product_Field_Reference__c
+            FROM    VDT_Object_Product_Field_Mapping__mdt
+            WHERE   MasterLabel = :objectName
+            WITH    SECURITY_ENFORCED
+        ];
+        if (customMetadataWithRecords.containsKey(VDT_PRODUCT_FIELD_MAPPING)) {
             productFieldMappings = customMetadataWithRecords.get(VDT_PRODUCT_FIELD_MAPPING);
         }
 
@@ -35,17 +55,15 @@ public inherited sharing class VDT_CustomMetadataService {
     public static List<VDT_OptionWrapper> getDefaultCountries() {
         List<VDT_OptionWrapper> options = new List<VDT_OptionWrapper>();
         List<VDT_General_Setting__mdt> defaultSettings;
-        if (!customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {
-            defaultSettings = [
-                SELECT  VDT_Default_Countries__c
-                FROM    VDT_General_Setting__mdt
-                WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
-                WITH    SECURITY_ENFORCED
-            ];
-        } else {
+        defaultSettings = [
+            SELECT  VDT_Default_Countries__c
+            FROM    VDT_General_Setting__mdt
+            WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
+            WITH    SECURITY_ENFORCED
+        ];
+        if (customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {
             defaultSettings = customMetadataWithRecords.get(VDT_GENERAL_SETTINGS);
         }
-
         if (!defaultSettings.isEmpty()) {
             String countriesCsv = defaultSettings[0].VDT_Default_Countries__c;
             for (String countryCode : countriesCsv.split(',')) {
@@ -58,14 +76,14 @@ public inherited sharing class VDT_CustomMetadataService {
     public static String getInternationalCountryValue() {
         String intCountryVal;
         List<VDT_General_Setting__mdt> defaultSettings;
-        if (!customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {        
-            defaultSettings = [
-                SELECT  International_Country__c
-                FROM    VDT_General_Setting__mdt
-                WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
-                WITH    SECURITY_ENFORCED
-            ];
-        } else {
+        
+        defaultSettings = [
+            SELECT  International_Country__c
+            FROM    VDT_General_Setting__mdt
+            WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
+            WITH    SECURITY_ENFORCED
+        ];
+        if (customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {
             defaultSettings = customMetadataWithRecords.get(VDT_GENERAL_SETTINGS);
         }
 
@@ -77,15 +95,14 @@ public inherited sharing class VDT_CustomMetadataService {
 
     public static Boolean isTerritoryManagementActive() {
         Boolean isActive = false;
-        List<VDT_General_Setting__mdt> defaultSettings;
-        if (!customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {        
-            defaultSettings = [
-                SELECT  VDT_Is_Territory_Management_Active__c
-                FROM    VDT_General_Setting__mdt
-                WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
-                WITH    SECURITY_ENFORCED
-            ];
-        } else {
+        List<VDT_General_Setting__mdt> defaultSettings;        
+        defaultSettings = [
+            SELECT  VDT_Is_Territory_Management_Active__c
+            FROM    VDT_General_Setting__mdt
+            WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
+            WITH    SECURITY_ENFORCED
+        ];
+        if (customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {
             defaultSettings = customMetadataWithRecords.get(VDT_GENERAL_SETTINGS);
         }
 
@@ -96,16 +113,15 @@ public inherited sharing class VDT_CustomMetadataService {
     }
 
     public static List<VDT_KPI_Configuration__mdt> getActiveKpiConfigurations() {
-        List<VDT_KPI_Configuration__mdt> configurations = new List<VDT_KPI_Configuration__mdt>();
-        if (!customMetadataWithRecords.containsKey(VDT_KPI_CONFIGURATIONS)) {        
-            configurations = [
-                SELECT  VDT_Display_Order__c, DeveloperName, VDT_Type__c, Description__c, VDT_Formula_Text__c, VDT_Help_Text__c, VDT_Default_Target__c
-                FROM    VDT_KPI_Configuration__mdt
-                WHERE   VDT_Is_Active__c = TRUE                
-                WITH    SECURITY_ENFORCED
-                ORDER BY VDT_Display_Order__c DESC
-            ];
-        } else {
+        List<VDT_KPI_Configuration__mdt> configurations = new List<VDT_KPI_Configuration__mdt>();        
+        configurations = [
+            SELECT  VDT_Display_Order__c, DeveloperName, VDT_Type__c, Description__c, VDT_Formula_Text__c, VDT_Help_Text__c, VDT_Default_Target__c
+            FROM    VDT_KPI_Configuration__mdt
+            WHERE   VDT_Is_Active__c = TRUE                
+            WITH    SECURITY_ENFORCED
+            ORDER BY VDT_Display_Order__c DESC
+        ];
+        if (customMetadataWithRecords.containsKey(VDT_KPI_CONFIGURATIONS)) {
             configurations = customMetadataWithRecords.get(VDT_KPI_CONFIGURATIONS);
         }
         return configurations;
@@ -113,13 +129,12 @@ public inherited sharing class VDT_CustomMetadataService {
 
     public static Map<String, Decimal> getCountryKpiConfigurations() {
         List<VDT_KPI_by_Country__mdt> configurations = new List<VDT_KPI_by_Country__mdt>();
-        if (!customMetadataWithRecords.containsKey(VDT_KPI_BY_COUNTRY_CONFIGURATIONS)) {        
-            configurations = [
-                SELECT  VDT_Country__c, VDT_KPI_Configuration__r.DeveloperName, VDT_Target__c
-                FROM    VDT_KPI_by_Country__mdt
-                WITH    SECURITY_ENFORCED
-            ];
-        } else {
+        configurations = [
+            SELECT  VDT_Country__c, VDT_KPI_Configuration__r.DeveloperName, VDT_Target__c
+            FROM    VDT_KPI_by_Country__mdt
+            WITH    SECURITY_ENFORCED
+        ];
+        if (customMetadataWithRecords.containsKey(VDT_KPI_BY_COUNTRY_CONFIGURATIONS)) {
             configurations = customMetadataWithRecords.get(VDT_KPI_BY_COUNTRY_CONFIGURATIONS);
         }
         Map<String, Decimal> targetByCountryAndKpi = new Map<String, Decimal>();
@@ -131,13 +146,12 @@ public inherited sharing class VDT_CustomMetadataService {
 
     public static Map<String, List<String>> getAccountRecordTypesByType() {
         List<VDT_Account_Record_Type_Mapping__mdt> recordTypeConfigurations = new List<VDT_Account_Record_Type_Mapping__mdt>();
-        if (!customMetadataWithRecords.containsKey(VDT_ACCOUNT_RECORD_TYPE_CONFIGURATIONS)) {        
-            recordTypeConfigurations = [
-                SELECT  DeveloperName, Account_Record_Types__c
-                FROM    VDT_Account_Record_Type_Mapping__mdt
-                WITH    SECURITY_ENFORCED
-            ];
-        } else {
+        recordTypeConfigurations = [
+            SELECT  DeveloperName, Account_Record_Types__c
+            FROM    VDT_Account_Record_Type_Mapping__mdt
+            WITH    SECURITY_ENFORCED
+        ];
+        if (customMetadataWithRecords.containsKey(VDT_ACCOUNT_RECORD_TYPE_CONFIGURATIONS)) {
             recordTypeConfigurations = customMetadataWithRecords.get(VDT_ACCOUNT_RECORD_TYPE_CONFIGURATIONS);
         }
         Map<String, List<String>> accountRecordTypesByType = new Map<String, List<String>>();
@@ -174,14 +188,13 @@ public inherited sharing class VDT_CustomMetadataService {
     public static String getAccountSpecialtyField() {
         String specialtyField;
         List<VDT_General_Setting__mdt> defaultSettings;
-        if (!customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {        
-            defaultSettings = [
-                SELECT  VDT_Default_Specialty_Field__c
-                FROM    VDT_General_Setting__mdt
-                WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
-                WITH    SECURITY_ENFORCED
-            ];
-        } else {
+        defaultSettings = [
+            SELECT  VDT_Default_Specialty_Field__c
+            FROM    VDT_General_Setting__mdt
+            WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
+            WITH    SECURITY_ENFORCED
+        ];
+        if (customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {
             defaultSettings = customMetadataWithRecords.get(VDT_GENERAL_SETTINGS);
         }
 
@@ -216,15 +229,14 @@ public inherited sharing class VDT_CustomMetadataService {
     public static Integer getBatchSizeForObject(String objectName) {
         Integer batchSize;
         List<VDT_Object_Batch_Size_Mapping__mdt> batchSizeMappings;
-        if (!customMetadataWithRecords.containsKey(VDT_BATCH_SIZE_MAPPING)) {        
-            batchSizeMappings = [
-                SELECT  Id,
-                        Batch_Size__c
-                FROM    VDT_Object_Batch_Size_Mapping__mdt
-                WHERE   MasterLabel = :objectName
-                WITH    SECURITY_ENFORCED
-            ];
-        } else {
+        batchSizeMappings = [
+            SELECT  Id,
+                    Batch_Size__c
+            FROM    VDT_Object_Batch_Size_Mapping__mdt
+            WHERE   MasterLabel = :objectName
+            WITH    SECURITY_ENFORCED
+        ];
+        if (customMetadataWithRecords.containsKey(VDT_BATCH_SIZE_MAPPING)) {
             batchSizeMappings = customMetadataWithRecords.get(VDT_BATCH_SIZE_MAPPING);
         }
 
@@ -241,18 +253,17 @@ public inherited sharing class VDT_CustomMetadataService {
         Integer batchSize;
 
         List<VDT_General_Setting__mdt> defaultSettings;
-        if (!customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {        
-            defaultSettings = [
-                SELECT  Batch_Size__c
-                FROM    VDT_General_Setting__mdt
-                WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
-                WITH    SECURITY_ENFORCED
-            ];
-        } else {
+        defaultSettings = [
+            SELECT  Batch_Size__c
+            FROM    VDT_General_Setting__mdt
+            WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
+            WITH    SECURITY_ENFORCED
+        ];
+        if (customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {
             defaultSettings = customMetadataWithRecords.get(VDT_GENERAL_SETTINGS);
         }
 
-        if (defaultSettings.isEmpty() == false) {
+        if (!defaultSettings.isEmpty()) {
             batchSize = Integer.valueOf(defaultSettings[0].Batch_Size__c);
         }
 
@@ -349,18 +360,17 @@ public inherited sharing class VDT_CustomMetadataService {
     public static Decimal getDailyAsyncExecutionAllocation() {
         Decimal allocation;
 
-        List<VDT_General_Setting__mdt> defaultSettings;
-        if (!customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {        
-            defaultSettings = [
-                SELECT  Apex_Async_Execution_Daily_Allocation__c
-                FROM    VDT_General_Setting__mdt
-                WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
-                WITH    SECURITY_ENFORCED
-            ]; 
-        } else {
+        List<VDT_General_Setting__mdt> defaultSettings;        
+        defaultSettings = [
+            SELECT  Apex_Async_Execution_Daily_Allocation__c
+            FROM    VDT_General_Setting__mdt
+            WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
+            WITH    SECURITY_ENFORCED
+        ]; 
+        if (customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {
             defaultSettings = customMetadataWithRecords.get(VDT_GENERAL_SETTINGS);
         }
-        if (defaultSettings.isEmpty() == false) {
+        if (!defaultSettings.isEmpty()) {
             allocation = defaultSettings[0].Apex_Async_Execution_Daily_Allocation__c;
         }
 
