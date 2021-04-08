@@ -25,6 +25,7 @@ public inherited sharing class VDT_VeevaUsersController {
         return wrappers;
     }
 
+    @TestVisible
     private class UserWrapper {
         @AuraEnabled public String id;
         @AuraEnabled public String name;
