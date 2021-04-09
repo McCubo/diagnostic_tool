@@ -79,26 +79,12 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
             this.dataCalculationRecord.VDT_Calculation_Date__c = Date.today();
             update this.dataCalculationRecord;
 
-            Attachment currentAttachment = VDT_AttachmentService.getAttachmentForRecord(
+            VDT_AttachmentService.createAttachmentForRecord(
+                JSON.serialize(this.builder.build()), 
                 VDT_DataCalculationService.MASTER_DATA_ANALYSIS_SUMMARY_FILE_NAME,
-                VDT_AttachmentService.JSON_FORMAT, 
+                VDT_AttachmentService.JSON_FORMAT,
                 this.dataCalculationRecord.Id
             );
-            if (currentAttachment == null) {
-                VDT_AttachmentService.createAttachmentForRecord(
-                    JSON.serialize(this.builder.build()), 
-                    VDT_DataCalculationService.MASTER_DATA_ANALYSIS_SUMMARY_FILE_NAME,
-                    VDT_AttachmentService.JSON_FORMAT,
-                    this.dataCalculationRecord.Id
-                );
-            } else {
-                VDT_AttachmentService.updateAttachmentForRecord(
-                    JSON.serialize(this.builder.build()), 
-                    VDT_DataCalculationService.MASTER_DATA_ANALYSIS_SUMMARY_FILE_NAME,
-                    VDT_AttachmentService.JSON_FORMAT,
-                    this.dataCalculationRecord.Id
-                );
-            }
             VDT_EmailService.sendMasterAnalysisCalculationFinishedEmailNotification(this.dataCalculationRecord.VDT_Country__c);
         } catch (Exception e) {
             VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);

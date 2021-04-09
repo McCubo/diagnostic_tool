@@ -103,7 +103,7 @@ public inherited sharing class VDT_ObjectService {
         
         List<Schema.sObjectType> references = describeResult.fields.getMap().get(fieldApiName).getDescribe().getReferenceTo();
         
-        if (references.get(0).getDescribe().isAccessible()) {
+        if (!references.isEmpty() && references.get(0).getDescribe().isAccessible()) {
             String sobjectName = references.get(0).getDescribe().getName();
             String query = String.format('SELECT Name FROM {0} WITH SECURITY_ENFORCED', new List<String>{ sobjectName });
             for (SObject obj : Database.query(query)) {

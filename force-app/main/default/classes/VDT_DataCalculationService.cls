@@ -144,7 +144,7 @@ public inherited sharing class VDT_DataCalculationService {
         List<VDT_Data_Calculation__c> calculations = new VDT_DataCalculationSelector().withLimit(1).getByAnalysisCalculationParameters(searchParameters);
         
         DataCalculation calculation = new DataCalculation();
-        if (calculations.isEmpty() == false) {
+        if (!calculations.isEmpty()) {
             calculation.status = calculations[0].Status__c;
             calculation.calculationDate = String.valueOf(calculations[0].VDT_Calculation_Date__c);
             Attachment att = VDT_AttachmentService.getAttachmentForRecord(

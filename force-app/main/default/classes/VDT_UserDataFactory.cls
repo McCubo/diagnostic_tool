@@ -8,7 +8,8 @@ public with sharing class VDT_UserDataFactory {
             LocaleSidKey = 'en_US',
             TimeZoneSidKey = 'GMT',
             EmailEncodingKey = 'UTF-8',
-            LanguageLocaleKey = 'en_US'
+            LanguageLocaleKey = 'en_US',
+            Country = 'DE'
         );
     }    
 

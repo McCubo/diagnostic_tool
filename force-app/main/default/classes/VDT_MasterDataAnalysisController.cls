@@ -76,12 +76,6 @@ public inherited sharing class VDT_MasterDataAnalysisController {
 
     @AuraEnabled(cacheable=true)
     public static Boolean isTerritoryManagementActive(){
-        try {
-            return VDT_CustomMetadataService.isTerritoryManagementActive();
-        } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
-        }
+        return VDT_CustomMetadataService.isTerritoryManagementActive();
     }
 }

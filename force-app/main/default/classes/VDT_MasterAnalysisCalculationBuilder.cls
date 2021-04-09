@@ -137,10 +137,6 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         return this;
     }
 
-    public VDT_MasterAnalysisCalculationBuilder calculateKpiInformation() {
-        return this;
-    }
-
     private String getPropertyValue(Account account, String fieldName) {
         String value = '';
         if (fieldName.contains('.')) {
