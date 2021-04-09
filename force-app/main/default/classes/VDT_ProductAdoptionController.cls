@@ -84,24 +84,12 @@ public inherited sharing class VDT_ProductAdoptionController {
     }
 
     @AuraEnabled
-    public static List<VDT_OptionWrapper> getCountryCodeFromProductSetup(){
-        try {
-            return VDT_CustomMetadataService.getDefaultCountries();
-        } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
-        }
+    public static List<VDT_OptionWrapper> getCountryCodeFromProductSetup() {
+        return VDT_CustomMetadataService.getDefaultCountries();
     }
 
     @AuraEnabled(cacheable=true)
-    public static String getInternationalCountryValue(){
-        try {
-            return VDT_CustomMetadataService.getInternationalCountryValue();
-        } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
-        }
+    public static String getInternationalCountryValue() {
+        return VDT_CustomMetadataService.getInternationalCountryValue();
     }
 }

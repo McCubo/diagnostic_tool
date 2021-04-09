@@ -23,8 +23,8 @@ public with sharing class VDT_ProductSelector {
         return 'Product_vod__c';
     }
 
-    public List<String> getFieldList() {
-        return new List<String>{
+    public Set<String> getFieldList() {
+        return new Set<String> {
             Product_vod__c.Id.getDescribe().getName(),
             Product_vod__c.Name.getDescribe().getName(),
             Product_vod__c.Product_Type_vod__c.getDescribe().getName()
@@ -32,11 +32,11 @@ public with sharing class VDT_ProductSelector {
     }
 
     public String getFieldListString() {
-        List<String> fields = this.getFieldList();
+        Set<String> fields = this.getFieldList();
         if (!this.additionalFields.isEmpty()) {
             fields.addAll(this.additionalFields);
         }
-        return String.join(fields, ',');
+        return String.join(new List<String>(fields), ',');
     }
     
     public String getLimitString() {
