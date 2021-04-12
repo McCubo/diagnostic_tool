@@ -52,10 +52,8 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
             update this.dataCalculationRecord;
             return Database.getQueryLocator(query);
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            VDT_DataCalculationService.sendStatusUpdateEvent(this.dataCalculationRecord.Id, VDT_DataCalculationService.STATUS_ERROR);
-            throw e;
+            handleException(e, this.dataCalculationRecord.Id);
+            return null;
         }
     }
 
@@ -65,10 +63,7 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
             update this.dataCalculationRecord;
             this.builder.withRecords(records).withTerritories().calculate();
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            VDT_DataCalculationService.sendStatusUpdateEvent(this.dataCalculationRecord.Id, VDT_DataCalculationService.STATUS_ERROR);
-            throw e;
+            handleException(e, this.dataCalculationRecord.Id);
         }
     }
 
@@ -87,11 +82,14 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
             );
             VDT_EmailService.sendMasterAnalysisCalculationFinishedEmailNotification(this.dataCalculationRecord.VDT_Country__c);
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            VDT_DataCalculationService.sendStatusUpdateEvent(this.dataCalculationRecord.Id, VDT_DataCalculationService.STATUS_ERROR);
-            
-            throw e;
+            handleException(e, this.dataCalculationRecord.Id);
         }
+    }
+
+    private void handleException(Exception e, String recordId) {
+        VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+        VDT_Log.get().publish();
+        VDT_DataCalculationService.sendStatusUpdateEvent(recordId, VDT_DataCalculationService.STATUS_ERROR);
+        throw e;
     }
 }

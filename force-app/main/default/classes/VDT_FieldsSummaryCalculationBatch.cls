@@ -77,26 +77,12 @@ public with sharing class VDT_FieldsSummaryCalculationBatch implements Database.
             // }
             update this.dataCalculationRecord;
 
-            Attachment currentAttachment = VDT_AttachmentService.getAttachmentForRecord(
+            VDT_AttachmentService.createAttachmentForRecord(
+                JSON.serialize(this.calculationBuilder.build()), 
                 VDT_ObjectService.FIELD_SUMMARY_CALCULATION_FILE_NAME,
-                VDT_AttachmentService.JSON_FORMAT, 
+                VDT_AttachmentService.JSON_FORMAT,
                 this.dataCalculationRecord.Id
-            );
-            if (currentAttachment == null) {
-                VDT_AttachmentService.createAttachmentForRecord(
-                    JSON.serialize(this.calculationBuilder.build()), 
-                    VDT_ObjectService.FIELD_SUMMARY_CALCULATION_FILE_NAME,
-                    VDT_AttachmentService.JSON_FORMAT,
-                    this.dataCalculationRecord.Id
-                );
-            } else {
-                VDT_AttachmentService.updateAttachmentForRecord(
-                    JSON.serialize(this.calculationBuilder.build()), 
-                    VDT_ObjectService.FIELD_SUMMARY_CALCULATION_FILE_NAME,
-                    VDT_AttachmentService.JSON_FORMAT,
-                    this.dataCalculationRecord.Id
-                );
-            }
+            );            
             VDT_EmailService.sendFieldCalculationFinishedEmailNotification(this.dataCalculationRecord.VDT_Object_Name__c);
         } catch (Exception e) {
             VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);

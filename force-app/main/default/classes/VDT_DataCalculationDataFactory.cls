@@ -7,6 +7,11 @@ public with sharing class VDT_DataCalculationDataFactory {
         this.dataCalculation = new VDT_Data_Calculation__c();
     }
 
+    public VDT_DataCalculationDataFactory object(String objectApi) {
+        this.dataCalculation.VDT_Object_Name__c = objectApi;
+        return this;
+    }
+
     public VDT_DataCalculationDataFactory countries(List<String> countries) {
         this.dataCalculation.VDT_Country__c = String.join(countries, ',');
         return this;
@@ -56,5 +61,9 @@ public with sharing class VDT_DataCalculationDataFactory {
     public VDT_DataCalculationDataFactory addAttachment(String name, String content, String format) {
         VDT_AttachmentService.createAttachmentForRecord(content, name, format, this.dataCalculation.Id);
         return this;
+    }
+
+    public VDT_Data_Calculation__c getRecord() {
+        return this.dataCalculation;
     }
 }

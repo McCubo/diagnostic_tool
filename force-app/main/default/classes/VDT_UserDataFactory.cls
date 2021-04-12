@@ -33,6 +33,16 @@ public with sharing class VDT_UserDataFactory {
         return this;
     }
     
+    public VDT_UserDataFactory profile(String profileName) {
+        Profile profile = [SELECT Id FROM Profile WHERE Name = :profileName LIMIT 1];
+        this.userSObject.ProfileId = profile.Id;
+        return this;
+    }
+
+    public User getRecord() {
+        return this.userSObject;
+    }
+
     public User buildAdmin() {
         Profile systemAdminProfile = [SELECT Id FROM Profile WHERE Name = 'System Administrator' LIMIT 1];
         this.userSObject.ProfileId = systemAdminProfile.Id;

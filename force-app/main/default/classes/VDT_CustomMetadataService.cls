@@ -273,19 +273,18 @@ public inherited sharing class VDT_CustomMetadataService {
     public static Integer getStartDateYearDecrement() {
         Integer yearDecrement;
 
-        List<VDT_General_Setting__mdt> defaultSettings;
-        if (!customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {
-            defaultSettings = [
-                SELECT  Start_Date_Year_Decrement__c
-                FROM    VDT_General_Setting__mdt
-                WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
-                WITH    SECURITY_ENFORCED
-            ];
-        } else {
+        List<VDT_General_Setting__mdt> defaultSettings;        
+        defaultSettings = [
+            SELECT  Start_Date_Year_Decrement__c
+            FROM    VDT_General_Setting__mdt
+            WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
+            WITH    SECURITY_ENFORCED
+        ];
+        if (customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {
             defaultSettings = customMetadataWithRecords.get(VDT_GENERAL_SETTINGS);
         }
 
-        if (defaultSettings.isEmpty() == false) {
+        if (!defaultSettings.isEmpty()) {
             yearDecrement = Integer.valueOf(defaultSettings[0].Start_Date_Year_Decrement__c);
         }
 
