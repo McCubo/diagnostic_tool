@@ -59,7 +59,7 @@ export default class Vdt_paginator extends LightningElement {
     }
 
     get showPagination() {
-        return this.pageNumbers.length > 0;
+        return this.pageNumbers.length > 0 || this._showFirst || this._showLast;
     }
 
     goToPrevious() {

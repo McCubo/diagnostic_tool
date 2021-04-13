@@ -58,13 +58,15 @@ public inherited sharing class VDT_DataCalculationService {
     }
 
     public static VDT_Data_Calculation__c initializeDataCalculation(CalculationParameters calculationParameters) {
+        List<RecordType> recordTypes = VDT_RecordTypeService.getRecordTypeByObjectAndName('VDT_Data_Calculation__c', VDT_DataCalculationSelector.OBJECT_ANALYSIS_RECORD_TYPE_DEV);
         return new VDT_Data_Calculation__c(
             VDT_Object_Name__c = calculationParameters.objectName,
             Status__c = calculationParameters.status, 
             Start_Year__c = calculationParameters.startYear,
             Start_Month__c = calculationParameters.startMonth,
             End_Year__c = calculationParameters.endYear,
-            End_Month__c = calculationParameters.endMonth
+            End_Month__c = calculationParameters.endMonth,
+            RecordTypeId = recordTypes.get(0).Id
         );
     }
 

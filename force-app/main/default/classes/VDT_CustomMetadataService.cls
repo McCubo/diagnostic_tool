@@ -1,6 +1,7 @@
 public inherited sharing class VDT_CustomMetadataService {
     public static final String DEFAULT_APP_SETTINGS = 'Default';
     public static final String VDT_GENERAL_SETTINGS = 'VDT_General_Setting__mdt';
+    public static final String VDT_QUERIES = 'VDT_Query__mdt';
     public static final String VDT_COUNTRY_FIELD_MAPPING = 'VDT_Object_Country_Field_Mapping__mdt';
     public static final String VDT_PRODUCT_FIELD_MAPPING = 'VDT_Object_Product_Field_Mapping__mdt';
     public static final String VDT_CUSTOM_OBJECT_FIELD_MAPPING = 'VDT_Custom_Objects_Field_Mapping__mdt';
@@ -10,6 +11,38 @@ public inherited sharing class VDT_CustomMetadataService {
     public static final String VDT_BATCH_SIZE_MAPPING = 'VDT_Object_Batch_Size_Mapping__mdt';
     @TestVisible
     private static Map<String, List<SObject>> customMetadataWithRecords = new Map<String, List<SObject>>();
+
+    public static String getPackageVersion() {
+        String packageVersion;
+        List<VDT_General_Setting__mdt> defaultSettings  = [SELECT  Package_Version__c 
+                                                           FROM VDT_General_Setting__mdt
+                                                           WHERE DeveloperName = :DEFAULT_APP_SETTINGS 
+                                                           WITH SECURITY_ENFORCED];
+        if (customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {
+            defaultSettings = customMetadataWithRecords.get(VDT_GENERAL_SETTINGS);
+        }
+
+        if (!defaultSettings.isEmpty()) {
+            packageVersion = defaultSettings[0].Package_Version__c;
+        }        
+        return packageVersion;
+    }
+
+    public static Map<String,String> getQueriesByPackageVersionAndModule(String packageVersion, String moduleName) {
+        Map<String,String> queriesByName = new Map<String,String>();
+        List<VDT_Query__mdt> queries  = [SELECT  Name__c, Query__c 
+                                                 FROM VDT_Query__mdt
+                                                 WHERE Package_Version__c = :packageVersion
+                                                 AND Module_Name__c = :moduleName
+                                                 WITH SECURITY_ENFORCED];
+        if (customMetadataWithRecords.containsKey(VDT_QUERIES)) {
+            queries = customMetadataWithRecords.get(VDT_QUERIES);
+        }
+        for (VDT_Query__mdt query : queries) {
+            queriesByName.put(query.Name__c, query.Query__c);
+        }
+        return queriesByName;
+    }
 
     public static String getFieldNameForCustomObject(String mappingName) {
         String fieldName;

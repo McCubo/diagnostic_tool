@@ -68,7 +68,7 @@ export default class Vdt_onekeyAnalysisSummary extends LightningElement {
             parsedData.push(kpiEntry);
         });
         parsedData.forEach(kpiEntry => {
-            kpiEntry.actualValue = Math.round((kpiEntry.totalNumerator / kpiEntry.totalDenominator) * 100);
+            kpiEntry.actualValue = Math.trunc((kpiEntry.totalNumerator / kpiEntry.totalDenominator) * 100);
             if (Number.isNaN(kpiEntry.actualValue)) {
                 kpiEntry.actualValue = 'N/A'
             }

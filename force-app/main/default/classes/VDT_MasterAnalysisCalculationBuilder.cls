@@ -10,8 +10,10 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
     private Set<String> specialties = new Set<String>();
     private List<Account> records = new List<Account>();
     private Set<Id> accountsWithTerritories = null;
+    // Account Types
     private final String ACCOUNT_TYPE_EXTERNAL = 'External_Customers';
     private final String ACCOUNT_TYPE_INTERNAL = 'Internal_Customers';
+    // KPI Names
     private final String ONEKEY_VS_NON_ONE_KEY_KPI_ID = 'Onekey_vs_Non_One_Key';
     private final String ONEKEY_ALIGNED_TO_TERRITORIES_KPI_ID = 'Onekey_aligned_to_territories';
     private final String ONEKEY_WITHOUT_VISIT_KPI_ID = 'Onekey_Without_visit';
@@ -24,11 +26,23 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
     private Map<String, Integer> metricsByAccount = new Map<String, Integer>();
     private Map<String, Integer> callsByAccount = new Map<String, Integer>();
     private Map<String, Integer> cyclePlanTargetsByAccount = new Map<String,Integer>();
-    
+    private Map<String, String> queriesByName = new Map<String, String>();
+    // Query Names
+    private final String ADDRESS_BY_ACCOUNT_QUERY = 'Addresses_By_Account';
+    private final String PRODUCT_METRICS_BY_ACCOUNT_QUERY = 'Product_Metrics';
+    private final String CALLS_BY_ACCOUNT_QUERY = 'Calls_By_Account';    
+    private final String PLAN_TARGETS_BY_ACCOUNT_QUERY = 'Plan_Targets_By_Account';
 
     public VDT_MasterAnalysisCalculationBuilder(String countryField, String specialtyField, Date startDate, Date endDate) {
         this.countryField = countryField;
         this.specialtyField = specialtyField;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public VDT_MasterAnalysisCalculationBuilder withCustomQueries(Map<String, String> queriesByName) {
+        this.queriesByName.putAll(queriesByName);
+        return this;
     }
 
     public VDT_MasterAnalysisCalculationBuilder withValidOptions(List<VDT_OptionWrapper> activeSpecialties) {
@@ -153,36 +167,22 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
 
     private Map<String, Integer> getAddressByAccount() {
         Map<String, Integer> addressByAccount = new Map<String, Integer>();
-        String query = String.format('SELECT Account_vod__c accountId, COUNT(Id) counter'
-                                    + ' FROM Address_vod__c'
-                                    + ' WHERE Account_vod__c IN :accountIds'
-                                    + ' GROUP BY Account_vod__c', new List<String>());
+        String query = String.format(this.queriesByName.get(ADDRESS_BY_ACCOUNT_QUERY), new List<String>());
         return this.getStatsByAccount(query);
     }
 
-    private Map<String,Integer> getMetricsByAccount() {        
-        String query = String.format('SELECT Account_vod__c accountId, COUNT(Id) counter'
-                                    + ' FROM Product_Metrics_vod__c'
-                                    + ' WHERE Account_vod__c IN :accountIds'
-                                    + ' GROUP BY Account_vod__c', new List<String>());
+    private Map<String, Integer> getMetricsByAccount() {        
+        String query = String.format(this.queriesByName.get(PRODUCT_METRICS_BY_ACCOUNT_QUERY), new List<String>());
         return this.getStatsByAccount(query);
     }
 
-    private Map<String,Integer> getCallsByAccount() {        
-        String query = String.format('SELECT Account_vod__c accountId, COUNT(Id) counter'
-                                    + ' FROM Call2_vod__c'
-                                    + ' WHERE Account_vod__c IN :accountIds'
-                                    + ' AND Call_Date_vod__c >= :startDate AND Call_Date_vod__c <= :endDate'
-                                    + ' GROUP BY Account_vod__c', new List<String>());
+    private Map<String, Integer> getCallsByAccount() {        
+        String query = String.format(this.queriesByName.get(CALLS_BY_ACCOUNT_QUERY), new List<String>());
         return this.getStatsByAccount(query);
     }
 
-    private Map<String,Integer> getCyclePlanTargetsByAccount() {        
-        String query = String.format('SELECT Target_vod__c accountId, COUNT(Id) counter'
-                                    + ' FROM MC_Cycle_Plan_Target_vod__c'
-                                    + ' WHERE Target_vod__c IN :accountIds'
-                                    + ' AND Cycle_Plan_vod__r.Start_Date_vod__c >= :startDate AND Cycle_Plan_vod__r.End_Date_vod__c <= :endDate'
-                                    + ' GROUP BY Target_vod__c', new List<String>());
+    private Map<String, Integer> getCyclePlanTargetsByAccount() {        
+        String query = String.format(this.queriesByName.get(PLAN_TARGETS_BY_ACCOUNT_QUERY), new List<String>());
         return this.getStatsByAccount(query);
     }
 
