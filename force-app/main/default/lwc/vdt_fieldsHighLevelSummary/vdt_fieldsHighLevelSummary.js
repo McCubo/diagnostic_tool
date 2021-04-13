@@ -183,7 +183,7 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
             'value': 'Field Value',
         };
         const fieldEntry = this._calculationData.find(entry => entry.name === row.name);
-        let csvData = [];
+        let csvData = {};
         if (this._columns.length > 4) {
             for (let i = 4; i < this._columns.length; i++) {
                 let countryLabel = this._columns[i].label;
@@ -192,18 +192,22 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
                     let totalRecords = fieldEntry[`${countryLabel}_totalRecords`];
                     Object.keys(valueOccurences).forEach(value => {
                         let occurencesNum = valueOccurences[value];
-                        csvData.push({
-                            name: fieldEntry.name,
-                            value: value || '',
-                            [countryLabel]: `${Math.floor((occurencesNum/totalRecords)*100)}%`
-                        })
+                        if (csvData[value]) {
+                            csvData[value][countryLabel] = `${Math.floor((occurencesNum/totalRecords)*100)}%`;
+                        } else {
+                            csvData[value] = {
+                                name: fieldEntry.name,
+                                value: value || '',
+                                [countryLabel]: `${Math.floor((occurencesNum/totalRecords)*100)}%`
+                            }
+                        }
+
                     })
                 }
                 headers[countryLabel] = countryLabel;
             }
         }
-
-        downloadCSVFile(headers, csvData, `${this.objectName}_${row.name}_usage_breakdown`);
+        downloadCSVFile(headers, Object.values(csvData), `${this.objectName}_${row.name}_usage_breakdown`);
     }
 
     handleFieldFilterInputChange(evt) {

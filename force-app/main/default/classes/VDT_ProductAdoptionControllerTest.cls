@@ -169,12 +169,12 @@ public with sharing class VDT_ProductAdoptionControllerTest {
             .addChildProduct(new VDT_ProductDataFactory('Onco Level 2').setProperty('Country__c', 'DE').getRecord())
             .getRecord();
 
-            Clm_Presentation_vod__c presentation = new Clm_Presentation_vod__c(
-                Status_vod__c = 'Approved_vod',
-                End_Date_vod__c = System.Today().addDays(15),
-                Product_vod__c = mainProduct.Id
-            );
-            insert presentation;
+            // Clm_Presentation_vod__c presentation = new Clm_Presentation_vod__c(
+            //     Status_vod__c = 'Approved_vod',
+            //     End_Date_vod__c = System.Today().addDays(15),
+            //     Product_vod__c = mainProduct.Id
+            // );
+            // insert presentation;
             VDT_ProductAdoptionController.recalculateProductAdoption(jsonSearchParameters);
         }
         Test.stopTest();

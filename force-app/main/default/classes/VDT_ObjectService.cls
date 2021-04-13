@@ -88,6 +88,9 @@ public inherited sharing class VDT_ObjectService {
         if (fieldName.contains('__r')) {
             return 'REFERENCE';
         }
+        if (fieldName.contains('CreatedBy.Country')) {
+            return 'STRING';
+        }
         SObjectType sobjectType = ((SObject)(Type.forName('Schema.' + objectName).newInstance())).getSObjectType();
         DescribeSObjectResult describeResult = sobjectType.getDescribe();
         return String.valueOf(describeResult.fields.getMap().get(fieldName).getDescribe().getType());
