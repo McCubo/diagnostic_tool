@@ -4,14 +4,4 @@
     <label>VDT Object Country Field Mapping</label>
     <pluralLabel>VDT Object Country Field Mappings</pluralLabel>
     <visibility>Public</visibility>
-    <fields>
-        <fullName>Country_Field_Reference__c</fullName>
-        <externalId>false</externalId>
-        <fieldManageability>DeveloperControlled</fieldManageability>
-        <label>Country Field Reference</label>
-        <length>255</length>
-        <required>false</required>
-        <type>Text</type>
-        <unique>false</unique>
-    </fields>
 </CustomObject>

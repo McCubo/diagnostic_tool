@@ -77,6 +77,16 @@
         <name>VDT_Object_Product_Field_Mapping__mdt</name>
     </customMetadataTypeAccesses>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>VDT_Data_Calculation_Entry__c.VDT_Object_Name__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>VDT_Data_Calculation_Entry__c.VDT_Partial_Calculation_Result__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>VDT_Data_Calculation__c.Batches_Number__c</field>
         <readable>true</readable>

@@ -143,13 +143,13 @@
     <allowInChatterGroups>false</allowInChatterGroups>
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
-    <enableActivities>false</enableActivities>
+    <enableActivities>true</enableActivities>
     <enableBulkApi>true</enableBulkApi>
     <enableFeeds>false</enableFeeds>
     <enableHistory>false</enableHistory>
     <enableLicensing>false</enableLicensing>
     <enableReports>false</enableReports>
-    <enableSearch>false</enableSearch>
+    <enableSearch>true</enableSearch>
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
     <label>Data Calculation</label>
@@ -159,156 +159,7 @@
         <type>AutoNumber</type>
     </nameField>
     <pluralLabel>Data Calculations</pluralLabel>
-    <searchLayouts/>
+    <searchLayouts></searchLayouts>
     <sharingModel>ReadWrite</sharingModel>
     <visibility>Public</visibility>
-    <fields>
-        <fullName>End_Date__c</fullName>
-        <externalId>false</externalId>
-        <formula>IF (End_Year__c!=0,DATE(IF(End_Month__c=0, End_Year__c+1, End_Year__c), 1,1) -1, NULL)</formula>
-        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
-        <label>End Date</label>
-        <required>false</required>
-        <trackTrending>false</trackTrending>
-        <type>Date</type>
-    </fields>
-    <fields>
-        <fullName>End_Month__c</fullName>
-        <externalId>false</externalId>
-        <label>End Month</label>
-        <precision>2</precision>
-        <required>false</required>
-        <scale>0</scale>
-        <trackTrending>false</trackTrending>
-        <type>Number</type>
-        <unique>false</unique>
-    </fields>
-    <fields>
-        <fullName>End_Year__c</fullName>
-        <externalId>false</externalId>
-        <label>End Year</label>
-        <precision>4</precision>
-        <required>false</required>
-        <scale>0</scale>
-        <trackTrending>false</trackTrending>
-        <type>Number</type>
-        <unique>false</unique>
-    </fields>
-    <fields>
-        <fullName>Start_Date__c</fullName>
-        <externalId>false</externalId>
-        <formula>DATE(Start_Year__c , IF(Start_Month__c = 0, 1, Start_Month__c) , 1)</formula>
-        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
-        <label>Start Date</label>
-        <required>false</required>
-        <trackTrending>false</trackTrending>
-        <type>Date</type>
-    </fields>
-    <fields>
-        <fullName>Start_Month__c</fullName>
-        <externalId>false</externalId>
-        <label>Start Month</label>
-        <precision>2</precision>
-        <required>false</required>
-        <scale>0</scale>
-        <trackTrending>false</trackTrending>
-        <type>Number</type>
-        <unique>false</unique>
-    </fields>
-    <fields>
-        <fullName>Start_Year__c</fullName>
-        <externalId>false</externalId>
-        <label>Start Year</label>
-        <precision>4</precision>
-        <required>false</required>
-        <scale>0</scale>
-        <trackTrending>false</trackTrending>
-        <type>Number</type>
-        <unique>false</unique>
-    </fields>
-    <fields>
-        <fullName>Status__c</fullName>
-        <externalId>false</externalId>
-        <label>Status</label>
-        <required>false</required>
-        <trackTrending>false</trackTrending>
-        <type>Picklist</type>
-        <valueSet>
-            <restricted>true</restricted>
-            <valueSetDefinition>
-                <sorted>false</sorted>
-                <value>
-                    <fullName>In Progress</fullName>
-                    <default>false</default>
-                    <label>In Progress</label>
-                </value>
-                <value>
-                    <fullName>Completed</fullName>
-                    <default>false</default>
-                    <label>Completed</label>
-                </value>
-                <value>
-                    <fullName>In Queue</fullName>
-                    <default>false</default>
-                    <label>In Queue</label>
-                </value>
-                <value>
-                    <fullName>Error</fullName>
-                    <default>false</default>
-                    <label>Error</label>
-                </value>
-            </valueSetDefinition>
-        </valueSet>
-    </fields>
-    <fields>
-        <fullName>VDT_Calculation_Date__c</fullName>
-        <externalId>false</externalId>
-        <label>Calculation Date</label>
-        <required>false</required>
-        <trackTrending>false</trackTrending>
-        <type>Date</type>
-    </fields>
-    <fields>
-        <fullName>VDT_Calculation_Result__c</fullName>
-        <externalId>false</externalId>
-        <label>Calculation Result</label>
-        <length>32768</length>
-        <trackTrending>false</trackTrending>
-        <type>LongTextArea</type>
-        <visibleLines>10</visibleLines>
-    </fields>
-    <fields>
-        <fullName>VDT_Job_Created_Date__c</fullName>
-        <externalId>false</externalId>
-        <label>Job Created Date</label>
-        <required>false</required>
-        <trackTrending>false</trackTrending>
-        <type>DateTime</type>
-    </fields>
-    <fields>
-        <fullName>VDT_Job_End_Date__c</fullName>
-        <externalId>false</externalId>
-        <label>Job End Date</label>
-        <required>false</required>
-        <trackTrending>false</trackTrending>
-        <type>DateTime</type>
-    </fields>
-    <fields>
-        <fullName>VDT_Job_Start_Date__c</fullName>
-        <externalId>false</externalId>
-        <label>Job Start Date</label>
-        <required>false</required>
-        <trackTrending>false</trackTrending>
-        <type>DateTime</type>
-    </fields>
-    <fields>
-        <fullName>VDT_Object_Name__c</fullName>
-        <externalId>false</externalId>
-        <label>Object Name</label>
-        <length>255</length>
-        <required>true</required>
-        <trackTrending>false</trackTrending>
-        <type>Text</type>
-        <unique>false</unique>
-    </fields>
 </CustomObject>

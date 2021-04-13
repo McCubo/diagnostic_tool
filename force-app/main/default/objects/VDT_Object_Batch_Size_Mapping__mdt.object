@@ -3,15 +3,4 @@
     <label>VDT Object Batch Size Mapping</label>
     <pluralLabel>VDT Object Batch Size Mappings</pluralLabel>
     <visibility>Public</visibility>
-    <fields>
-        <fullName>Batch_Size__c</fullName>
-        <externalId>false</externalId>
-        <fieldManageability>DeveloperControlled</fieldManageability>
-        <label>Batch Size</label>
-        <precision>18</precision>
-        <required>false</required>
-        <scale>0</scale>
-        <type>Number</type>
-        <unique>false</unique>
-    </fields>
 </CustomObject>

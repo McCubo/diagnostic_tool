@@ -27,5 +27,5 @@
         <ipRelaxation>ENFORCE</ipRelaxation>
         <refreshTokenPolicy>infinite</refreshTokenPolicy>
     </oauthPolicy>
-    <profileName>System Administrator</profileName>
+    <permissionSetName>BASE CRM Diagnostic Tool User</permissionSetName>
 </ConnectedApp>

@@ -28,11 +28,6 @@ public inherited sharing class VDT_DataCalculationService {
                         VDT_DataCalculationService.STATUS_IN_PROGRESS
                     }
                 );
-
-            List<VDT_Data_Calculation__c> calculations = 
-                new VDT_DataCalculationSelector()
-                    .getByCalculationParameters(calculationParameters);
-            
             
             if (inProgressCalculations.size() < maxRunningCalculations) {
                 calculationParameters.status = STATUS_IN_PROGRESS;
@@ -41,10 +36,7 @@ public inherited sharing class VDT_DataCalculationService {
             }
 
             VDT_Data_Calculation__c dataCalculationRecord = initializeDataCalculation(calculationParameters);
-            if (calculations.isEmpty() == false) {
-                dataCalculationRecord.Id = calculations[0].Id;
-            }
-            upsert dataCalculationRecord;
+            insert dataCalculationRecord;
 
             if (dataCalculationRecord.Status__c == STATUS_IN_PROGRESS) {
                 Integer batchSize = 

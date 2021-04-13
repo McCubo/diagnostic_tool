@@ -1,0 +1,16 @@
+{
+	"size": 1,
+	"totalSize": 1,
+	"done": true,
+	"queryLocator": null,
+	"entityTypeName": "CustomObject",
+	"records": [
+		{
+			"attributes": {
+				"type": "CustomObject",
+				"url": "/services/data/v51.0/tooling/sobjects/CustomObject/01I0v000000c9wiEAA"
+			},
+			"Id": "01I0v000000c9wiEAA"
+		}
+	]
+}
