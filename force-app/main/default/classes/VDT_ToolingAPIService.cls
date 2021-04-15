@@ -35,8 +35,7 @@ public inherited sharing class VDT_ToolingAPIService {
         String body = toolingAPISOQL(sql.replace('enumOrId', enumOrId));
         Set<String> layouts = new Set<String>();
 
-        System.debug('TEST:body: ' + body);
-        if(String.isNotBlank(body)){
+        if(String.isNotBlank(body)) {
             VDT_ToolingPageLayoutResponse.Root toolingResponse = 
                 (VDT_ToolingPageLayoutResponse.Root)JSON.deserialize(body, VDT_ToolingPageLayoutResponse.Root.class);
             String r = String.valueOf(toolingResponse.done) + toolingResponse.entityTypeName + String.valueOf(toolingResponse.size) + String.valueOf(toolingResponse.totalSize) + String.valueOf(toolingResponse.queryLocator);
