@@ -50,15 +50,23 @@ public inherited sharing class VDT_DataCalculationSelector {
         String whereString = 'RecordTypeId = :fieldAnalysisRT AND VDT_Object_Name__c = \'' + String.escapeSingleQuotes(calculationParameters.objectName) +'\'';
         if (calculationParameters.startYear != null) {
             whereString += ' AND Start_Year__c = ' + calculationParameters.startYear;
+        } else {
+            whereString += ' AND Start_Year__c = NULL';
         }
         if (calculationParameters.startMonth != null) {
             whereString += ' AND Start_Month__c = ' + calculationParameters.startMonth;
+        } else {
+            whereString += ' AND Start_Month__c = NULL';
         }
         if (calculationParameters.endYear != null) {
             whereString += ' AND End_Year__c = ' + calculationParameters.endYear;
+        } else {
+            whereString += ' AND End_Year__c = NULL';
         }
         if (calculationParameters.endMonth != null) {
             whereString += ' AND End_Month__c = ' + calculationParameters.endMonth;
+        } else {
+            whereString += ' AND End_Month__c = NULL';
         }
         String query = String.format(
             'SELECT {0} FROM {1} ' + 

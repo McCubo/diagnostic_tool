@@ -156,7 +156,11 @@ public inherited sharing class VDT_CustomMetadataService {
         }
         Map<String, List<String>> accountRecordTypesByType = new Map<String, List<String>>();
         for (VDT_Account_Record_Type_Mapping__mdt recordTypeConfiguration : recordTypeConfigurations) {
-            accountRecordTypesByType.put(recordTypeConfiguration.DeveloperName, recordTypeConfiguration.Account_Record_Types__c.split(','));
+            if (!String.isBlank(recordTypeConfiguration.Account_Record_Types__c)) {
+                accountRecordTypesByType.put(recordTypeConfiguration.DeveloperName, recordTypeConfiguration.Account_Record_Types__c.split(','));
+            } else {
+                accountRecordTypesByType.put(recordTypeConfiguration.DeveloperName, new List<String>());
+            }
         }
         return accountRecordTypesByType;
     }
