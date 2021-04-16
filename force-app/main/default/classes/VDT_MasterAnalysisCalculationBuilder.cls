@@ -90,8 +90,8 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         for (Account acc : records) {
             String country = this.getPropertyValue(acc, this.countryField);
             String specialty = acc.get(this.specialtyField).toString();
-            this.analysisData.recordTypes.add(acc.RecordType.Name);
-            Boolean isExternal = accountRecordTypesByType.get(ACCOUNT_TYPE_EXTERNAL).contains(acc.RecordType.Name);            
+            this.analysisData.recordTypes.add(acc.RecordType.DeveloperName);
+            Boolean isExternal = accountRecordTypesByType.get(ACCOUNT_TYPE_EXTERNAL).contains(acc.RecordType.DeveloperName);            
             this.updateKpiForCountry(ONEKEY_VS_NON_ONE_KEY_KPI_ID, country, isExternal ? 1 : 0, 1);            
             if (isExternal) {
                 Boolean hasAddress = this.addressByAccount.containsKey(acc.Id) && this.addressByAccount.get(acc.Id) > 0;
@@ -109,8 +109,8 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
             }
             if (this.analysisData.calculations.containsKey(specialty)) {
                 SpecialtySummary specialtySummary = this.analysisData.calculations.get(specialty);
-                if (specialtySummary.recordTypeUsageSummary.containsKey(acc.RecordType.Name)) {
-                    RecordTypeUsageSummary recordTypeSummary = specialtySummary.recordTypeUsageSummary.get(acc.RecordType.Name);
+                if (specialtySummary.recordTypeUsageSummary.containsKey(acc.RecordType.DeveloperName)) {
+                    RecordTypeUsageSummary recordTypeSummary = specialtySummary.recordTypeUsageSummary.get(acc.RecordType.DeveloperName);
                     if (recordTypeSummary.countryUsageSummary.containsKey(country)) {
                         CountryUsageSummary countrySummary = recordTypeSummary.countryUsageSummary.get(country);
                         updateCountrySummary(acc, countrySummary);
@@ -120,18 +120,18 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
                     }
                 } else {
                     RecordTypeUsageSummary recordTypeSummary = new RecordTypeUsageSummary();
-                    recordTypeSummary.name = acc.RecordType.Name;
+                    recordTypeSummary.name = acc.RecordType.DeveloperName;
                     CountryUsageSummary countrySummary = updateCountrySummary(acc, new CountryUsageSummary());
                     recordTypeSummary.countryUsageSummary.put(country, countrySummary);
-                    specialtySummary.recordTypeUsageSummary.put(acc.RecordType.Name, recordTypeSummary);
+                    specialtySummary.recordTypeUsageSummary.put(acc.RecordType.DeveloperName, recordTypeSummary);
                 }
             } else {
                 SpecialtySummary specialtySummary = new SpecialtySummary(specialty, this.specialties.contains(specialty));
                 RecordTypeUsageSummary recordTypeSummary = new RecordTypeUsageSummary();
-                recordTypeSummary.name = acc.RecordType.Name;
+                recordTypeSummary.name = acc.RecordType.DeveloperName;
                 CountryUsageSummary countrySummary = updateCountrySummary(acc, new CountryUsageSummary());
                 recordTypeSummary.countryUsageSummary.put(country, countrySummary);
-                specialtySummary.recordTypeUsageSummary.put(acc.RecordType.Name, recordTypeSummary);
+                specialtySummary.recordTypeUsageSummary.put(acc.RecordType.DeveloperName, recordTypeSummary);
                 this.analysisData.calculations.put(specialty, specialtySummary);
                 this.analysisData.specialties.add(specialty);
             }

@@ -219,7 +219,7 @@ public inherited sharing class VDT_DataCalculationSelector {
         String query = String.format(
             'SELECT {0} FROM {1} ' + 
             'WHERE  Status__c IN :statuses ' +
-            'WITH   SECURITY_ENFORCED {2}', 
+            'WITH   SECURITY_ENFORCED ORDER BY VDT_Job_End_Date__c DESC {2}', 
             new List<String>{
                 String.join(allFields, ','),
                 getObjectName(),
