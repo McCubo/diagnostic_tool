@@ -33,7 +33,7 @@ public with sharing class VDT_FieldsSummaryCalculationBatch implements Database.
                 query += ',' + countryField;
             }
 
-            query += ' FROM ' + this.dataCalculationRecord.VDT_Object_Name__c + ' WHERE ' + countryField + ' != NULL LIMIT 7500';
+            query += ' FROM ' + this.dataCalculationRecord.VDT_Object_Name__c + ' WHERE ' + countryField + ' != NULL';
 
             this.dataCalculationRecord.VDT_Job_Start_Date__c = Datetime.now();
             this.dataCalculationRecord.Batches_Number__c = 0;
@@ -49,15 +49,18 @@ public with sharing class VDT_FieldsSummaryCalculationBatch implements Database.
         }
     }
 
-    public void execute(Database.BatchableContext bc, List<SObject> records){
+    public void execute(Database.BatchableContext bc, List<SObject> records) {
         try {
+            List<VDT_Field_Summary__c> summaries = new VDT_FieldSummarySelector()
+                .addWhereClause('Job_Id__c = \'' + bc.getJobId() + '\'')
+                .query();
             this.dataCalculationRecord.Batches_Number__c += 1;
             update this.dataCalculationRecord;
-            // this.batchSize = records.size();
-            // this.recordCount += records.size();
+
             this.calculationBuilder
                 .withRecords(records)
-                .calculate();
+                .withFieldSummaryRecords(summaries)
+                .calculate(bc.getJobId());
         } catch (Exception e) {
             VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
             VDT_Log.get().publish();
@@ -67,18 +70,16 @@ public with sharing class VDT_FieldsSummaryCalculationBatch implements Database.
         }
     }
 
-    public void finish(Database.BatchableContext bc){
+    public void finish(Database.BatchableContext bc) {
         try {
             this.dataCalculationRecord.VDT_Job_End_Date__c = Datetime.now();
             this.dataCalculationRecord.Status__c = VDT_DataCalculationService.STATUS_COMPLETED;
             this.dataCalculationRecord.VDT_Calculation_Date__c = Date.today();
-            // if (this.batchSize > 0) {
-            //     this.dataCalculationRecord.Batches_Number__c = Math.ceil(this.recordCount / this.batchSize);
-            // }
+
             update this.dataCalculationRecord;
 
             VDT_AttachmentService.createAttachmentForRecord(
-                JSON.serialize(this.calculationBuilder.build()), 
+                this.calculationBuilder.build(bc.getJobId()),
                 VDT_ObjectService.FIELD_SUMMARY_CALCULATION_FILE_NAME,
                 VDT_AttachmentService.JSON_FORMAT,
                 this.dataCalculationRecord.Id

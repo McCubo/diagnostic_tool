@@ -3,8 +3,9 @@ public inherited sharing class VDT_ObjectCalculationBuilder {
     private List<String> fieldNames = new List<String>();
     private Map<String, List<String>> layoutWithFields = new Map<String, List<String>>();
     private List<SObject> records = new List<SObject>();
-    private ObjectFieldsSummary calculation = new ObjectFieldsSummary();
     private String countryField;
+    Map<String, VDT_FieldSummary> summaries = new Map<String, VDT_FieldSummary>();
+    public Set<String> uniqueCountryCodes = new Set<String>();
 
     public VDT_ObjectCalculationBuilder(String objectName, List<String> fieldNames) { 
         this.objectName = objectName;
@@ -23,30 +24,39 @@ public inherited sharing class VDT_ObjectCalculationBuilder {
         return this;
     }
 
-    public VDT_ObjectCalculationBuilder calculate() {
-        for (String field : fieldNames) {
-            FieldSummary fieldSummary = this.initFieldSummary(field);
+    public VDT_ObjectCalculationBuilder withFieldSummaryRecords(List<VDT_Field_Summary__c> summaries) {
+        this.summaries = new Map<String, VDT_FieldSummary>(); 
+        for (VDT_Field_Summary__c summary : summaries) {
+            VDT_FieldSummary fieldSummary = new VDT_FieldSummary(summary.Label__c, summary.Name__c, summary.Type__c);
+            fieldSummary.id = summary.Id;
+            fieldSummary.countryUsageSummary = (Map<String, VDT_FieldSummary.CountryUsageSummary>) JSON.deserialize(summary.Country_Usage_Summary__c, Map<String, VDT_FieldSummary.CountryUsageSummary>.class);
+            fieldSummary.pageLayouts = (List<String>) JSON.deserialize(summary.Page_Layouts__c, List<String>.class);
+            this.summaries.put(summary.Name__c, fieldSummary);
+        }
+        return this;
+    }
 
-            if (this.layoutWithFields.isEmpty() == false) {
+    public VDT_ObjectCalculationBuilder calculate(String jobId) {
+        List<VDT_FieldSummary> upsertSummaries = new List<VDT_FieldSummary>();
+        for (String field : fieldNames) {
+            VDT_FieldSummary fieldSummary = this.initFieldSummary(field);
+
+            if (!this.layoutWithFields.isEmpty()) {
                 fieldSummary.pageLayouts = this.getPageLayoutsForField(field);
             }
 
             for (SObject record : records) {
-                // system.debug('record.get(this.countryField) :: ' + record.get('CreatedBy'));
-                // system.debug('record.get(this.countryField) :: ' + record.get('CreatedBy.Country'));
                 String countryCode;
                 if (this.countryField.indexOf('.') >= 0) {
-                    system.debug('this.countryField :: ' + this.countryField);
                     List<String> parentCountryField = this.countryField.split('\\.');
-                    system.debug('parentCountryField :: ' + parentCountryField);
                     countryCode = String.valueOf(record.getSObject(parentCountryField[0]).get(parentCountryField[1]));
                 } else {
                     countryCode = String.valueOf(record.get(this.countryField));
                 }
 
-                CountryUsageSummary countryUsageSummary = null;
+                VDT_FieldSummary.CountryUsageSummary countryUsageSummary = null;
                 if (fieldSummary.countryUsageSummary.get(countryCode) == null) {
-                    countryUsageSummary = new CountryUsageSummary();
+                    countryUsageSummary = new VDT_FieldSummary.CountryUsageSummary();
                     fieldSummary.countryUsageSummary.put(countryCode, countryUsageSummary);
                 } else {
                     countryUsageSummary = fieldSummary.countryUsageSummary.get(countryCode);
@@ -56,8 +66,7 @@ public inherited sharing class VDT_ObjectCalculationBuilder {
                     countryUsageSummary.usageNumber++;
                 }
                 countryUsageSummary.totalRecords++;
-                countryUsageSummary.usagePercentage = 
-                    (Decimal.valueOf(countryUsageSummary.usageNumber) / Decimal.valueOf(countryUsageSummary.totalRecords)).setScale(2);
+                countryUsageSummary.usagePercentage = (Decimal.valueOf(countryUsageSummary.usageNumber) / Decimal.valueOf(countryUsageSummary.totalRecords)).setScale(2);
                 
                 if (fieldSummary.type == 'boolean') {
                     if (countryUsageSummary.fieldValueOccurences.get('true') == null) {
@@ -80,21 +89,47 @@ public inherited sharing class VDT_ObjectCalculationBuilder {
                         countryUsageSummary.fieldValueOccurences.put(picklistValue, countryUsageSummary.fieldValueOccurences.get(picklistValue) + 1);
                     }
                 }
-                this.calculation.uniqueCountryCodes.add(countryCode);
+                this.uniqueCountryCodes.add(countryCode);
             }
+            upsertSummaries.add(fieldSummary);
         }
-
+        if (!upsertSummaries.isEmpty()) {
+            List<VDT_Field_Summary__c> fieldSummaries = new List<VDT_Field_Summary__c>();
+            for (VDT_FieldSummary fieldSummary : upsertSummaries) {
+                VDT_Field_Summary__c fieldSummarySObject = new VDT_Field_Summary__c(
+                    Label__c = fieldSummary.label,
+                    Name__c = fieldSummary.name,
+                    Page_Layouts__c = JSON.serialize(fieldSummary.pageLayouts),
+                    Type__c = fieldSummary.type,
+                    Country_Usage_Summary__c = JSON.serialize(fieldSummary.countryUsageSummary),
+                    Job_Id__c = jobId
+                );
+                if (!fieldSummary.isNew()) {
+                    fieldSummarySObject.Id = fieldSummary.id;
+                }
+                fieldSummaries.add(fieldSummarySObject);
+            }
+            upsert fieldSummaries;
+        }
         return this;
     }
 
-    public ObjectFieldsSummary build() {
-        this.calculation.countryCodes.addAll(this.calculation.uniqueCountryCodes);
-        return this.calculation;
+    public String build(String jobId) {        
+        List<VDT_Field_Summary__c> summaries =  new VDT_FieldSummarySelector()
+            .addWhereClause('Job_Id__c = \'' + jobId + '\'')
+            .query();
+        String fieldsProperty = VDT_FieldSummary.getParsedObjects(summaries);
+        String countriesProperty = JSON.serialize(this.uniqueCountryCodes);
+        String builtJson = String.format('\'{\'"uniqueCountryCodes":{1},{0},"countryCodes":{1}\'}\'', new List<String>{
+            fieldsProperty,
+            countriesProperty
+        });
+        return builtJson;
     }
 
-    private FieldSummary initFieldSummary(String field) {
-        FieldSummary fieldSummary = null;
-        if (this.calculation.fields.get(field) == null) {
+    private VDT_FieldSummary initFieldSummary(String field) {
+        VDT_FieldSummary fieldSummary = null;
+        if (!this.summaries.containsKey(field)) {
             Schema.DescribeFieldResult fieldDescribe = 
                 Schema.getGlobalDescribe()
                     .get(this.objectName)
@@ -103,14 +138,14 @@ public inherited sharing class VDT_ObjectCalculationBuilder {
                     .getMap()
                     .get(field)
                     .getDescribe();
-            fieldSummary = new FieldSummary();
-            fieldSummary.name = field;
-            fieldSummary.label = fieldDescribe.getLabel();
-            fieldSummary.type = String.valueOf(fieldDescribe.getType());
-
-            this.calculation.fields.put(field, fieldSummary);
+            fieldSummary = new VDT_FieldSummary(
+                fieldDescribe.getLabel(),
+                field,
+                String.valueOf(fieldDescribe.getType())
+            );
+            this.summaries.put(field, fieldSummary);
         } else {
-            fieldSummary = this.calculation.fields.get(field);
+            fieldSummary = this.summaries.get(field);
         }
 
         return fieldSummary;
@@ -128,24 +163,10 @@ public inherited sharing class VDT_ObjectCalculationBuilder {
     }
 
     public class ObjectFieldsSummary {
-        @AuraEnabled public Map<String, FieldSummary> fields = new Map<String, FieldSummary>();
-        @AuraEnabled public List<String> countryCodes = new List<String>();
+        
+        Map<String, VDT_FieldSummary> fields = new Map<String, VDT_FieldSummary>();
         public Set<String> uniqueCountryCodes = new Set<String>();
-    }
+        public Set<String> countryCodes = new Set<String>();
 
-    public class FieldSummary {
-        @AuraEnabled public String label;
-        @AuraEnabled public String name;
-        @AuraEnabled public String type;
-        @AuraEnabled public Map<String, CountryUsageSummary> countryUsageSummary = 
-            new Map<String, CountryUsageSummary>();
-        @AuraEnabled public List<String> pageLayouts = new List<String>();
-    }
-
-    public class CountryUsageSummary {
-        @AuraEnabled public Integer usageNumber = 0;
-        @AuraEnabled public Integer totalRecords = 0;
-        @AuraEnabled public Decimal usagePercentage = 0;
-        @AuraEnabled public Map<String, Decimal> fieldValueOccurences = new Map<String, Decimal>();
     }
 }
