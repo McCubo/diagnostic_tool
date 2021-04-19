@@ -51,15 +51,15 @@ public with sharing class VDT_FieldsSummaryCalculationBatch implements Database.
 
     public void execute(Database.BatchableContext bc, List<SObject> records) {
         try {
-            List<VDT_Field_Summary__c> summaries = new VDT_FieldSummarySelector()
-                .addWhereClause('Job_Id__c = \'' + bc.getJobId() + '\'')
-                .query();
+            List<VDT_Field_Summary__c> summaries = new VDT_FieldSummarySelector().addWhereClause('Job_Id__c = \'' + bc.getJobId() + '\'').query();
+            Set<String> summaryIds = (new Map<String, VDT_Field_Summary__c>(summaries)).keySet();
+            Map<String, String> attachmentsByParent = VDT_AttachmentService.getAttachmentsByParentId(summaryIds, VDT_ObjectCalculationBuilder.COUNTRY_USAGE_FILE_NAME + VDT_AttachmentService.JSON_FORMAT);
             this.dataCalculationRecord.Batches_Number__c += 1;
             update this.dataCalculationRecord;
-
             this.calculationBuilder
                 .withRecords(records)
-                .withFieldSummaryRecords(summaries)
+                .withCountryUsageAttachments(attachmentsByParent)
+                .withFieldSummaryRecords(summaries)                
                 .calculate(bc.getJobId());
         } catch (Exception e) {
             VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);

@@ -22,7 +22,7 @@ public inherited sharing class VDT_FieldSummary {
         return String.isBlank(this.id);
     }
 
-    public static String getParsedObjects(List<VDT_Field_Summary__c> summaries) {
+    public static String getParsedObjects(List<VDT_Field_Summary__c> summaries, Map<String, String> attachmentsByParent) {
         List<String> jsonResponses = new List<String>();
         for (VDT_Field_Summary__c summary : summaries) {
             String jsonRow = String.format('"{0}":\'{\'"type":"{1}","pageLayouts":{2},"name":"{0}","label":"{3}","countryUsageSummary":{4}\'}\'', new List<String>{
@@ -30,7 +30,7 @@ public inherited sharing class VDT_FieldSummary {
                 summary.Type__c,
                 summary.Page_Layouts__c,
                 summary.Label__c,
-                summary.Country_Usage_Summary__c
+                attachmentsByParent.containsKey(summary.Id) ? attachmentsByParent.get(summary.Id) : '{}'
             });
             jsonResponses.add(jsonRow);
         }
