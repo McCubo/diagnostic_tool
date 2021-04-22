@@ -3,7 +3,8 @@ public inherited sharing class VDT_ToolingPageLayoutResponse {
         public Integer size {get;set;} 
         public Integer totalSize {get;set;} 
         public Boolean done {get;set;} 
-        public Object queryLocator {get;set;} 
+        public String nextRecordsUrl {get;set;}
+        public String queryLocator {get;set;} 
         public String entityTypeName {get;set;} 
         public List<Record> records {get;set;} 
     }

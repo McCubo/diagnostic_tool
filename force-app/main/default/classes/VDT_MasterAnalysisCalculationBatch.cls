@@ -34,7 +34,7 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
                 countryClause = 'AND (' + String.join(countryCriterias, ' OR ') + ')';
             }
             String query = String.format(
-                'SELECT Id, RecordType.DeveloperName, {0}, {1} FROM Account WHERE {0} != NULL AND {1} != NULL {2}', 
+                'SELECT Id, RecordType.DeveloperName, {0}, {1} FROM Account WHERE {0} != NULL {2}', 
                 new List<String> {
                     countryField,
                     specialtyField,

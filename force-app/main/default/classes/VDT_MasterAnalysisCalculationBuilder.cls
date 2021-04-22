@@ -89,7 +89,10 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         this.cyclePlanTargetsByAccount = getCyclePlanTargetsByAccount();
         for (Account acc : records) {
             String country = this.getPropertyValue(acc, this.countryField);
-            String specialty = acc.get(this.specialtyField).toString();
+            String specialty = this.getPropertyValue(acc, this.specialtyField);
+            if (String.isEmpty(specialty)) {
+                specialty = '<<Empty>>';
+            }
             this.analysisData.recordTypes.add(acc.RecordType.DeveloperName);
             Boolean isExternal = accountRecordTypesByType.get(ACCOUNT_TYPE_EXTERNAL).contains(acc.RecordType.DeveloperName);            
             this.updateKpiForCountry(ONEKEY_VS_NON_ONE_KEY_KPI_ID, country, isExternal ? 1 : 0, 1);            

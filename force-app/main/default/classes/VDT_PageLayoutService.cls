@@ -12,7 +12,7 @@ public without sharing class VDT_PageLayoutService {
             while (index < layoutNames.size()) {
                 tempList.add(layoutNames.get(index++));
                 ++count;
-                if (count == 10) {
+                if (count == 5) {
                     layoutNamesChunks.add(tempList);
                     tempList = new List<String>();
                     count = 0;
@@ -28,7 +28,10 @@ public without sharing class VDT_PageLayoutService {
         for (List<String> chunk : layoutNamesChunks) {
             List<String> layoutFullNames = new List<String>();
             for (String layoutName : chunk) {
-                layoutFullNames.add(String.format('{0}-{1}', new String[]{objectName, layoutName})); 
+                layoutFullNames.add(String.format('{0}-{1}', new String[]{objectName, layoutName}));
+                if (objectName == 'Account') {
+                    layoutFullNames.add(String.format('{0}-{1}', new String[]{'PersonAccount', layoutName}));
+                }
             }
             List<Metadata.Metadata> layoutMetadata = 
                 Metadata.Operations.retrieve(Metadata.MetadataType.Layout, layoutFullNames);
