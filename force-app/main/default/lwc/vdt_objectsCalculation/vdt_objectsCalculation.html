@@ -8,7 +8,17 @@
                             ondiagnose={handleDiagnose}
                             disabled={_filterDisabled}
                         ></c-vdt_objects-calculation-filter>
-                    </lightning-layout-item>
+                    </lightning-layout-item>                    
+                    <template if:true={_showFieldValuesButton}>
+                        <lightning-layout-item>
+                            <c-vdt_calculation-button
+                                last-calculation-date={_fieldOccurenceCalculation.calculationDate}
+                                calculation-status={_fieldOccurenceCalculation.status}
+                                oncalculate={handleCalculateValuesOccurrences}
+                                description='Field Values Occurrences'
+                            ></c-vdt_calculation-button>
+                        </lightning-layout-item>                        
+                    </template>
                     <template if:true={_showCalculationButton}>
                         <lightning-layout-item>
                             <c-vdt_calculation-button

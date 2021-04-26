@@ -1,0 +1,42 @@
+<template>
+    <lightning-layout multiple-rows>
+        <lightning-layout-item size="12">
+            <lightning-layout>
+                <lightning-layout-item size="4">
+                    <c-vdt_autocomplete-input
+                        multiselect
+                        label="Field Name"
+                        placeholder="Select Fields to Filter"
+                        options={_fieldOptions}
+                        onoptionselect={handleFieldNameChange}
+                    ></c-vdt_autocomplete-input>
+                </lightning-layout-item>                
+                <lightning-layout-item alignment-bump="left">
+                    <lightning-button
+                        variant="brand"
+                        name="export_csv"
+                        label='Export CSV'
+                        onclick={handleExportCSV}
+                    ></lightning-button>
+                </lightning-layout-item>
+            </lightning-layout>            
+        </lightning-layout-item>
+        <lightning-layout-item size="12" class="datatable">
+            <lightning-datatable
+                key-field="name"
+                data={_currentPageData}
+                columns={_columns}
+                hide-checkbox-column
+            ></lightning-datatable>
+        </lightning-layout-item>
+        <lightning-layout-item size="12" class="paginator">
+            <c-vdt_paginator
+                page-numbers={_pageNumbers}
+                current-page={_currentPage}
+                onprevious={handlePreviousClick}
+                onpageclick={handlePageClick}
+                onnext={handleNextClick}
+            ></c-vdt_paginator>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>

@@ -46,6 +46,13 @@ public with sharing class VDT_DataCalculationTriggerHandler extends VDT_TriggerH
                         Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject('Account');
                         VDT_MasterAnalysisCalculationBatch masterAnalysisBatch = new VDT_MasterAnalysisCalculationBatch(queuedCalculation);
                         Database.executeBatch(masterAnalysisBatch, batchSize);
+                    } else if (recordTypeNameById.get(queuedCalculation.RecordTypeId) == VDT_DataCalculationSelector.FIELD_OCCURRENCE_RECORD_TYPE_DEV) {
+                        Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject(queuedCalculation.VDT_Object_Name__c);
+                        VDT_FieldValuesOccurrencesBatch fieldValueOccurrenceBatch = new VDT_FieldValuesOccurrencesBatch(queuedCalculation);
+                        Database.executeBatch(fieldValueOccurrenceBatch, batchSize);
+                    } else if (recordTypeNameById.get(queuedCalculation.RecordTypeId) == VDT_DataCalculationSelector.PRODUCT_ADOPTION_RECORD_TYPE_DEV) {
+                        VDT_ProductAdoptionBatch productAdoptionBatch = new VDT_ProductAdoptionBatch(queuedCalculation);
+                        Database.executeBatch(productAdoptionBatch);
                     }
                 }
 

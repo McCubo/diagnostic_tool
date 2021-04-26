@@ -4,8 +4,15 @@
             <lightning-tab label="Analysis">
                 <c-vdt_objects-calculation
                     oncalculationchange={handleCalculationChange}
+                    onfieldvalueoccurrencechange={handleFieldValueOccurenceChange}
                 ></c-vdt_objects-calculation>
             </lightning-tab>
+            <template if:true={_showFieldValueOccurrenceTab}>
+                <lightning-tab label="Field Values Occurence">
+                    <c-vdt_objects-field-value-occurence field-value-occurrence-data={_fieldvalueoccurrence}>
+                    </c-vdt_objects-field-value-occurence>
+                </lightning-tab>
+            </template>
             <lightning-tab label="Dashboard">
                 <c-vdt_objects-dashboard
                     calculation-data={_data}

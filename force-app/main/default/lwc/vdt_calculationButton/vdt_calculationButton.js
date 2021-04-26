@@ -1,6 +1,17 @@
 import { LightningElement, api } from 'lwc';
 
 export default class Vdt_calculationButton extends LightningElement {
+    
+    @api
+    description;
+
+    get buttonLabel() {
+        if (this.description) {
+            return this._buttonLabel +' ('+ this.description + ')';
+        }
+        return this._buttonLabel;
+    }
+
     _buttonLabel = 'Calculate';
     _calculationStatus = '';
     _buttonDisabled = false;

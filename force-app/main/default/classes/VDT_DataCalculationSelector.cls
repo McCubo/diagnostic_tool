@@ -5,6 +5,7 @@ public inherited sharing class VDT_DataCalculationSelector {
     public static final String MASTER_ANALYSIS_RECORD_TYPE_DEV = 'VDT_Master_Data_Analysis';
     public static final String PRODUCT_ADOPTION_RECORD_TYPE_DEV = 'VDT_Product_Adoption';
     public static final String OBJECT_ANALYSIS_RECORD_TYPE_DEV = 'VDT_Object_Field_Analysis';
+    public static final String FIELD_OCCURRENCE_RECORD_TYPE_DEV = 'VDT_Object_Field_Value_Occurrence';    
 
     public String getObjectName() {
         return 'VDT_Data_Calculation__c';
@@ -44,9 +45,8 @@ public inherited sharing class VDT_DataCalculationSelector {
         return limitString;
     }
 
-    public List<VDT_Data_Calculation__c> getByCalculationParameters(VDT_DataCalculationService.CalculationParameters calculationParameters) {
-        system.debug('calculationParameters: ' + calculationParameters);
-        String fieldAnalysisRT = VDT_RecordTypeService.getRecordTypeByObjectAndName('VDT_Data_Calculation__c', 'VDT_Object_Field_Analysis')[0].Id;
+    public List<VDT_Data_Calculation__c> getByCalculationParameters(VDT_DataCalculationService.CalculationParameters calculationParameters, String recordTypeName) {
+        String fieldAnalysisRT = VDT_RecordTypeService.getRecordTypeByObjectAndName('VDT_Data_Calculation__c', recordTypeName)[0].Id;
         String whereString = 'RecordTypeId = :fieldAnalysisRT AND VDT_Object_Name__c = \'' + String.escapeSingleQuotes(calculationParameters.objectName) +'\'';
         if (calculationParameters.startYear != null) {
             whereString += ' AND Start_Year__c = ' + calculationParameters.startYear;
@@ -187,6 +187,20 @@ public inherited sharing class VDT_DataCalculationSelector {
             'SELECT {0} FROM {1} ' + 
             'WHERE  VDT_Object_Name__c = :objectName ' +
             'WITH   SECURITY_ENFORCED ', 
+            new List<String>{
+                getFieldListString(),
+                getObjectName()
+            }
+        );
+
+        return Database.query(query);
+    }
+
+    public List<VDT_Data_Calculation__c> getByObjectNameAndReocordType(String objectName, String recordTypeName) {
+        String query = String.format(
+            'SELECT {0} FROM {1} ' + 
+            'WHERE  VDT_Object_Name__c = :objectName AND RecordType.DeveloperName = :recordTypeName ' +
+            'WITH   SECURITY_ENFORCED ORDER BY VDT_Job_End_Date__c DESC', 
             new List<String>{
                 getFieldListString(),
                 getObjectName()

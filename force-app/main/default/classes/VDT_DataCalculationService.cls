@@ -35,7 +35,7 @@ public inherited sharing class VDT_DataCalculationService {
                 calculationParameters.status = STATUS_IN_QUEUE;
             }
 
-            VDT_Data_Calculation__c dataCalculationRecord = initializeDataCalculation(calculationParameters);
+            VDT_Data_Calculation__c dataCalculationRecord = initializeDataCalculation(calculationParameters, VDT_DataCalculationSelector.OBJECT_ANALYSIS_RECORD_TYPE_DEV);
             insert dataCalculationRecord;
 
             if (dataCalculationRecord.Status__c == STATUS_IN_PROGRESS) {
@@ -49,8 +49,33 @@ public inherited sharing class VDT_DataCalculationService {
             }
     }
 
-    public static VDT_Data_Calculation__c initializeDataCalculation(CalculationParameters calculationParameters) {
-        List<RecordType> recordTypes = VDT_RecordTypeService.getRecordTypeByObjectAndName('VDT_Data_Calculation__c', VDT_DataCalculationSelector.OBJECT_ANALYSIS_RECORD_TYPE_DEV);
+    public static void triggerFieldValueOccurrenceCalculation(CalculationParameters calculationParameters) {
+        Integer maxRunningCalculations = VDT_CustomMetadataService.getMaxNumberOfRunningCalculations();
+            List<VDT_Data_Calculation__c> inProgressCalculations = 
+                new VDT_DataCalculationSelector().getDataCalculationsByStatus(
+                    new List<String>{ 
+                        VDT_DataCalculationService.STATUS_IN_PROGRESS
+                    }
+                );
+            
+            if (inProgressCalculations.size() < maxRunningCalculations) {
+                calculationParameters.status = STATUS_IN_PROGRESS;
+            } else {
+                calculationParameters.status = STATUS_IN_QUEUE;
+            }
+
+            VDT_Data_Calculation__c dataCalculationRecord = initializeDataCalculation(calculationParameters, VDT_DataCalculationSelector.FIELD_OCCURRENCE_RECORD_TYPE_DEV);
+            insert dataCalculationRecord;
+
+            if (dataCalculationRecord.Status__c == STATUS_IN_PROGRESS) {
+                Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject(dataCalculationRecord.VDT_Object_Name__c);
+                VDT_FieldValuesOccurrencesBatch fieldValueOccurrenceBatch = new VDT_FieldValuesOccurrencesBatch(dataCalculationRecord); 
+                Database.executeBatch(fieldValueOccurrenceBatch, batchSize);
+            }
+    }
+
+    public static VDT_Data_Calculation__c initializeDataCalculation(CalculationParameters calculationParameters, String recordTypeName) {
+        List<RecordType> recordTypes = VDT_RecordTypeService.getRecordTypeByObjectAndName('VDT_Data_Calculation__c', recordTypeName);
         return new VDT_Data_Calculation__c(
             VDT_Object_Name__c = calculationParameters.objectName,
             Status__c = calculationParameters.status, 
@@ -174,9 +199,9 @@ public inherited sharing class VDT_DataCalculationService {
         return calculation;        
     }
 
-    public static DataCalculation getExistingCalculation(CalculationParameters calculationParameters) {
+    public static DataCalculation getExistingCalculation(CalculationParameters calculationParameters, String recordTypeName, String fileName) {
         List<VDT_Data_Calculation__c> calculations = 
-            new VDT_DataCalculationSelector().getByCalculationParameters(calculationParameters);
+            new VDT_DataCalculationSelector().getByCalculationParameters(calculationParameters, recordTypeName);
 
         DataCalculation calculation = new DataCalculation();
 
@@ -184,7 +209,7 @@ public inherited sharing class VDT_DataCalculationService {
             calculation.status = calculations[0].Status__c;
             calculation.calculationDate = String.valueOf(calculations[0].VDT_Calculation_Date__c);
             Attachment att = VDT_AttachmentService.getAttachmentForRecord(
-                VDT_ObjectService.FIELD_SUMMARY_CALCULATION_FILE_NAME,
+                fileName,
                 VDT_AttachmentService.JSON_FORMAT, 
                 calculations[0].Id
             );

@@ -1,4 +1,6 @@
 public inherited sharing class VDT_ObjectService {
+
+    public static final String FIELD_VALUES_OCCURRENCES_FILE_NAME = 'field_values_occurrences';
     public static final String FIELD_SUMMARY_CALCULATION_FILE_NAME = 'summary_calculation';
 
     private static final String OBJECT_SUFFX_HISTORY    = 'history';
@@ -72,6 +74,32 @@ public inherited sharing class VDT_ObjectService {
         }
 
         return fields;
+    }
+
+    public static List<Schema.SObjectField> getAllAccessibleFieldsForObjectAndTypes(String objectName, List<DisplayType> types) {
+        List<Schema.SObjectField> fieldsForTypes = new List<Schema.SObjectField>();
+        List<Schema.SObjectField> accessibleFields = getAllAccessibleFieldsForObject(objectName);
+        for (Schema.SObjectField field : accessibleFields) {
+            Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
+            if (types.contains(fieldDescribe.getType())) {
+                fieldsForTypes.add(field);
+            }
+        }
+        return fieldsForTypes;
+    }
+
+    public static Map<String, Set<String>> getPicklistValuesByFieldName(String objectName, Set<String> fieldNames) {
+        Map<String, Set<String>> picklistOptionsByFieldName = new Map<String, Set<String>>();
+        Map<String, Schema.SObjectField> fieldMap = Schema.getGlobalDescribe().get(objectName).getDescribe().fields.getMap();
+        for (String fieldName : fieldNames) {
+            Set<String> fieldValues = new Set<String>();
+            List<Schema.PicklistEntry> values = fieldMap.get(fieldName).getDescribe().getPickListValues();
+            for (Schema.PicklistEntry a : values) {
+                fieldValues.add(a.getValue());
+            }
+            picklistOptionsByFieldName.put(fieldName, fieldValues);
+        }
+        return picklistOptionsByFieldName;
     }
 
     public static List<VDT_OptionWrapper> getPicklistOptionsBySObjectName(Schema.DescribeSObjectResult objectDescribe, String fieldName) {
