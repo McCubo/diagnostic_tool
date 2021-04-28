@@ -3,6 +3,10 @@
     <label>Default</label>
     <protected>false</protected>
     <values>
+        <field>Active_Tab_List__c</field>
+        <value xsi:type="xsd:string">home,master_data_analysis,object_field_analysis,users,settings.product_adoption</value>
+    </values>
+    <values>
         <field>Apex_Async_Execution_Daily_Allocation__c</field>
         <value xsi:type="xsd:double">100.0</value>
     </values>
@@ -29,6 +33,10 @@
     <values>
         <field>Maximum_Running_Calculations__c</field>
         <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>Package_Version__c</field>
+        <value xsi:type="xsd:string">Veeva</value>
     </values>
     <values>
         <field>Standard_Field_Identifier__c</field>

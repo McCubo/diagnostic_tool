@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Veeva_Account_Goal</label>
+    <protected>false</protected>
+    <values>
+        <field>Module_Name__c</field>
+        <value xsi:type="xsd:string">Master Data Analysis</value>
+    </values>
+    <values>
+        <field>Name__c</field>
+        <value xsi:type="xsd:string">Plan_Targets_By_Account</value>
+    </values>
+    <values>
+        <field>Package_Version__c</field>
+        <value xsi:type="xsd:string">Veeva</value>
+    </values>
+    <values>
+        <field>Query__c</field>
+        <value xsi:type="xsd:string">SELECT Target_vod__c accountId, COUNT(Id) counter
+FROM MC_Cycle_Plan_Target_vod__c
+WHERE Target_vod__c IN :accountIds
+AND Cycle_Plan_vod__r.Start_Date_vod__c &gt;= :startDate AND Cycle_Plan_vod__r.End_Date_vod__c &lt;= :endDate
+GROUP BY Target_vod__c</value>
+    </values>
+</CustomMetadata>

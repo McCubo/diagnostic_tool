@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>email send as notification once field values occurrences calculation completes</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <name>VDT_FieldsOccurrencesFinished</name>
+    <style>none</style>
+    <subject>Field Values Occurrences for {!VDT_Data_Calculation__c.VDT_Object_Name__c} Finished!</subject>
+    <type>text</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

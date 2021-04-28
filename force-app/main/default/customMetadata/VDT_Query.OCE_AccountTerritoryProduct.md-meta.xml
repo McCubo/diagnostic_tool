@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>OCE_AccountTerritoryProduct</label>
+    <protected>false</protected>
+    <values>
+        <field>Module_Name__c</field>
+        <value xsi:type="xsd:string">Master Data Analysis</value>
+    </values>
+    <values>
+        <field>Name__c</field>
+        <value xsi:type="xsd:string">Product_Metrics</value>
+    </values>
+    <values>
+        <field>Package_Version__c</field>
+        <value xsi:type="xsd:string">OCE</value>
+    </values>
+    <values>
+        <field>Query__c</field>
+        <value xsi:type="xsd:string">SELECT OCE__Account__c accountId, COUNT(Id) counter
+FROM OCE__AccountTerritoryProduct__c
+WHERE OCE__Account__c IN :accountIds
+GROUP BY OCE__Account__c</value>
+    </values>
+</CustomMetadata>

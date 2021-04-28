@@ -7,7 +7,6 @@
     <columns>Label__c</columns>
     <columns>Type__c</columns>
     <columns>Page_Layouts__c</columns>
-    <columns>Country_Usage_Summary__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
 </ListView>

@@ -44,9 +44,9 @@ public inherited sharing class VDT_ToolingAPIService {
         String body = toolingAPISOQL(sql.replace('enumOrId', enumOrId));
         Set<String> layouts = new Set<String>();
 
-        if(String.isNotBlank(body)){
+        if (String.isNotBlank(body)) {
             VDT_ToolingPageLayoutResponse.Root toolingResponse = (VDT_ToolingPageLayoutResponse.Root)JSON.deserialize(body, VDT_ToolingPageLayoutResponse.Root.class);
-            for(VDT_ToolingPageLayoutResponse.Record record : toolingResponse.records) {                
+            for(VDT_ToolingPageLayoutResponse.Record record : toolingResponse.records) {
                 layouts.add(String.valueOf(record.Layout.Name));
             }
             if (String.isNotBlank(toolingResponse.nextRecordsUrl)) {
