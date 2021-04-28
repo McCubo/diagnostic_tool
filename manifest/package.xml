@@ -25,6 +25,10 @@
         <members>VDT_DateRangePickerTest</members>
         <members>VDT_EmailService</members>
         <members>VDT_EmailTemplateSelector</members>
+        <members>VDT_FieldSummary</members>
+        <members>VDT_FieldSummarySelector</members>
+        <members>VDT_FieldValuesOccurrencesBatch</members>
+        <members>VDT_FieldValuesOccurrencesBuilder</members>
         <members>VDT_FieldsSummaryCalculationBatch</members>
         <members>VDT_HttpService</members>
         <members>VDT_Log</members>
@@ -52,6 +56,7 @@
         <members>VDT_ProductService</members>
         <members>VDT_RecordTypeSelector</members>
         <members>VDT_RecordTypeService</members>
+        <members>VDT_TabsController</members>
         <members>VDT_ToolingAPIService</members>
         <members>VDT_ToolingCustomObjectResponse</members>
         <members>VDT_ToolingPageLayoutResponse</members>
@@ -92,11 +97,41 @@
         <name>CustomApplication</name>
     </types>
     <types>
+        <members>VDT_Account_Record_Type_Mapping.External_Customers</members>
+        <members>VDT_Account_Record_Type_Mapping.Internal_Customers</members>
+        <members>VDT_Custom_Objects_Field_Mapping.PRODUCT_VOD_STATUS</members>
+        <members>VDT_General_Setting.Default</members>
+        <members>VDT_KPI_Configuration.OneKey_Without_Visit_and_Cycle_Plan</members>
+        <members>VDT_KPI_Configuration.Onekey_Without_cycle_plan</members>
+        <members>VDT_KPI_Configuration.Onekey_Without_ratings</members>
+        <members>VDT_KPI_Configuration.Onekey_Without_visit</members>
+        <members>VDT_KPI_Configuration.Onekey_aligned_to_territories</members>
+        <members>VDT_KPI_Configuration.Onekey_vs_Non_One_Key</members>
+        <members>VDT_KPI_Configuration.Onekey_without_address</members>
+        <members>VDT_Object_Country_Field_Mapping.Approved_Document_vod_c</members>
+        <members>VDT_Object_Country_Field_Mapping.Clm_Presentation_vod_c</members>
+        <members>VDT_Object_Country_Field_Mapping.EM_Event_vod_c</members>
+        <members>VDT_Object_Country_Field_Mapping.Key_Message_vod_c</members>
+        <members>VDT_Object_Country_Field_Mapping.Patient_Metric_c</members>
+        <members>VDT_Object_Country_Field_Mapping.Product_vod_c</members>
+        <members>VDT_Object_Product_Field_Mapping.EM_Event_vod_c</members>
+        <members>VDT_Query.OCE_AccountTerritoryProduct</members>
+        <members>VDT_Query.OCE_Account_Goal</members>
+        <members>VDT_Query.OCE_Addresses_By_Account</members>
+        <members>VDT_Query.OCE_Calls</members>
+        <members>VDT_Query.Veeva_Account_Goal</members>
+        <members>VDT_Query.Veeva_Addresses</members>
+        <members>VDT_Query.Veeva_Calls</members>
+        <members>VDT_Query.Veeva_Product_Metrics</members>
+        <name>CustomMetadata</name>
+    </types>
+    <types>
         <members>VDT_Account_Record_Type_Mapping__mdt</members>
         <members>VDT_Calculation_Status_Update__e</members>
         <members>VDT_Custom_Objects_Field_Mapping__mdt</members>
         <members>VDT_Data_Calculation_Entry__c</members>
         <members>VDT_Data_Calculation__c</members>
+        <members>VDT_Field_Summary__c</members>
         <members>VDT_General_Setting__mdt</members>
         <members>VDT_KPI_Configuration__mdt</members>
         <members>VDT_KPI_by_Country__mdt</members>
@@ -105,10 +140,12 @@
         <members>VDT_Object_Batch_Size_Mapping__mdt</members>
         <members>VDT_Object_Country_Field_Mapping__mdt</members>
         <members>VDT_Object_Product_Field_Mapping__mdt</members>
+        <members>VDT_Query__mdt</members>
         <name>CustomObject</name>
     </types>
     <types>
         <members>VDT_Data_Calculation__c</members>
+        <members>VDT_Field_Summary__c</members>
         <members>VDT_Log_Event__c</members>
         <members>Veeva_Diagnostic_Tool</members>
         <members>Veeva_Diagnostic_Tool_VF</members>
@@ -116,6 +153,7 @@
     </types>
     <types>
         <members>VDT_EmailTemplates/VDT_FieldCamparisonCalculationFinished</members>
+        <members>VDT_EmailTemplates/VDT_FieldsOccurrencesFinished</members>
         <members>VDT_EmailTemplates/VDT_MasterAnalysisCalculationFinished</members>
         <name>EmailTemplate</name>
     </types>
@@ -134,6 +172,23 @@
     <types>
         <members>BASE_CRM_Diagnostic_Tool_User</members>
         <name>PermissionSet</name>
+    </types>
+    <types>
+        <members>VDT_Data_Calculation__c.VDT_Master_Data_Analysis</members>
+        <members>VDT_Data_Calculation__c.VDT_Object_Field_Analysis</members>
+        <members>VDT_Data_Calculation__c.VDT_Object_Field_Value_Occurrence</members>
+        <members>VDT_Data_Calculation__c.VDT_Product_Adoption</members>
+        <name>RecordType</name>
+    </types>
+    <types>
+        <members>VDT_ObjectToolingResponse</members>
+        <members>VDT_ProfileToolingResponse</members>
+        <members>vdt_chartjs</members>
+        <members>vdt_d3</members>
+        <members>vdt_moment</members>
+        <members>vdt_onekey_summary_table</members>
+        <members>vdt_styles</members>
+        <name>StaticResource</name>
     </types>
     <version>50.0</version>
 </Package>
