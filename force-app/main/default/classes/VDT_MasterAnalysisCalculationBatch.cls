@@ -18,6 +18,8 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
 
     public Database.QueryLocator start(Database.BatchableContext bc) {
         try {
+            String packageVersion = VDT_CustomMetadataService.getPackageVersion();
+            Map<String,String> queriesByName = VDT_CustomMetadataService.getQueriesByPackageVersionAndModule(packageVersion, 'Master Data Analysis');
             String countryField = VDT_CustomMetadataService.getCountryFieldForObject('Account');
             String specialtyField = VDT_CustomMetadataService.getAccountSpecialtyField();
             List<VDT_OptionWrapper> activeSpecialties = VDT_ObjectService.getPicklistOptionsBySObjectName(SObjectType.Account, specialtyField);
@@ -46,7 +48,8 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
             .withValidOptions(activeSpecialties)
             .initKpis(activeKpis)
             .withRecordTypesByType(accountRecordTypesByType)
-            .withCustomTargets(targetByCountryAndKpi);
+            .withCustomTargets(targetByCountryAndKpi)
+            .withCustomQueries(queriesByName);
             this.dataCalculationRecord.VDT_Job_Start_Date__c = Datetime.now();
             this.dataCalculationRecord.Batches_Number__c = 0;
             update this.dataCalculationRecord;

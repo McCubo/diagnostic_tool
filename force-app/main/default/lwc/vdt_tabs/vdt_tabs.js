@@ -1,6 +1,7 @@
 import { LightningElement, wire, track } from 'lwc';
 import tabsMessageChannel from '@salesforce/messageChannel/vdt_tabs__c';
 import { publish, MessageContext } from 'lightning/messageService';
+import getActiveMainMenuOptions from '@salesforce/apex/VDT_TabsController.getActiveMainMenuOptions';
 
 export const TABS = {
     home: {
@@ -37,6 +38,24 @@ export const TABS = {
 export const DEFAULT_TAB = TABS.home;
 
 export default class Vdt_tabs extends LightningElement {
+
+    @wire(getActiveMainMenuOptions)
+    _activeMenuOptions;
+
+    get isProductVisible() {
+        if (this.activeMenuOptions.length > 0) {
+            return this.activeMenuOptions.includes('product_adoption');
+        }
+        return false;
+    }
+    
+    get activeMenuOptions() {
+        if (this._activeMenuOptions.data) {
+            return this._activeMenuOptions.data.split(',');
+        }
+        return [];
+    }
+
     _currentTab = DEFAULT_TAB;
     @track 
     _tabs = TABS;

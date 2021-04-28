@@ -23,7 +23,7 @@ public with sharing class VDT_FieldValuesOccurrencesBatch implements Database.Ba
                 query += ',' + countryField;
             }
     
-            query += ' FROM ' + this.dataCalculationRecord.VDT_Object_Name__c + ' WHERE ' + countryField + ' != NULL LIMIT 7500';
+            query += ' FROM ' + this.dataCalculationRecord.VDT_Object_Name__c + ' WHERE ' + countryField + ' != NULL';
     
             this.dataCalculationRecord.VDT_Job_Start_Date__c = Datetime.now();
             this.dataCalculationRecord.Batches_Number__c = 0;

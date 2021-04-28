@@ -30,8 +30,7 @@ public inherited sharing class VDT_FieldSummarySelector {
             VDT_Field_Summary__c.Label__c.getDescribe().getName(),
             VDT_Field_Summary__c.Name__c.getDescribe().getName(),
             VDT_Field_Summary__c.Page_Layouts__c.getDescribe().getName(),
-            VDT_Field_Summary__c.Type__c.getDescribe().getName(),
-            VDT_Field_Summary__c.Country_Usage_Summary__c.getDescribe().getName()
+            VDT_Field_Summary__c.Type__c.getDescribe().getName()
         };
     }
 

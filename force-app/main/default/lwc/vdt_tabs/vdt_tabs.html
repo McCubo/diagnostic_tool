@@ -41,16 +41,17 @@
                     active={_tabs.users.active}
                 ></c-vdt_tab-item>
             </li>
-            <li 
+            <template if:true={isProductVisible}>
+                <li 
                 class="slds-item"
-                onclick={handleProductsClick}
-            >
-                <c-vdt_tab-item
-                    icon-name={_tabs.products.icon}
-                    tab-name={_tabs.products.name}
-                    active={_tabs.products.active}
-                ></c-vdt_tab-item>
-            </li>
+                onclick={handleProductsClick}>
+                    <c-vdt_tab-item
+                        icon-name={_tabs.products.icon}
+                        tab-name={_tabs.products.name}
+                        active={_tabs.products.active}>
+                    </c-vdt_tab-item>
+                </li>
+            </template>
             <li 
                 class="slds-item"
                 onclick={handleSettingsClick}
