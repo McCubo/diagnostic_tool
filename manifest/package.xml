@@ -123,6 +123,12 @@
         <members>VDT_Query.Veeva_Addresses</members>
         <members>VDT_Query.Veeva_Calls</members>
         <members>VDT_Query.Veeva_Product_Metrics</members>
+        <members>VDT_Tab.home</members>
+        <members>VDT_Tab.master_data_analysis</members>
+        <members>VDT_Tab.object_field_analysis</members>
+        <members>VDT_Tab.product_adoption</members>
+        <members>VDT_Tab.settings</members>
+        <members>VDT_Tab.users</members>
         <name>CustomMetadata</name>
     </types>
     <types>
@@ -141,6 +147,7 @@
         <members>VDT_Object_Country_Field_Mapping__mdt</members>
         <members>VDT_Object_Product_Field_Mapping__mdt</members>
         <members>VDT_Query__mdt</members>
+        <members>VDT_Tab__mdt</members>
         <name>CustomObject</name>
     </types>
     <types>
