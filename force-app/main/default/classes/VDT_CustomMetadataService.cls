@@ -2,6 +2,7 @@ public inherited sharing class VDT_CustomMetadataService {
     public static final String DEFAULT_APP_SETTINGS = 'Default';
     public static final String VDT_GENERAL_SETTINGS = 'VDT_General_Setting__mdt';
     public static final String VDT_QUERIES = 'VDT_Query__mdt';
+    public static final String VDT_TABS = 'VDT_Tab__mdt';
     public static final String VDT_COUNTRY_FIELD_MAPPING = 'VDT_Object_Country_Field_Mapping__mdt';
     public static final String VDT_PRODUCT_FIELD_MAPPING = 'VDT_Object_Product_Field_Mapping__mdt';
     public static final String VDT_CUSTOM_OBJECT_FIELD_MAPPING = 'VDT_Custom_Objects_Field_Mapping__mdt';
@@ -13,19 +14,21 @@ public inherited sharing class VDT_CustomMetadataService {
     private static Map<String, List<SObject>> customMetadataWithRecords = new Map<String, List<SObject>>();
 
     public static String getActiveMenuOptions() {
-        String menuOptions;
-        List<VDT_General_Setting__mdt> defaultSettings  = [SELECT  Active_Tab_List__c 
-                                                           FROM VDT_General_Setting__mdt
-                                                           WHERE DeveloperName = :DEFAULT_APP_SETTINGS 
-                                                           WITH SECURITY_ENFORCED];
-        if (customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {
-            defaultSettings = customMetadataWithRecords.get(VDT_GENERAL_SETTINGS);
+        List<String> menuOptions = new List<String>();
+        List<VDT_Tab__mdt> tabs  = [SELECT  DeveloperName 
+                                    FROM VDT_Tab__mdt
+                                    WHERE Is_Active__c = TRUE 
+                                    WITH SECURITY_ENFORCED];
+        if (customMetadataWithRecords.containsKey(VDT_TABS)) {
+            tabs = customMetadataWithRecords.get(VDT_TABS);
         }
 
-        if (!defaultSettings.isEmpty()) {
-            menuOptions = defaultSettings[0].Active_Tab_List__c;
+        if (!tabs.isEmpty()) {
+            for (VDT_Tab__mdt tab : tabs) {
+                menuOptions.add(tab.DeveloperName);
+            }
         }        
-        return menuOptions;
+        return String.join(menuOptions, ',');
     }
 
     public static String getPackageVersion() {
