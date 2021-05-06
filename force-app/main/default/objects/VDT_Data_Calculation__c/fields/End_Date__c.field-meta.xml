@@ -2,7 +2,12 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>End_Date__c</fullName>
     <externalId>false</externalId>
-    <formula>IF (End_Year__c!=0,DATE(IF(End_Month__c=0, End_Year__c+1, End_Year__c), 1,1) -1, NULL)</formula>
+    <formula>IF(
+				AND(End_Year__c !=0, End_Month__c != 0), DATE(End_Year__c, End_Month__c, 1),
+				IF(
+								AND(End_Year__c !=0, End_Month__c = 0), DATE(End_Year__c, 1, 1),
+								NULL)
+				)</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
     <label>End Date</label>
     <required>false</required>

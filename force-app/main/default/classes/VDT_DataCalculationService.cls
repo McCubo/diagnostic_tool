@@ -39,12 +39,10 @@ public inherited sharing class VDT_DataCalculationService {
             insert dataCalculationRecord;
 
             if (dataCalculationRecord.Status__c == STATUS_IN_PROGRESS) {
-                Integer batchSize = 
-                    VDT_CustomMetadataService.getBatchSizeForObject(dataCalculationRecord.VDT_Object_Name__c);
-                    system.debug('batchSize :: ' + batchSize);
-                    system.debug('dataCalculationRecord.VDT_Object_Name__c :: ' + dataCalculationRecord.VDT_Object_Name__c);
-                VDT_FieldsSummaryCalculationBatch fieldSummaryBatch = 
-                    new VDT_FieldsSummaryCalculationBatch(dataCalculationRecord); 
+                Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject(dataCalculationRecord.VDT_Object_Name__c);
+                List<String> additionalFields = new List<String>{'Start_Date__c', 'End_Date__c'};
+                List<VDT_Data_Calculation__c> records = new VDT_DataCalculationSelector().withAdditionalFields(additionalFields).getById(dataCalculationRecord.Id);
+                VDT_FieldsSummaryCalculationBatch fieldSummaryBatch = new VDT_FieldsSummaryCalculationBatch(records.get(0));
                 Database.executeBatch(fieldSummaryBatch, batchSize);
             }
     }
@@ -69,7 +67,9 @@ public inherited sharing class VDT_DataCalculationService {
 
             if (dataCalculationRecord.Status__c == STATUS_IN_PROGRESS) {
                 Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject(dataCalculationRecord.VDT_Object_Name__c);
-                VDT_FieldValuesOccurrencesBatch fieldValueOccurrenceBatch = new VDT_FieldValuesOccurrencesBatch(dataCalculationRecord); 
+                List<String> additionalFields = new List<String>{'Start_Date__c', 'End_Date__c'};
+                List<VDT_Data_Calculation__c> records = new VDT_DataCalculationSelector().withAdditionalFields(additionalFields).getById(dataCalculationRecord.Id);
+                VDT_FieldValuesOccurrencesBatch fieldValueOccurrenceBatch = new VDT_FieldValuesOccurrencesBatch(records.get(0)); 
                 Database.executeBatch(fieldValueOccurrenceBatch, batchSize);
             }
     }
@@ -102,7 +102,7 @@ public inherited sharing class VDT_DataCalculationService {
 
         if (dataCalculationRecord.Status__c == STATUS_IN_PROGRESS) {
             Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject('Product_vod__c');
-            List<String> additionalFields = new List<String>{'Start_Date__c', 'End_Date__c'};
+            List<String> additionalFields = new List<String>{'VDT_Country__c', 'Start_Date__c', 'End_Date__c'};
             List<VDT_Data_Calculation__c> records = new VDT_DataCalculationSelector().withAdditionalFields(additionalFields).getById(dataCalculationRecord.Id);
             VDT_ProductAdoptionBatch productAdoptionBatch = new VDT_ProductAdoptionBatch(records[0]); 
             Database.executeBatch(productAdoptionBatch, batchSize);
@@ -135,6 +135,7 @@ public inherited sharing class VDT_DataCalculationService {
     public static VDT_Data_Calculation__c initRecordForProductAdoption(ProductAdoptionParameters searchParameters) {
         List<RecordType> recordTypes = VDT_RecordTypeService.getRecordTypeByObjectAndName('VDT_Data_Calculation__c', VDT_DataCalculationSelector.PRODUCT_ADOPTION_RECORD_TYPE_DEV);
         VDT_Data_Calculation__c dataCalculationRecord = new VDT_Data_Calculation__c(
+            VDT_Country__c = String.join(searchParameters.countries, ','),
             Status__c = searchParameters.status, 
             Start_Year__c = searchParameters.startYear,
             Start_Month__c = searchParameters.startMonth,
@@ -335,7 +336,8 @@ public inherited sharing class VDT_DataCalculationService {
     }
 
     public class ProductAdoptionParameters extends SearchParameters {
-
+        @AuraEnabled
+        public List<String> countries;
     }
 
 }

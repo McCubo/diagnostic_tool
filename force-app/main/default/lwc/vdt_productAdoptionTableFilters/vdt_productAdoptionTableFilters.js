@@ -10,8 +10,7 @@ export default class Vdt_productAdoptionTableFilters extends LightningElement {
         startYear: null,
         startMonth: null,
         endYear: null,
-        endMonth: null,
-        productTypes: []
+        endMonth: null
     }
 
     handleDateRangeChange(evt) {

@@ -153,6 +153,16 @@ public inherited sharing class VDT_DataCalculationSelector {
 
     public List<VDT_Data_Calculation__c> getByProductAdoptionParameters(VDT_DataCalculationService.ProductAdoptionParameters calculationParameters) {
         List<String> whereClauses = new List<String>();
+        if (!calculationParameters.countries.isEmpty()) {
+            List<String> countryCriteria = new List<String>();
+            for (String country : calculationParameters.countries) {
+                countryCriteria.add('VDT_Country__c LIKE \'%'+ country + '%\'');
+            }
+            countryCriteria.add('VDT_Country__c LIKE \'%All%\'');
+            whereClauses.add('(' + String.join(countryCriteria, ' OR ') + ')');
+        } else {
+            whereClauses.add('VDT_Country__c = NULL');
+        }
         if (calculationParameters.startYear != null) {
             whereClauses.add('Start_Year__c = ' + calculationParameters.startYear);
         }

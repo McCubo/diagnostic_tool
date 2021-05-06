@@ -5,41 +5,62 @@ public with sharing class VDT_FieldsSummaryCalculationBatch implements Database.
     private Integer batchSize = 0;
     private Integer recordCount = 0;
     private Integer batchCount = 0;
+    private Date startDate;
+    private Date endDate;
 
     public VDT_FieldsSummaryCalculationBatch(VDT_Data_Calculation__c dataCalculationRecord) {
         this.dataCalculationRecord = dataCalculationRecord;
+        this.startDate = dataCalculationRecord.Start_Date__c;
+        this.endDate = dataCalculationRecord.End_Date__c;
     }
 
     public Database.QueryLocator start(Database.BatchableContext bc) {
         try {
-            Map<String, List<String>> layoutWithFields = 
-                VDT_PageLayoutService.getLayoutsWithFieldsForObject(this.dataCalculationRecord.VDT_Object_Name__c);
+            String sobjectName = this.dataCalculationRecord.VDT_Object_Name__c;
+            if (this.dataCalculationRecord.VDT_Object_Name__c == 'PersonAccount' || this.dataCalculationRecord.VDT_Object_Name__c == 'BusinessAccount') {
+                sobjectName = 'Account';
+            }
+            Map<String, List<String>> layoutWithFields = VDT_PageLayoutService.getLayoutsWithFieldsForObject(sobjectName);
             List<String> typeFieldNames = new List<String>();
 
-            for (Schema.SObjectField field : VDT_ObjectService.getAllAccessibleFieldsForObject(this.dataCalculationRecord.VDT_Object_Name__c)) {
+            for (Schema.SObjectField field : VDT_ObjectService.getAllAccessibleFieldsForObject(sobjectName)) {
                 typeFieldNames.add(field.getDescribe().getName());
             }
 
-            this.calculationBuilder = 
-                new VDT_ObjectCalculationBuilder(this.dataCalculationRecord.VDT_Object_Name__c, typeFieldNames)
-                    .withPageLayoutInformation(layoutWithFields);
+            this.calculationBuilder = new VDT_ObjectCalculationBuilder(sobjectName, typeFieldNames)
+                                        .withPageLayoutInformation(layoutWithFields);
             
             String query = 'SELECT ';
             query += String.join(typeFieldNames, ',');
             
-            this.countryField = 
-                VDT_CustomMetadataService.getCountryFieldForObject(this.dataCalculationRecord.VDT_Object_Name__c);
+            this.countryField = VDT_CustomMetadataService.getCountryFieldForObject(sobjectName);
+            String dateField = VDT_CustomMetadataService.getDateFieldForObject(sobjectName);
+
             if (query.indexOf(countryField) < 0) {
                 query += ',' + countryField;
             }
 
-            query += ' FROM ' + this.dataCalculationRecord.VDT_Object_Name__c + ' WHERE ' + countryField + ' != NULL';
+            query += ' FROM ' + sobjectName + ' WHERE ' + countryField + ' != NULL';
+
+            if (this.dataCalculationRecord.VDT_Object_Name__c == 'PersonAccount') {
+                query += ' AND IsPersonAccount = TRUE';
+            }
+            if (this.dataCalculationRecord.VDT_Object_Name__c == 'BusinessAccount') {
+                query += ' AND IsPersonAccount = FALSE';
+            }
+            if (this.dataCalculationRecord.Start_Date__c != NULL && this.dataCalculationRecord.End_Date__c != NULL) {
+                query += ' AND {0} >= :startDate AND {0} <= :endDate';
+            }
+
+            String queryFormatted = String.format(query, new List<String>{
+                dateField
+            });
 
             this.dataCalculationRecord.VDT_Job_Start_Date__c = Datetime.now();
             this.dataCalculationRecord.Batches_Number__c = 0;
             update this.dataCalculationRecord;
-
-            return Database.getQueryLocator(query);
+            
+            return Database.getQueryLocator(queryFormatted);
         } catch (Exception e) {
             VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
             VDT_Log.get().publish();

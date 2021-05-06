@@ -4,6 +4,7 @@ public with sharing class VDT_ProductAdoptionBatch implements Database.Batchable
     private Date startDate;
     private Date endDate;
     private VDT_ProductAdoptionBuilder builder;
+    private final String DELIMITER_CHARACTER = ',';
 
     public VDT_ProductAdoptionBatch(VDT_Data_Calculation__c dataCalculationRecord) {
         this.dataCalculationRecord = dataCalculationRecord;
@@ -13,8 +14,18 @@ public with sharing class VDT_ProductAdoptionBatch implements Database.Batchable
 
     public Database.QueryLocator start(Database.BatchableContext bc) {
         String productCountryField = VDT_CustomMetadataService.getCountryFieldForObject('Product_vod__c');
-        String query = String.format('SELECT Id, Name, Product_Type_vod__c, {0} FROM Product_vod__c', new List<String> {
-            productCountryField
+        List<String> countries = String.isNotBlank(this.dataCalculationRecord.VDT_Country__c) ? this.dataCalculationRecord.VDT_Country__c.split(DELIMITER_CHARACTER) : new List<String>(); 
+        List<String> countryCriterias = new List<String>();
+        String countryClause = '';
+        if (!countries.isEmpty() && !countries.contains('All')) {
+            for (String countrycode : countries) {
+                countryCriterias.add(productCountryField + ' = \'' + countrycode + '\'');
+            }
+            countryClause = 'WHERE (' + String.join(countryCriterias, ' OR ') + ')';
+        }
+        String query = String.format('SELECT Id, Name, Product_Type_vod__c, {0} FROM Product_vod__c {1}', new List<String> {
+            productCountryField,
+            countryClause
         });
         String accountCountry = VDT_CustomMetadataService.getCountryFieldForObject('Account');
         String keyMessageCountry = VDT_CustomMetadataService.getCountryFieldForObject('Key_Message_vod__c');        

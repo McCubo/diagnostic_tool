@@ -59,13 +59,17 @@ public inherited sharing class VDT_ObjectCalculationBuilder {
                 String countryCode;
                 if (this.countryField.indexOf('.') >= 0) {
                     List<String> parentCountryField = this.countryField.split('\\.');
-                    countryCode = String.valueOf(record.getSObject(parentCountryField[0]).get(parentCountryField[1]));
+                    if (parentCountryField.size() == 2) {
+                        countryCode = String.valueOf(record.getSObject(parentCountryField[0]).get(parentCountryField[1]));
+                    }
+                    if (parentCountryField.size() == 3) {
+                        countryCode = String.valueOf(record.getSObject(parentCountryField[0]).getSObject(parentCountryField[1]).get(parentCountryField[2]));
+                    }
                 } else {
                     countryCode = String.valueOf(record.get(this.countryField));
                 }
-
                 VDT_FieldSummary.CountryUsageSummary countryUsageSummary = null;
-                if (fieldSummary.countryUsageSummary.get(countryCode) == null) {
+                if (!fieldSummary.countryUsageSummary.containsKey(countryCode)) {
                     countryUsageSummary = new VDT_FieldSummary.CountryUsageSummary();
                     fieldSummary.countryUsageSummary.put(countryCode, countryUsageSummary);
                 } else {

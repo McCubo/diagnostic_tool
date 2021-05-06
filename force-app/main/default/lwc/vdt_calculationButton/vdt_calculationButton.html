@@ -3,12 +3,15 @@
         <!-- <template if:true={_showSpinner}>
             <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
         </template> -->
-        <lightning-layout multiple-rows>
-            <template if:true={_showLastCalculation}>
-                <lightning-layout-item size="12">
+        <lightning-layout multiple-rows>            
+            <lightning-layout-item size="12">
+                <template if:true={_showLastCalculation}>
                     <strong>Last Calculation: {lastCalculationDate}</strong>
-                </lightning-layout-item>
-            </template>
+                </template>
+                <template if:false={_showLastCalculation}>
+                    &nbsp;
+                </template>
+            </lightning-layout-item>
             <lightning-layout-item size="12" class="calculation-button">
                 <lightning-button
                     variant="neutral"

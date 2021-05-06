@@ -167,7 +167,7 @@ public with sharing class VDT_ProductAdoptionBuilder {
 
     private void addValueToProductAndCountry(Map<String, Map<String, Integer>> genericMap, AggregateResult aggregateResult) {
         String productId = aggregateResult.get('productid').toString();
-        String country = aggregateResult.get('countryname').toString();
+        String country = String.valueOf(aggregateResult.get('countryname'));
         if (String.isBlank(country)) {
             return;
         }
@@ -222,7 +222,7 @@ public with sharing class VDT_ProductAdoptionBuilder {
                     prodSummary.countryUsageSummary.put(country, countryUsage);
                 }
             }
-            this.adoptionData.product_adoption.put(product.Name, prodSummary);
+            this.adoptionData.product_adoption.put(product.Id, prodSummary);
         }
         return this;
     }

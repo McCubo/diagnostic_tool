@@ -8,26 +8,30 @@
                             ondiagnose={handleDiagnose}
                             disabled={_filterDisabled}
                         ></c-vdt_objects-calculation-filter>
-                    </lightning-layout-item>                    
-                    <template if:true={_showFieldValuesButton}>
-                        <lightning-layout-item>
-                            <c-vdt_calculation-button
-                                last-calculation-date={_fieldOccurenceCalculation.calculationDate}
-                                calculation-status={_fieldOccurenceCalculation.status}
-                                oncalculate={handleCalculateValuesOccurrences}
-                                description='Field Values Occurrences'
-                            ></c-vdt_calculation-button>
-                        </lightning-layout-item>                        
-                    </template>
-                    <template if:true={_showCalculationButton}>
-                        <lightning-layout-item>
-                            <c-vdt_calculation-button
-                                last-calculation-date={_calculation.calculationDate}
-                                calculation-status={_calculation.status}
-                                oncalculate={handleCalculate}
-                            ></c-vdt_calculation-button>
-                        </lightning-layout-item>
-                    </template>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="8">
+                        <lightning-layout horizontal-align="end" multiple-rows>
+                            <lightning-layout-item size="4">
+                                <template if:true={_showFieldValuesButton}>
+                                    <c-vdt_calculation-button
+                                        last-calculation-date={_fieldOccurenceCalculation.calculationDate}
+                                        calculation-status={_fieldOccurenceCalculation.status}
+                                        oncalculate={handleCalculateValuesOccurrences}
+                                        description='Field Values Occurrences'
+                                    ></c-vdt_calculation-button>
+                                </template>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="3">
+                                <template if:true={_showCalculationButton}>
+                                    <c-vdt_calculation-button
+                                        last-calculation-date={_calculation.calculationDate}
+                                        calculation-status={_calculation.status}
+                                        oncalculate={handleCalculate}
+                                    ></c-vdt_calculation-button>
+                                </template>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </lightning-layout-item>
                 </lightning-layout>
             </lightning-layout-item>
             <template if:true={_showCalculationSection}>

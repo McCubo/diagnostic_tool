@@ -38,7 +38,7 @@ public inherited sharing class VDT_FieldSummary {
     }
 
     public class CountryUsageSummary {
-        
+
         public Integer usageNumber = 0;
         
         public Integer totalRecords = 0;

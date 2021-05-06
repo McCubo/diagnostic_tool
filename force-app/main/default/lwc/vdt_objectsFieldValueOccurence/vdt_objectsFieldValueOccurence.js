@@ -45,7 +45,7 @@ export default class Vdt_objectsFieldValueOccurence extends LightningElement {
             });
             this.initializePaginator();
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     }
 

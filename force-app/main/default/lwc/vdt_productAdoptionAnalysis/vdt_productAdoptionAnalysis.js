@@ -6,11 +6,14 @@ import validateCanRunCalculation from '@salesforce/apex/VDT_ObjectsCalculationCo
 import { showToast } from 'c/vdt_utils';
 
 import refreshMonitoringMessageChannel from '@salesforce/messageChannel/vdt_refreshMonitoring__c';
-import { publish, MessageContext } from 'lightning/messageService';
+import onekeyCountryChannel from '@salesforce/messageChannel/vdt_onekeyCountryChannel__c';
+import { subscribe, unsubscribe, APPLICATION_SCOPE, publish, MessageContext } from 'lightning/messageService';
 export default class Vdt_productAdoptionAnalysis extends LightningElement {
 
     @wire(MessageContext)
     _messageContext;
+    _subscription = null;
+    _countries = [];
 
     @api
     internationalCountry;
@@ -37,10 +40,43 @@ export default class Vdt_productAdoptionAnalysis extends LightningElement {
         return `No information was found for the selected filter criteria`;
     }
 
+    connectedCallback() {
+        this.subscribeToMessageChannel();
+    }
+
+    subscribeToMessageChannel() {
+        if (!this._subscription) {
+            this._subscription = subscribe(
+                this._messageContext,
+                onekeyCountryChannel,
+                (message) => this.handleMessage(message),
+                { scope: APPLICATION_SCOPE }
+            );
+        }
+    }
+
+    handleMessage(message) {
+        if (message.countries) {
+            this._countries = message.countries;
+        } else {
+            this._countries = [];
+        }
+    }
+
+    disconnectedCallback() {
+        this.unsubscribeToMessageChannel();
+    }
+
+    unsubscribeToMessageChannel() {
+        unsubscribe(this._subscription);
+        this._subscription = null;
+    }
+
     handleShowInfo(event) {
         this._showCalculationSection = false;
         this._filterDisabled = true;
         this._filter = event.detail;
+        this._filter.countries = this._countries;
         searchExistingCalculations({ jsonSearchParameters: JSON.stringify(this._filter) }).then(response => {
             this._calculation = response;
             this._showCalculationSection = true;
@@ -54,6 +90,7 @@ export default class Vdt_productAdoptionAnalysis extends LightningElement {
 
     handleCalculate(event) {
         this._calculationInProgress = true;
+        this._filter.countries = this._countries;
         validateCanRunCalculation()
         .then((response) => {
             if (response) {
@@ -72,6 +109,6 @@ export default class Vdt_productAdoptionAnalysis extends LightningElement {
         .catch((error) => {
             this.dispatchEvent(showToast(error, 'error'));
         })
-        .finally(() => this._calculationInProgress = false);;
+        .finally(() => this._calculationInProgress = false);
     }
 }

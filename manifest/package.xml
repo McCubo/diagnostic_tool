@@ -114,6 +114,7 @@
         <members>VDT_Object_Country_Field_Mapping.Key_Message_vod_c</members>
         <members>VDT_Object_Country_Field_Mapping.Patient_Metric_c</members>
         <members>VDT_Object_Country_Field_Mapping.Product_vod_c</members>
+        <members>VDT_Object_Date_Field_Mapping.Call2_vod_c</members>
         <members>VDT_Object_Product_Field_Mapping.EM_Event_vod_c</members>
         <members>VDT_Query.OCE_AccountTerritoryProduct</members>
         <members>VDT_Query.OCE_Account_Goal</members>
@@ -145,6 +146,7 @@
         <members>VDT_Log__e</members>
         <members>VDT_Object_Batch_Size_Mapping__mdt</members>
         <members>VDT_Object_Country_Field_Mapping__mdt</members>
+        <members>VDT_Object_Date_Field_Mapping__mdt</members>
         <members>VDT_Object_Product_Field_Mapping__mdt</members>
         <members>VDT_Query__mdt</members>
         <members>VDT_Tab__mdt</members>

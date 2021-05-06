@@ -19,6 +19,10 @@
         <value xsi:type="xsd:string">CreatedBy.Country</value>
     </values>
     <values>
+        <field>Default_Date_Field__c</field>
+        <value xsi:type="xsd:string">CreatedDate</value>
+    </values>
+    <values>
         <field>International_Country__c</field>
         <value xsi:type="xsd:string">INT</value>
     </values>

@@ -24,18 +24,21 @@ export default class Vdt_productsAndHierarchy extends LightningElement {
         .then(response => {
             if (response == 'PICKLIST') {
                 getCountryOptions().then(picklistResponse => {
+                    picklistResponse.unshift({ label: 'All', value: 'All', selected: false});
                     this._countryOptions = picklistResponse;
                 }).catch(error => {
                     this.dispatchEvent(showToast(error, 'error'));
                 });
             } else if (response == 'REFERENCE') {
                 getCountryOptionFromReference().then(referenceResponse => {
+                    referenceResponse.unshift({ label: 'All', value: 'All', selected: false});
                     this._countryOptions = referenceResponse;
                 }).catch(error => {
                     this.dispatchEvent(showToast(error, 'error'));
                 });
             } else if (response == 'STRING') {
                 getCountryCodeFromProductSetup().then(stringResponse => {
+                    stringResponse.unshift({ label: 'All', value: 'All', selected: false});
                     this._countryOptions = stringResponse;
                 }).catch(error => {
                     this.dispatchEvent(showToast(error, 'error'));
@@ -49,9 +52,13 @@ export default class Vdt_productsAndHierarchy extends LightningElement {
     }
 
     handleCountryChange(event) {
-        const payload = { countries: event.detail };
-        publish(this.messageContext, onekeyCountryChannel, payload);
-        this._countries = event.detail;
+        try {
+            const payload = { countries: event.detail };
+            publish(this.messageContext, onekeyCountryChannel, payload);
+            this._countries = event.detail;            
+        } catch (error) {
+            
+        }
     }
 
 }

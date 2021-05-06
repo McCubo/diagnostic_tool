@@ -12,6 +12,7 @@ import { publish, MessageContext } from 'lightning/messageService';
 import { showToast } from 'c/vdt_utils'
 
 export default class Vdt_objectsCalculation extends LightningElement {
+    
     _showCalculationButton = false;
     _lastCalculationDate = '';
     _calculationStatus = '';

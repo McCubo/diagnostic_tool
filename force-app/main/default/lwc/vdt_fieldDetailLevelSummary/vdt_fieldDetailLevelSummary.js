@@ -6,10 +6,6 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
         { label: 'Field Label', fieldName: 'label' },
         { label: 'Field Name', fieldName: 'name' },
         { label: 'Field Type', fieldName: 'type' },
-        {
-            type: 'action',
-            typeAttributes: { rowActions: this.getRowActions },
-        },
         { label: 'Available On Page Layout', fieldName: 'onPageLayout' },
         { label: 'Page Layout Name', fieldName: 'pageLayoutsString' },
         { label: '# Records have value', fieldName: 'totalUsage' },
@@ -29,7 +25,7 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
     _fieldFilterInput;
     _startDate;
     _countryCodeOptions = [];
-    _selectedCountries = []
+    _selectedCountries = [];
 
     get _endDateDisabled() {
         return this._startDate === null;
@@ -123,8 +119,8 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
             const falseValueUsage = field.countryUsageSummary[countryCode].fieldValueOccurences['false'] || 0;
             fieldEntry.totalRecords += field.countryUsageSummary[countryCode].totalRecords;
             
-            fieldEntry.totalValueUsage.true ? fieldEntry.totalValueUsage.true+= trueValueUsage : fieldEntry.totalValueUsage.true = trueValueUsage;
-            fieldEntry.totalValueUsage.false ? fieldEntry.totalValueUsage.false+= falseValueUsage : fieldEntry.totalValueUsage.false = falseValueUsage;
+            fieldEntry.totalValueUsage.true ? fieldEntry.totalValueUsage.true += trueValueUsage : fieldEntry.totalValueUsage.true = trueValueUsage;
+            fieldEntry.totalValueUsage.false ? fieldEntry.totalValueUsage.false += falseValueUsage : fieldEntry.totalValueUsage.false = falseValueUsage;
 
             fieldEntry.totalUsage = `${fieldEntry.totalValueUsage.true}/${fieldEntry.totalValueUsage.false}`;
 
@@ -173,29 +169,6 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
         }
     }
 
-    getRowActions(row, doneCallback) {
-        const actions = [];
-        actions.push({
-            'label': 'Export Field Breakdown',
-            'iconName': 'utility:list',
-            'name': 'export_breakdown',
-            'disabled': row.type !== 'picklist'
-        });
-        doneCallback(actions);
-    }
-
-    handleRowAction(evt) {
-        const action = evt.detail.action;
-        const row = evt.detail.row;
-        switch (action.name) {
-            case 'export_breakdown':
-                this.handleExportFieldBreakdown(row);
-                break;
-            default:
-                break;
-        }
-    }
-
     handleExportCSV() {
         let headers = {};
         let csvData = [];
@@ -228,68 +201,6 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
         downloadCSVFile(headers, csvData, this.objectName + '_fields_country_detail_summary');
     }
 
-    handleExportFieldBreakdown(row) {
-        let headers = {
-            [this._columns[1].fieldName]: this._columns[1].label,
-            value: 'Field Value',
-            valueUsage: 'Value Usage',
-            valueUsagePercentage: 'Value Usage Percentage',
-
-        };
-        let csvData = [];
-
-        
-        if (this._selectedCountries.length > 1) {
-            headers.country = 'country';
-            let fieldEntry = {};
-            this._selectedCountries.forEach(country => {
-                let countryData = this.parseData(this._rawData, [country]);
-                this.sortCalculationData(countryData);
-                fieldEntry = countryData.find(entry => entry.name === row.name);
-                Object.keys(fieldEntry.totalValueUsage).forEach(value => {
-                    csvData.push({
-                        name: row.name,
-                        value: value,
-                        valueUsage: value ? `${fieldEntry.totalValueUsage[value]}/${fieldEntry.totalUsage}` : `${fieldEntry.totalValueUsage[value]}/${fieldEntry.totalRecords}`,
-                        valueUsagePercentage: value ? `${fieldEntry.totalValueUsagePercentage[value]}%` : `${Math.floor(fieldEntry.totalValueUsage[value]/fieldEntry.totalRecords)*100}%`,
-                        country: country
-                    });
-                });
-            });
-            let countrySummaryData = this.parseData(this._rawData, this._selectedCountries);
-            this.sortCalculationData(countrySummaryData);
-            fieldEntry = countrySummaryData.find(entry => entry.name === row.name);
-            Object.keys(fieldEntry.totalValueUsage).forEach(value => {
-                if (value) {
-                    csvData.push({
-                        name: row.name,
-                        value: value,
-                        valueUsage: `${fieldEntry.totalValueUsage[value]}/${fieldEntry.totalUsage}`,
-                        valueUsagePercentage: `${fieldEntry.totalValueUsagePercentage[value]}%`,
-                        country: this._selectedCountries.join(',')
-                    });
-                }
-            });
-
-        } else {
-            const fieldEntry = this._calculationData.find(entry => entry.name === row.name);
-            if (fieldEntry.totalValueUsage) {
-                Object.keys(fieldEntry.totalValueUsage).forEach(value => {
-                    if (value) {
-                        csvData.push({
-                            name: row.name,
-                            value: value,
-                            valueUsage: `${fieldEntry.totalValueUsage[value]}/${fieldEntry.totalUsage}`,
-                            valueUsagePercentage: `${fieldEntry.totalValueUsagePercentage[value]}%`
-                        });
-                    }
-                });
-            }
-        }
-
-        downloadCSVFile(headers, csvData, `${this.objectName}_${row.name}_detail_usage_breakdown`);
-    }
-
     handleFieldFilterInputChange(evt) {
         let fieldFilterInput = evt.target.value.toLowerCase();
         this._filteredData = this._calculationData.filter(d => d.label.toLowerCase().indexOf(fieldFilterInput) >= 0 || d.name.toLowerCase().indexOf(fieldFilterInput) >= 0);
@@ -303,7 +214,6 @@ export default class Vdt_fieldHighLevelSummary extends LightningElement {
     }
 
     handleCountryOptionSelect(evt) {
-        console.log(evt.detail);
         this._selectedCountries = evt.detail;
         if (this._selectedCountries.indexOf('All') < 0 && this._selectedCountries.length > 0) {
             this._calculationData = this.parseData(this._rawData, this._selectedCountries);
