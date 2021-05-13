@@ -108,13 +108,6 @@
         <members>VDT_KPI_Configuration.Onekey_aligned_to_territories</members>
         <members>VDT_KPI_Configuration.Onekey_vs_Non_One_Key</members>
         <members>VDT_KPI_Configuration.Onekey_without_address</members>
-        <members>VDT_Object_Country_Field_Mapping.Approved_Document_vod_c</members>
-        <members>VDT_Object_Country_Field_Mapping.Clm_Presentation_vod_c</members>
-        <members>VDT_Object_Country_Field_Mapping.EM_Event_vod_c</members>
-        <members>VDT_Object_Country_Field_Mapping.Key_Message_vod_c</members>
-        <members>VDT_Object_Country_Field_Mapping.Patient_Metric_c</members>
-        <members>VDT_Object_Country_Field_Mapping.Product_vod_c</members>
-        <members>VDT_Object_Date_Field_Mapping.Call2_vod_c</members>
         <members>VDT_Object_Product_Field_Mapping.EM_Event_vod_c</members>
         <members>VDT_Query.OCE_AccountTerritoryProduct</members>
         <members>VDT_Query.OCE_Account_Goal</members>
@@ -199,5 +192,5 @@
         <members>vdt_styles</members>
         <name>StaticResource</name>
     </types>
-    <version>50.0</version>
+    <version>51.0</version>
 </Package>
