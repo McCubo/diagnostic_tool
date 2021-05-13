@@ -25,6 +25,7 @@ public with sharing class VDT_ProductAdoptionControllerTest {
         .endYearAndMonth(2021, 1)
         .calculationDate(System.today())
         .status('Completed')
+        .country('DE')
         .recordType(VDT_DataCalculationSelector.PRODUCT_ADOPTION_RECORD_TYPE_DEV)
         .insertRecord()
         .addAttachment(VDT_DataCalculationService.PRODUCT_ADOPTION_FILE_NAME, fileContent, VDT_AttachmentService.JSON_FORMAT);
@@ -55,7 +56,6 @@ public with sharing class VDT_ProductAdoptionControllerTest {
             adoptionData = VDT_ProductAdoptionController.getProductCatalogTree();
         }
         Test.stopTest();
-        System.debug('TEST:adoptionData: ' + adoptionData);
     }
 
     @IsTest
@@ -155,12 +155,13 @@ public with sharing class VDT_ProductAdoptionControllerTest {
             (List<VDT_Object_Country_Field_Mapping__mdt>) JSON.deserialize('[{"Country_Field_Reference__c": "CreatedBy.Country"}]', List<VDT_Object_Country_Field_Mapping__mdt>.class));
 
         VDT_CustomMetadataService.customMetadataWithRecords.put('VDT_General_Setting__mdt', 
-            (List<VDT_General_Setting__mdt>) JSON.deserialize('[{"Maximum_Running_Calculations__c": "2"}]', List<VDT_General_Setting__mdt>.class));
+            (List<VDT_General_Setting__mdt>) JSON.deserialize('[{"Maximum_Running_Calculations__c": "2", "Batch_Size__c": 200}]', List<VDT_General_Setting__mdt>.class));
 
         User adminUser = getUser();
-        String jsonSearchParameters = '{"startYear": 2015, "startMonth": 1, "endYear": 2021, "endMonth": 1}';
+        String jsonSearchParameters = '{"startYear": 2015, "startMonth": 1, "endYear": 2021, "endMonth": 1, "countries": ["DE"]}';
         Test.startTest();
         System.runAs(adminUser) {
+            /*
             Product_vod__c mainProduct = new VDT_ProductDataFactory('Product Onco')
             .setProperty('Country__c', 'DE')
             .setProperty('Product_Type_vod__c', 'Detail')
@@ -175,6 +176,7 @@ public with sharing class VDT_ProductAdoptionControllerTest {
                 Product_vod__c = mainProduct.Id
             );
             insert presentation;
+            */
             VDT_ProductAdoptionController.recalculateProductAdoption(jsonSearchParameters);
         }
         Test.stopTest();

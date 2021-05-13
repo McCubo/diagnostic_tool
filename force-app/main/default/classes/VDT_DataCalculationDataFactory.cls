@@ -42,6 +42,11 @@ public with sharing class VDT_DataCalculationDataFactory {
         return this;
     }
 
+    public VDT_DataCalculationDataFactory country(String country) {
+        this.dataCalculation.VDT_Country__c = country;
+        return this;
+    }
+
     public VDT_DataCalculationDataFactory status(String status) {
         this.dataCalculation.Status__c = status;
         return this;

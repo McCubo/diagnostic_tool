@@ -149,7 +149,7 @@ public with sharing class VDT_MasterDataAnalysisControllerTest {
             (List<VDT_Object_Country_Field_Mapping__mdt>) JSON.deserialize('[{"Country_Field_Reference__c": "CreatedBy.Country"}]', List<VDT_Object_Country_Field_Mapping__mdt>.class));
 
         VDT_CustomMetadataService.customMetadataWithRecords.put('VDT_General_Setting__mdt', 
-            (List<VDT_General_Setting__mdt>) JSON.deserialize('[{"Batch_Size__c": 200, "VDT_Default_Specialty_Field__c": "Type", "Maximum_Running_Calculations__c": "2"}]', List<VDT_General_Setting__mdt>.class));
+            (List<VDT_General_Setting__mdt>) JSON.deserialize('[{"Package_Version__c": "Veeva", "Batch_Size__c": 200, "VDT_Default_Specialty_Field__c": "Type", "Maximum_Running_Calculations__c": "2"}]', List<VDT_General_Setting__mdt>.class));
 
         User adminUser = getUser();
         String jsonSearchParameters = '{"startYear": 2015, "startMonth": 1, "endYear": 2021, "endMonth": 1, "countries": ["DE", "FR"]}';
