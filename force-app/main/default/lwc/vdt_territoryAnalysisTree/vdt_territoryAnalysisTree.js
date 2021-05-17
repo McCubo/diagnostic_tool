@@ -218,7 +218,28 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
     }
 
     handleExportCSV() {
-        downloadCSVFile(headers, this._calculationData, 'account_onekey_summary');
+        let headers = {};
+        this._columns.forEach(col => headers[col.fieldName] = col.label);
+        headers['parentTerritory'] = 'Parent Territory';
+        let records = [];
+        this.flatTreeData(this.territoryTreeData, records, null);
+        downloadCSVFile(headers, records, 'territory_analysis');
     }
 
+    flatTreeData(treeData, records, parentTerritory) {
+        treeData.forEach(territory => {
+            let flatTerritory = Object.assign({}, territory);
+            // removing unneeded properties
+            delete flatTerritory.parentId;
+            delete flatTerritory.countrySummary;
+            delete flatTerritory._children;
+            if (parentTerritory) {
+                flatTerritory['parentTerritory'] = parentTerritory;
+            }             
+            records.push(flatTerritory);
+            if (territory._children) {
+                this.flatTreeData(territory._children, records, territory.name);
+            }           
+        });
+    }
 }
