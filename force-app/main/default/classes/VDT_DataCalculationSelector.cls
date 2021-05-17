@@ -2,10 +2,12 @@ public inherited sharing class VDT_DataCalculationSelector {
     
     private Integer limitValue;
     private List<String> additionalFields = new List<String>();
+    private List<String> conditionals = new List<String>();
     public static final String MASTER_ANALYSIS_RECORD_TYPE_DEV = 'VDT_Master_Data_Analysis';
     public static final String PRODUCT_ADOPTION_RECORD_TYPE_DEV = 'VDT_Product_Adoption';
     public static final String OBJECT_ANALYSIS_RECORD_TYPE_DEV = 'VDT_Object_Field_Analysis';
-    public static final String FIELD_OCCURRENCE_RECORD_TYPE_DEV = 'VDT_Object_Field_Value_Occurrence';    
+    public static final String FIELD_OCCURRENCE_RECORD_TYPE_DEV = 'VDT_Object_Field_Value_Occurrence';
+    public static final String TERRITORY_ANALYSIS_RECORD_TYPE_DEV = 'VDT_Territory_Analysis';
 
     public String getObjectName() {
         return 'VDT_Data_Calculation__c';
@@ -35,6 +37,19 @@ public inherited sharing class VDT_DataCalculationSelector {
     public VDT_DataCalculationSelector withAdditionalFields(List<String> additionalFields) {
         this.additionalFields = additionalFields;
         return this;
+    }
+
+    public VDT_DataCalculationSelector withConditionals(List<String> conditionals) {
+        this.conditionals = conditionals;
+        return this;
+    }
+
+    public String getWhereClause() {
+        String whereClause = '';
+        if (!this.conditionals.isEmpty()) {
+            whereClause = 'WHERE ' + String.join(this.conditionals, ' AND ');
+        }
+        return whereClause;
     }
 
     public String getLimitString() {
@@ -113,6 +128,48 @@ public inherited sharing class VDT_DataCalculationSelector {
             }
         );
 
+        return Database.query(query);
+    }
+
+    public List<VDT_Data_Calculation__c> getByTerritoryCalculationParameters(VDT_DataCalculationService.TerritoryAnalysisParameters calculationParameters) {
+        List<String> countryCriteria = new List<String>();
+        for (String country : calculationParameters.countries) {
+            countryCriteria.add('VDT_Country__c LIKE \'%'+ country + '%\'');
+        }
+        countryCriteria.add('VDT_Country__c LIKE \'%All%\'');
+
+
+        String whereString = '(' + String.join(countryCriteria, ' OR ') + ')';
+
+        whereString += ' AND RecordType.DeveloperName = :TERRITORY_ANALYSIS_RECORD_TYPE_DEV';
+        String query = String.format(
+            'SELECT {0} FROM {1} ' + 
+            'WHERE {2} '+
+            'WITH SECURITY_ENFORCED ORDER BY VDT_Job_End_Date__c DESC ' +
+            '{3}', 
+            new List<String>{
+                getFieldListString(),
+                getObjectName(),
+                whereString,
+                getLimitString()
+            }
+        );
+        return Database.query(query);
+    }
+
+    public List<VDT_Data_Calculation__c> query() {
+        String query = String.format(
+            'SELECT {0} FROM {1} ' + 
+            '{2} '+
+            'WITH SECURITY_ENFORCED ORDER BY VDT_Job_End_Date__c DESC ' +
+            '{3}', 
+            new List<String>{
+                getFieldListString(),
+                getObjectName(),
+                getWhereClause(),
+                getLimitString()
+            }
+        );        
         return Database.query(query);
     }
 

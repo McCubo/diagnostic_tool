@@ -1,5 +1,6 @@
 public inherited sharing class VDT_ObjectService {
 
+    public static final String TERRITORY_ANALYSIS_FILE_NAME = 'territory_management';
     public static final String FIELD_VALUES_OCCURRENCES_FILE_NAME = 'field_values_occurrences';
     public static final String FIELD_SUMMARY_CALCULATION_FILE_NAME = 'summary_calculation';
 

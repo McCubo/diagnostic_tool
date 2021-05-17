@@ -1,0 +1,26 @@
+<template>
+    <div class="container">
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12">
+                <lightning-layout horizontal-align="end">
+                    <lightning-layout-item>
+                        <lightning-button
+                            variant="brand"
+                            name="export_csv"
+                            label='Export CSV'
+                            onclick={handleExportCSV}
+                        ></lightning-button>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="graphs">
+                <lightning-tree-grid
+                    columns={_columns}
+                    data={territoryTreeData}
+                    key-field="id"
+                    hide-checkbox-column
+                ></lightning-tree-grid>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

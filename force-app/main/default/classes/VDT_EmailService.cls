@@ -3,8 +3,28 @@ public inherited sharing class VDT_EmailService {
     public static final String TEMPLATE_CALCULATION_FINISHED = 'VDT_FieldCamparisonCalculationFinished';
     public static final String TEMPLATE_MASTER_ANALYSIS_FINISHED = 'VDT_MasterAnalysisCalculationFinished';
     public static final String TEMPLATE_FIELDS_OCCURRENCES_FINISHED = 'VDT_FieldsOccurrencesFinished';
+    public static final String TEMPLATE_TERRITORY_ANALYSIS_FINISHED = 'VDT_TerritoryAnalysisFinished';
     public static final String SENDER_DISPLAY_NAME = 'BASELife CRM [TBD]';
     public static final String REPLY_TO = 'no-reply@base-crm.com.TBD';
+
+    public static void sendTerritoryAnalysisFinishedEmailNotification(String country) {
+        List<EmailTemplate> emailTemplates = new VDT_EmailTemplateSelector().getByName(TEMPLATE_TERRITORY_ANALYSIS_FINISHED);
+        List<VDT_Data_Calculation__c> calculationObjects = new VDT_DataCalculationSelector()
+                                                            .withLimit(1)
+                                                            .withAdditionalFields(new List<String>{'CreatedById'})
+                                                            .withConditionals(new List<String> {
+                                                                'VDT_Country__c = \'' + country + '\'',
+                                                                'RecordType.DeveloperName = \'' + VDT_DataCalculationSelector.TERRITORY_ANALYSIS_RECORD_TYPE_DEV + '\''
+                                                            })
+                                                            .query();
+        if (emailTemplates.isEmpty()) {
+            throw new EmailServiceException('Email Template Not Found');
+        }
+        if (calculationObjects.isEmpty()) {
+            throw new EmailServiceException('Calculation For Notification Not Found');
+        }
+        VDT_EmailService.sendEmail(emailTemplates[0].Id, calculationObjects[0].CreatedById, calculationObjects[0].Id);
+    }
 
     public static void sendFieldValuesOccurrencesFinishedEmailNotification(String objectName) {
         List<EmailTemplate> emailTemplates = new VDT_EmailTemplateSelector().getByName(TEMPLATE_FIELDS_OCCURRENCES_FINISHED);

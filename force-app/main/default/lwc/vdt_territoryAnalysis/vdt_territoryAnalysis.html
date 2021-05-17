@@ -1,0 +1,47 @@
+<template>
+    <div class="container">
+        <lightning-tabset>
+            <lightning-tab label="Analysis">
+                <lightning-layout multiple-rows>
+                    <lightning-layout-item size="12">
+                        <lightning-layout horizontal-align="spread">
+                            <lightning-layout-item size="10">
+                                <c-vdt_territory-analysis-filter onshowinfo={handleShowInfo} disabled={_filterDisabled}></c-vdt_territory-analysis-filter>
+                            </lightning-layout-item>
+                            <template if:true={_showCalculationButton}>
+                                <lightning-layout-item>
+                                    <c-vdt_calculation-button
+                                        last-calculation-date={_calculation.calculationDate}
+                                        calculation-status={_calculation.status}
+                                        oncalculate={handleCalculate}
+                                    ></c-vdt_calculation-button>
+                                </lightning-layout-item>
+                            </template>
+                        </lightning-layout>
+                    </lightning-layout-item>
+                    <template if:true={_showCalculationSection}>
+                        <template if:true={_showEmpty}>
+                            <lightning-layout-item size="12">
+                                <c-vdt_illustration-provider
+                                    svgname="lakeMountain"
+                                    message={_emptyMessage}
+                                ></c-vdt_illustration-provider>
+                            </lightning-layout-item>
+                        </template>
+                        <template if:true={_showCalculation}>
+                            <lightning-layout-item size="12" class="graphs">
+                                <c-vdt_territory-analysis-tree countries={countries} calculation-data={_calculation.data}></c-vdt_territory-analysis-tree>
+                            </lightning-layout-item>
+                        </template>
+                    </template>
+                </lightning-layout>
+            </lightning-tab>
+            <lightning-tab label="Monitoring">
+                <c-vdt_calculation-monitoring></c-vdt_calculation-monitoring>
+            </lightning-tab>
+            <lightning-tab label="Logs">
+                <c-vdt_onekey-logs></c-vdt_onekey-logs>
+            </lightning-tab>
+        </lightning-tabset>
+    </div>
+</template>

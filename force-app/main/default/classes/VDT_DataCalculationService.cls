@@ -2,6 +2,7 @@ public inherited sharing class VDT_DataCalculationService {
 
     public static final String MASTER_DATA_ANALYSIS_SUMMARY_FILE_NAME = 'onekey_analysis_summary';
     public static final String PRODUCT_ADOPTION_FILE_NAME = 'product_adoption_summary';
+    public static final String TERRITORY_ANALYSIS_FILE_NAME = 'territory_management';
 
     public static final String STATUS_COMPLETED = 'Completed';
     public static final String STATUS_ERROR = 'Error';
@@ -19,6 +20,33 @@ public inherited sharing class VDT_DataCalculationService {
         VDT_DataCalculationService.STATUS_COMPLETED, 
         VDT_DataCalculationService.STATUS_ERROR 
     };
+
+    public static void triggerTerritoryAnalysisCalculation(TerritoryAnalysisParameters calculationParameters) {
+        Integer maxRunningCalculations = VDT_CustomMetadataService.getMaxNumberOfRunningCalculations();
+            List<VDT_Data_Calculation__c> inProgressCalculations = 
+                new VDT_DataCalculationSelector().getDataCalculationsByStatus(
+                    new List<String>{ 
+                        VDT_DataCalculationService.STATUS_IN_PROGRESS
+                    }
+                );
+            
+            if (inProgressCalculations.size() < maxRunningCalculations) {
+                calculationParameters.status = STATUS_IN_PROGRESS;
+            } else {
+                calculationParameters.status = STATUS_IN_QUEUE;
+            }
+
+            VDT_Data_Calculation__c dataCalculationRecord = initRecordForTerritoryAnalysis(calculationParameters);
+            insert dataCalculationRecord;
+
+            if (dataCalculationRecord.Status__c == STATUS_IN_PROGRESS) {
+                Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject('Account');
+                List<String> additionalFields = new List<String>{'VDT_Country__c'};
+                List<VDT_Data_Calculation__c> records = new VDT_DataCalculationSelector().withAdditionalFields(additionalFields).getById(dataCalculationRecord.Id);
+                VDT_TerritoryManagementBatch territoryAnalysisBatch = new VDT_TerritoryManagementBatch(records.get(0));
+                Database.executeBatch(territoryAnalysisBatch, batchSize);
+            }
+    }
 
     public static void triggerCalculation(CalculationParameters calculationParameters) {
         Integer maxRunningCalculations = VDT_CustomMetadataService.getMaxNumberOfRunningCalculations();
@@ -158,6 +186,36 @@ public inherited sharing class VDT_DataCalculationService {
             RecordTypeId = recordTypes[0].Id
         );
         return dataCalculationRecord;
+    }
+
+    public static VDT_Data_Calculation__c initRecordForTerritoryAnalysis(TerritoryAnalysisParameters searchParameters) {
+        List<RecordType> recordTypes = VDT_RecordTypeService.getRecordTypeByObjectAndName('VDT_Data_Calculation__c', VDT_DataCalculationSelector.TERRITORY_ANALYSIS_RECORD_TYPE_DEV);
+        VDT_Data_Calculation__c dataCalculationRecord = new VDT_Data_Calculation__c(
+            VDT_Country__c = String.join(searchParameters.countries, ','),
+            Status__c = searchParameters.status, 
+            RecordTypeId = recordTypes[0].Id
+        );
+        return dataCalculationRecord;
+    }
+
+    public static DataCalculation getExistingTerritoryAnalysisCalculation(TerritoryAnalysisParameters searchParameters) {        
+        List<VDT_Data_Calculation__c> calculations = new VDT_DataCalculationSelector().withLimit(1).getByTerritoryCalculationParameters(searchParameters);
+        
+        DataCalculation calculation = new DataCalculation();
+        if (!calculations.isEmpty()) {
+            calculation.status = calculations[0].Status__c;
+            calculation.calculationDate = String.valueOf(calculations[0].VDT_Calculation_Date__c);
+            Attachment att = VDT_AttachmentService.getAttachmentForRecord(
+                VDT_DataCalculationService.TERRITORY_ANALYSIS_FILE_NAME,
+                VDT_AttachmentService.JSON_FORMAT, 
+                calculations[0].Id
+            );
+
+            if (att != null) {
+                calculation.data = att.Body.toString();
+            }
+        }
+        return calculation;
     }
 
     public static DataCalculation getExistingCalculationMasterAnalysis(CalculationAnalysisParameters searchParameters) {
@@ -338,6 +396,14 @@ public inherited sharing class VDT_DataCalculationService {
     public class ProductAdoptionParameters extends SearchParameters {
         @AuraEnabled
         public List<String> countries;
+    }
+
+    public class TerritoryAnalysisParameters {
+
+        @AuraEnabled
+        public List<String> countries;
+
+        public String status;
     }
 
 }

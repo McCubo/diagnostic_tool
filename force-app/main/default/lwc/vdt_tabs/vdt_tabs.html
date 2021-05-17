@@ -62,6 +62,16 @@
                     active={_tabs.settings.active}
                 ></c-vdt_tab-item>
             </li>
+            <li 
+                class="slds-item"
+                onclick={handleTerritoryClick}
+            >
+                <c-vdt_tab-item
+                    icon-name={_tabs.territory.icon}
+                    tab-name={_tabs.territory.name}
+                    active={_tabs.territory.active}
+                ></c-vdt_tab-item>
+            </li>            
         </ul>
     </div>
 </template>

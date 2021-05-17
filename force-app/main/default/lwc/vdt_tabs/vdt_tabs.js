@@ -33,6 +33,11 @@ export const TABS = {
         name: 'Settings',
         icon: 'utility:slider',
         active: false
+    },
+    territory: {
+        name: 'Territory Analysis',
+        icon: 'utility:location',
+        active: false
     }
 }
 export const DEFAULT_TAB = TABS.home;
@@ -62,6 +67,11 @@ export default class Vdt_tabs extends LightningElement {
 
     @wire(MessageContext)
     messageContext;
+
+    handleTerritoryClick() {
+        Object.values(this._tabs).forEach(tab => tab.active = tab.name === this._tabs.territory.name);
+        publish(this.messageContext, tabsMessageChannel, {selectedTab: this._tabs.territory.name});
+    }
 
     handleHomeClick() {
         Object.values(this._tabs).forEach(tab => tab.active = tab.name === this._tabs.home.name);
