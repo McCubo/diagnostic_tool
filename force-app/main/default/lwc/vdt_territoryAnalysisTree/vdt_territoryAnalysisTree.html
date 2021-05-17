@@ -2,8 +2,38 @@
     <div class="container">
         <lightning-layout multiple-rows>
             <lightning-layout-item size="12">
-                <lightning-layout horizontal-align="end">
-                    <lightning-layout-item>
+                <lightning-layout>
+                    <lightning-layout-item size="2">
+                        <lightning-input 
+                            type="text" 
+                            variant="label-hidden"
+                            name="field" 
+                            placeholder="Find Territory"
+                            onchange={handleTerritoryFilterInputChange}
+                        ></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="2" class="filter-component">
+                        <c-vdt_autocomplete-input
+                            placeholder="Select Specialty"
+                            options={specialtyOptions}
+                            onoptionselect={handleSpecialtyOptionSelect}
+                        ></c-vdt_autocomplete-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="2" class="filter-component">
+                        <c-vdt_autocomplete-input
+                            placeholder="Operator"
+                            options={operators}
+                            onoptionselect={handleOperatorOptionSelect}
+                        ></c-vdt_autocomplete-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="2" class="filter-component">
+                        <lightning-input type="number" 
+                            variant="label-hidden"
+                            placeholder="Enter a number"
+                            onchange={handleAmountChange}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item alignment-bump="left">
                         <lightning-button
                             variant="brand"
                             name="export_csv"

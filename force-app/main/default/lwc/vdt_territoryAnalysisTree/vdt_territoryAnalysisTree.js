@@ -3,6 +3,14 @@ import { downloadCSVFile } from 'c/vdt_csvUtil'
 import { subscribe, unsubscribe, APPLICATION_SCOPE, MessageContext } from 'lightning/messageService';
 import onekeyCountryChannel from '@salesforce/messageChannel/vdt_onekeyCountryChannel__c';
 
+const COMPARISON_OPERATORS = [
+    {label: 'equals', value: 'eq'},
+    {label: 'not equals', value: 'neq'},
+    {label: 'less than', value: 'lt'},
+    {label: 'greater than', value: 'gt'},
+    {label: 'less or equal', value: 'loe'},
+    {label: 'greater or equal', value: 'goe'},
+];
 export default class Vdt_territoryAnalysisTree extends LightningElement {
 
     _columnsBase = [
@@ -17,6 +25,13 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
     _specialtyColumns = [];
     territoryTreeData = [];
     _specialties = [];
+    specialtyOptions = [];
+    filterNumberValue = null;
+    selectedSpecialty = null;
+    _territoryFilter = '';
+    operators = COMPARISON_OPERATORS;
+    selectedOperator = null;
+    amountFilter = null;
     @api
     countries = [];
     @wire(MessageContext)
@@ -66,22 +81,31 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
         this.territoryTreeData = this.parseData(data);
     }
 
-    setSpecialtyColumns(data) {        
+    setSpecialtyColumns(data) {
+        let options = [];
         if (data.specialties && data.specialties.length > 0) {
             data.specialties.forEach(specialty => {
+                options.push({label: specialty, value: `${specialty}_accounts`});
                     this._specialtyColumns.push({ label: specialty, fieldName: `${specialty}_accounts`, type: 'number', initialWidth: 110});
                     this._specialties.push(`${specialty}_accounts`);
                 }
             );
             this._columns = this._columnsBase.concat(this._specialtyColumns);
         }
+        this.specialtyOptions = options;
     }
 
     parseData(data) {
         let territoryAnalysis = data.territoryAnalysis;
         let parentTerritories = Object.values(territoryAnalysis)
-                                .filter(territory => territory.parentId == null)
-                                .map(territory => this.flatTerritoryRecord(territory));
+                                .filter(territory => {
+                                    if (this._territoryFilter) {
+                                        return territory.parentId == null && territory.name.toLowerCase().includes(this._territoryFilter);
+                                    }
+                                    return territory.parentId == null;
+                                })
+                                .map(territory => this.flatTerritoryRecord(territory))
+                                .filter(territory => this.filterBySpecialty(territory));
         parentTerritories.forEach(parentTerritory => {
             this.addChildRecords(parentTerritory, territoryAnalysis);
         });
@@ -89,6 +113,33 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
             parentTerritory['total_accounts'] = this.getTotalAccounts(parentTerritory);
         });        
         return parentTerritories;
+    }
+
+    filterBySpecialty(territory) {
+        let filter = true;
+        if (this.selectedSpecialty && this.selectedOperator && this.amountFilter) {
+            switch(this.selectedOperator) {
+                case 'eq':
+                    filter = territory[this.selectedSpecialty] == this.amountFilter;
+                    break;
+                case 'neq':
+                    filter = territory[this.selectedSpecialty] != this.amountFilter;
+                    break;
+                case 'lt':
+                    filter = territory[this.selectedSpecialty] < this.amountFilter;
+                    break;
+                case 'gt':
+                    filter = territory[this.selectedSpecialty] > this.amountFilter;
+                    break;
+                case 'loe':
+                    filter = territory[this.selectedSpecialty] <= this.amountFilter;
+                    break;
+                case 'goe':
+                    filter = territory[this.selectedSpecialty] >= this.amountFilter;
+                    break;
+            }
+        }
+        return filter;
     }
 
     flatTerritoryRecord(territory) {
@@ -117,11 +168,17 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
 
     addChildRecords(parentTerritory, territoryAnalysis) {
         let childerTerritories = Object.values(territoryAnalysis)
-                                .filter(territory => territory.parentId == parentTerritory.id)
+                                .filter(territory => {
+                                    if (this._territoryFilter) {
+                                        return territory.parentId == parentTerritory.id && territory.name.toLowerCase().includes(this._territoryFilter);
+                                    }
+                                    return territory.parentId == parentTerritory.id;
+                                })
                                 .map(childTerritory => {
                                     this.addChildRecords(childTerritory, territoryAnalysis);
                                     return this.flatTerritoryRecord(childTerritory);
-                                });
+                                })
+                                .filter(territory => this.filterBySpecialty(territory));
         if (childerTerritories != null && childerTerritories.length > 0) {
             parentTerritory['_children'] = childerTerritories;
         }
@@ -137,6 +194,27 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
             });
         }
         return totalAccounts;
+    }
+
+    handleTerritoryFilterInputChange(event) {
+        let territoryFilterInput = event.target.value.toLowerCase();
+        this._territoryFilter = territoryFilterInput;
+        this.territoryTreeData = this.parseData(JSON.parse(this._rawData));
+    }
+
+    handleSpecialtyOptionSelect(event) {
+        this.selectedSpecialty = event.detail;
+        this.territoryTreeData = this.parseData(JSON.parse(this._rawData));
+    }
+
+    handleOperatorOptionSelect(event) {
+        this.selectedOperator = event.detail;
+        this.territoryTreeData = this.parseData(JSON.parse(this._rawData));
+    }
+
+    handleAmountChange(event){
+        this.amountFilter = event.detail.value;
+        this.territoryTreeData = this.parseData(JSON.parse(this._rawData));
     }
 
     handleExportCSV() {
