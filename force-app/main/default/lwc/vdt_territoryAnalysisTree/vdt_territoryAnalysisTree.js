@@ -153,7 +153,7 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
                     } else {
                         specialtyNumbers[`${specialty}_accounts`] = territory.countrySummary[countryCode][specialty];
                     }
-                    accountsInTerritory += specialtyNumbers[`${specialty}_accounts`];
+                    accountsInTerritory += territory.countrySummary[countryCode][specialty];
                 });
             }
         });

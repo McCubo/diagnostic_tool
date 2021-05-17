@@ -15,6 +15,11 @@ public with sharing class VDT_ProductAdoptionBuilder {
     private Map<String, String> productFieldByObject = new Map<String, String>();
     private final String PRESENTATION_STATUS_APPROVED = 'Approved_vod';
     private final String APPROVED_DOCUMENT_STATUS_APPROVED = 'Approved_vod';
+    private String internationalCountryCode;
+
+    public VDT_ProductAdoptionBuilder() {
+        this.internationalCountryCode = VDT_CustomMetadataService.getInternationalCountryValue();
+    }
 
     public VDT_ProductAdoptionBuilder addCountriesForObjects(Map<String, String> countryFieldByObject) {
         this.countryFieldByObject.putAll(countryFieldByObject);
@@ -189,6 +194,9 @@ public with sharing class VDT_ProductAdoptionBuilder {
             String countryValue = getPropertyValue(product, productCountryField);
             ProductSummary prodSummary = new ProductSummary(product.Id, product.Name, countryValue, product.Product_Type_vod__c);            
             for (String country : this.countries) {
+                if (country != countryValue && countryValue != this.internationalCountryCode) {
+                    continue;
+                }
                 CountryUsageSummary countryUsage = new CountryUsageSummary();
                 Map<String, Integer> keyMessageCount = this.keyMessagesByProduct.get(product.Id);
                 if (keyMessageCount != null && keyMessageCount.containsKey(country)) {

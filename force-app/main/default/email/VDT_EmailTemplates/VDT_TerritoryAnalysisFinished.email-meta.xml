@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>email send as notification once the Territory Analysis job completes</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <name>VDT_TerritoryAnalysisFinished</name>
+    <style>none</style>
+    <subject>Territory Analysis for {!VDT_Data_Calculation__c.VDT_Country__c} Finished!</subject>
+    <type>text</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

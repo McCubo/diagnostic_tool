@@ -251,12 +251,12 @@
         <recordType>VDT_Data_Calculation__c.VDT_Product_Adoption</recordType>
         <visible>true</visible>
     </recordTypeVisibilities>
+    <recordTypeVisibilities>
+        <recordType>VDT_Data_Calculation__c.VDT_Territory_Analysis</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
     <tabSettings>
         <tab>VDT_Data_Calculation__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>VDT_Field_Summary__c</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
