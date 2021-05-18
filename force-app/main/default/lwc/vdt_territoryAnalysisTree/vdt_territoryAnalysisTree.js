@@ -32,6 +32,7 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
     operators = COMPARISON_OPERATORS;
     selectedOperator = null;
     amountFilter = null;
+    _parentTerritories = [];
     @api
     countries = [];
     @wire(MessageContext)
@@ -78,7 +79,7 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
         let data = JSON.parse(val);
         this._rawData = val;
         this.setSpecialtyColumns(data);
-        this.territoryTreeData = this.parseData(data);
+        this.parseData(data);
     }
 
     setSpecialtyColumns(data) {
@@ -95,24 +96,59 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
         this.specialtyOptions = options;
     }
 
+    refreshTreeGrid(parentTerritoriesJSON) {
+        let parentTerritories = JSON.parse(parentTerritoriesJSON);
+        let filteredTerritories = parentTerritories.filter(territory => this.shouldIncludeTerritory(territory));
+        filteredTerritories.forEach(parentTerritory => {
+            parentTerritory['total_accounts'] = this.getTotalAccounts(parentTerritory);
+        });
+        return filteredTerritories;
+    }
+
     parseData(data) {
         let territoryAnalysis = data.territoryAnalysis;
-        let parentTerritories = Object.values(territoryAnalysis)
-                                .filter(territory => {
-                                    if (this._territoryFilter) {
-                                        return territory.parentId == null && territory.name.toLowerCase().includes(this._territoryFilter);
-                                    }
-                                    return territory.parentId == null;
-                                })
-                                .map(territory => this.flatTerritoryRecord(territory))
-                                .filter(territory => this.filterBySpecialty(territory));
-        parentTerritories.forEach(parentTerritory => {
+        this._parentTerritories = Object.values(territoryAnalysis)
+                                .filter(territory => territory.parentId == null)
+                                .map(territory => this.flatTerritoryRecord(territory));
+        this._parentTerritories.forEach(parentTerritory => {
             this.addChildRecords(parentTerritory, territoryAnalysis);
         });
-        parentTerritories.forEach(parentTerritory => {
-            parentTerritory['total_accounts'] = this.getTotalAccounts(parentTerritory);
-        });        
-        return parentTerritories;
+        this.territoryTreeData = this.refreshTreeGrid(JSON.stringify(this._parentTerritories));
+    }
+
+    shouldIncludeTerritory(territory) {
+        if (territory._children) {
+            let filteredChildren = territory._children.filter(childTerritory => {
+                return this.shouldIncludeTerritory(childTerritory);
+            });
+            if (filteredChildren != null && filteredChildren.length > 0) {
+                territory['_children'] = filteredChildren;
+            } else {
+                delete territory._children;
+            }
+        }
+        return this.showBasedOnChildTerritories(territory) || (this.filterByName(territory) && this.filterBySpecialty(territory));
+    }
+
+    showBasedOnChildTerritories(territory) {
+        let show = false;
+        if (territory._children) {
+            show = territory._children.reduce((acc, childTerritory) => {
+                let _show = this.filterBySpecialty(childTerritory) && this.filterByName(childTerritory);
+                if (childTerritory._children) {
+                    _show = _show || this.showBasedOnChildTerritories(childTerritory);
+                }
+                return acc || _show;
+            }, false);
+        }
+        return show;
+    }
+
+    filterByName(territory) {
+        if (this._territoryFilter) {
+            return territory.name.toLowerCase().includes(this._territoryFilter);
+        }
+        return true;
     }
 
     filterBySpecialty(territory) {
@@ -168,17 +204,11 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
 
     addChildRecords(parentTerritory, territoryAnalysis) {
         let childerTerritories = Object.values(territoryAnalysis)
-                                .filter(territory => {
-                                    if (this._territoryFilter) {
-                                        return territory.parentId == parentTerritory.id && territory.name.toLowerCase().includes(this._territoryFilter);
-                                    }
-                                    return territory.parentId == parentTerritory.id;
-                                })
+                                .filter(territory => territory.parentId == parentTerritory.id)
                                 .map(childTerritory => {
                                     this.addChildRecords(childTerritory, territoryAnalysis);
                                     return this.flatTerritoryRecord(childTerritory);
-                                })
-                                .filter(territory => this.filterBySpecialty(territory));
+                                });
         if (childerTerritories != null && childerTerritories.length > 0) {
             parentTerritory['_children'] = childerTerritories;
         }
@@ -199,22 +229,22 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
     handleTerritoryFilterInputChange(event) {
         let territoryFilterInput = event.target.value.toLowerCase();
         this._territoryFilter = territoryFilterInput;
-        this.territoryTreeData = this.parseData(JSON.parse(this._rawData));
+        this.territoryTreeData = this.refreshTreeGrid(JSON.stringify(this._parentTerritories));
     }
 
     handleSpecialtyOptionSelect(event) {
         this.selectedSpecialty = event.detail;
-        this.territoryTreeData = this.parseData(JSON.parse(this._rawData));
+        this.territoryTreeData = this.refreshTreeGrid(JSON.stringify(this._parentTerritories));
     }
 
     handleOperatorOptionSelect(event) {
         this.selectedOperator = event.detail;
-        this.territoryTreeData = this.parseData(JSON.parse(this._rawData));
+        this.territoryTreeData = this.refreshTreeGrid(JSON.stringify(this._parentTerritories));
     }
 
     handleAmountChange(event){
         this.amountFilter = event.detail.value;
-        this.territoryTreeData = this.parseData(JSON.parse(this._rawData));
+        this.territoryTreeData = this.refreshTreeGrid(JSON.stringify(this._parentTerritories));
     }
 
     handleExportCSV() {
