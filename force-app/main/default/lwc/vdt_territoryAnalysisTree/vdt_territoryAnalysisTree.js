@@ -14,15 +14,14 @@ const COMPARISON_OPERATORS = [
 export default class Vdt_territoryAnalysisTree extends LightningElement {
 
     _columnsBase = [
-        { label: 'Territory Name', fieldName: 'name', type: 'text' },
-        { label: 'Total Accounts', fieldName: 'total_accounts', type: 'number' },
-        { label: 'Territory Accounts', fieldName: 'territory_accounts', type: 'number' }
+        { label: 'Territory Name', fieldName: 'name', type: 'text', initialWidth: 150 },
+        { label: 'Total Accounts', fieldName: 'total_accounts', type: 'number', initialWidth: 115 },
+        { label: 'Territory Accounts', fieldName: 'territory_accounts', type: 'number', initialWidth: 115 }
     ];
 
     _rawData = [];
     _calculationData = [];
     _columns = [];
-    _specialtyColumns = [];
     territoryTreeData = [];
     _specialties = [];
     metricOptions = [];
@@ -57,7 +56,7 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
     handleMessage(message) {
         if (message.countries) {
             this.countries = message.countries;
-            this.territoryTreeData = this.parseData(JSON.parse(this._rawData));
+            this.parseData(JSON.parse(this._rawData));
         }
     }
 
@@ -78,22 +77,20 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
     set calculationData(val) {
         let data = JSON.parse(val);
         this._rawData = val;
-        this.setSpecialtyColumns(data);
+        this.setMetricOptions(data);
         this.parseData(data);
     }
 
-    setSpecialtyColumns(data) {
+    setMetricOptions(data) {
         let options = [
             {label: 'Territory Accounts', value: 'territory_accounts'}
         ];
         if (data.specialties && data.specialties.length > 0) {
             data.specialties.forEach(specialty => {
-                options.push({label: specialty, value: `${specialty}_accounts`});
-                    this._specialtyColumns.push({ label: specialty, fieldName: `${specialty}_accounts`, type: 'number', initialWidth: 110});
+                    options.push({label: specialty, value: `${specialty}_accounts`});
                     this._specialties.push(`${specialty}_accounts`);
                 }
             );
-            this._columns = this._columnsBase.concat(this._specialtyColumns);
         }
         this.metricOptions = options;
     }
@@ -104,7 +101,28 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
         filteredTerritories.forEach(parentTerritory => {
             parentTerritory['total_accounts'] = this.getTotalAccounts(parentTerritory);
         });
+        let colNames = [... new Set(this.getSpecialtyColumnsWithValues(filteredTerritories, 1))].sort();
+        this._columns = this._columnsBase.concat(colNames.map(columnName => {
+            return { label: columnName.replace('_accounts', ''), fieldName: columnName, type: 'number'}
+        }));
         return filteredTerritories;
+    }
+
+    getSpecialtyColumnsWithValues(territories) {
+        let defaultProperties = ['parentId', 'name', 'id', 'countrySummary', 'territory_accounts', 'total_accounts', '_children'];
+        let columnsWithValues = territories.reduce((accumulator, territory) => {
+            let cols = [];
+            Object.keys(territory).forEach(propertyName => {
+                if (territory[propertyName] != 0 && !defaultProperties.includes(propertyName)) {
+                    cols.push(propertyName);
+                }
+            });
+            if (territory['_children']) {
+                cols = cols.concat(this.getSpecialtyColumnsWithValues(territory._children));
+            }
+            return accumulator.concat(cols);
+        }, []);
+        return columnsWithValues;
     }
 
     parseData(data) {
