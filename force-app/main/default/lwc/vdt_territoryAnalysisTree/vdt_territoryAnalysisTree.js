@@ -25,9 +25,9 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
     _specialtyColumns = [];
     territoryTreeData = [];
     _specialties = [];
-    specialtyOptions = [];
+    metricOptions = [];
     filterNumberValue = null;
-    selectedSpecialty = null;
+    selectedMetricOption = null;
     _territoryFilter = '';
     operators = COMPARISON_OPERATORS;
     selectedOperator = null;
@@ -83,7 +83,9 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
     }
 
     setSpecialtyColumns(data) {
-        let options = [];
+        let options = [
+            {label: 'Territory Accounts', value: 'territory_accounts'}
+        ];
         if (data.specialties && data.specialties.length > 0) {
             data.specialties.forEach(specialty => {
                 options.push({label: specialty, value: `${specialty}_accounts`});
@@ -93,7 +95,7 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
             );
             this._columns = this._columnsBase.concat(this._specialtyColumns);
         }
-        this.specialtyOptions = options;
+        this.metricOptions = options;
     }
 
     refreshTreeGrid(parentTerritoriesJSON) {
@@ -127,14 +129,14 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
                 delete territory._children;
             }
         }
-        return this.showBasedOnChildTerritories(territory) || (this.filterByName(territory) && this.filterBySpecialty(territory));
+        return this.showBasedOnChildTerritories(territory) || (this.filterByName(territory) && this.filterByMetricNumber(territory));
     }
 
     showBasedOnChildTerritories(territory) {
         let show = false;
         if (territory._children) {
             show = territory._children.reduce((acc, childTerritory) => {
-                let _show = this.filterBySpecialty(childTerritory) && this.filterByName(childTerritory);
+                let _show = this.filterByMetricNumber(childTerritory) && this.filterByName(childTerritory);
                 if (childTerritory._children) {
                     _show = _show || this.showBasedOnChildTerritories(childTerritory);
                 }
@@ -151,27 +153,27 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
         return true;
     }
 
-    filterBySpecialty(territory) {
+    filterByMetricNumber(territory) {
         let filter = true;
-        if (this.selectedSpecialty && this.selectedOperator && this.amountFilter) {
+        if (this.selectedMetricOption && this.selectedOperator && this.amountFilter) {
             switch(this.selectedOperator) {
                 case 'eq':
-                    filter = territory[this.selectedSpecialty] == this.amountFilter;
+                    filter = territory[this.selectedMetricOption] == this.amountFilter;
                     break;
                 case 'neq':
-                    filter = territory[this.selectedSpecialty] != this.amountFilter;
+                    filter = territory[this.selectedMetricOption] != this.amountFilter;
                     break;
                 case 'lt':
-                    filter = territory[this.selectedSpecialty] < this.amountFilter;
+                    filter = territory[this.selectedMetricOption] < this.amountFilter;
                     break;
                 case 'gt':
-                    filter = territory[this.selectedSpecialty] > this.amountFilter;
+                    filter = territory[this.selectedMetricOption] > this.amountFilter;
                     break;
                 case 'loe':
-                    filter = territory[this.selectedSpecialty] <= this.amountFilter;
+                    filter = territory[this.selectedMetricOption] <= this.amountFilter;
                     break;
                 case 'goe':
-                    filter = territory[this.selectedSpecialty] >= this.amountFilter;
+                    filter = territory[this.selectedMetricOption] >= this.amountFilter;
                     break;
             }
         }
@@ -232,8 +234,8 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
         this.territoryTreeData = this.refreshTreeGrid(JSON.stringify(this._parentTerritories));
     }
 
-    handleSpecialtyOptionSelect(event) {
-        this.selectedSpecialty = event.detail;
+    handleMetricOptionSelect(event) {
+        this.selectedMetricOption = event.detail;
         this.territoryTreeData = this.refreshTreeGrid(JSON.stringify(this._parentTerritories));
     }
 
