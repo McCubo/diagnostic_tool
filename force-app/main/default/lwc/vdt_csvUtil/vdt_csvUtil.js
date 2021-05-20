@@ -28,7 +28,9 @@ function generateCsvString(headers, objArray) {
     const headerValues = Object.values(headers);
     
     let csvString = '';
-    csvString += headerValues.join(columnDelimiter);
+    csvString += headerValues
+                .map(value => `${enclosingCharacter}${value}${enclosingCharacter}` )
+                .join(columnDelimiter);
     csvString += lineDelimiter;
 
     objArray.forEach(dataEntry => {

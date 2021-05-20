@@ -46,9 +46,14 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
                 specialtyValue = EMPTY_PLACEHOLDER;
             }
             this.territoryAnalysisData.specialties.add(specialtyValue);
-
-            if (territoryAnalysis.countrySummary.containsKey(countryValue)) {
-                Map<String, Integer> specialties = territoryAnalysis.countrySummary.get(countryValue);
+            Map<String, Map<String, Integer>> countrySummaryMap = null;
+            if (account.IsPersonAccount) {
+                countrySummaryMap = territoryAnalysis.personCountrySummary;
+            } else {
+                countrySummaryMap = territoryAnalysis.businessCountrySummary;
+            }
+            if (countrySummaryMap.containsKey(countryValue)) {
+                Map<String, Integer> specialties = countrySummaryMap.get(countryValue);
                 if (specialties.containsKey(specialtyValue)) {
                     specialties.put(specialtyValue, specialties.get(specialtyValue) + 1);
                 } else {
@@ -57,7 +62,7 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
             } else {
                 Map<String, Integer> specialties = new Map<String, Integer>();
                 specialties.put(specialtyValue, 1);
-                territoryAnalysis.countrySummary.put(countryValue, specialties);
+                countrySummaryMap.put(countryValue, specialties);
             }
         }
         return this;
@@ -109,7 +114,8 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
             this.parentId = parentId;
         }
 
-        public Map<String, Map<String, Integer>> countrySummary = new Map<String, Map<String, Integer>>();
+        public Map<String, Map<String, Integer>> businessCountrySummary = new Map<String, Map<String, Integer>>();
+        public Map<String, Map<String, Integer>> personCountrySummary = new Map<String, Map<String, Integer>>();
 
     }
 }

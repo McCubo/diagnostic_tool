@@ -33,6 +33,13 @@
                             onchange={handleAmountChange}>
                         </lightning-input>
                     </lightning-layout-item>
+                    <lightning-layout-item size="2" class="filter-component">
+                        <c-vdt_autocomplete-input
+                            placeholder="Account Type"
+                            options={accountTypeOptions}
+                            onoptionselect={handleAccountTypeOptionSelect}
+                        ></c-vdt_autocomplete-input>
+                    </lightning-layout-item>                    
                     <lightning-layout-item alignment-bump="left">
                         <lightning-button
                             variant="brand"

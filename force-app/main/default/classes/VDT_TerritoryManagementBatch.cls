@@ -22,7 +22,7 @@ public with sharing class VDT_TerritoryManagementBatch implements Database.Batch
             countryClause = 'WHERE (' + String.join(countryCriterias, ' OR ') + ')';
         }
         String query = String.format(
-            'SELECT Id, {0}, {1} FROM Account {2}', 
+            'SELECT Id, IsPersonAccount, {0}, {1} FROM Account {2}', 
             new List<String> {
                 countryField,
                 specialtyField,
