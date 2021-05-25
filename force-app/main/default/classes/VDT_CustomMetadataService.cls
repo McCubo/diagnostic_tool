@@ -1,3 +1,8 @@
+/**
+ * @author      BASE Life Science
+ * @since       2021.03.01
+ * @description Provides methods to access congifuration records stored in Custom Metadata Type objects
+ */
 public inherited sharing class VDT_CustomMetadataService {
     public static final String DEFAULT_APP_SETTINGS = 'Default';
     public static final String VDT_GENERAL_SETTINGS = 'VDT_General_Setting__mdt';
@@ -14,6 +19,11 @@ public inherited sharing class VDT_CustomMetadataService {
     @TestVisible
     private static Map<String, List<SObject>> customMetadataWithRecords = new Map<String, List<SObject>>();
 
+    /**
+     * @description  returns the Field to be used to filter records based on date parameters, if none is found, the `Default_Date_Field__c` from `Default Settings` is returned
+     * @param objectName SObject API Name
+     * @return  `String` with the Field API name
+     */
     public static String getDateFieldForObject(String objectName) {
         String dateField;
         List<VDT_Object_Date_Field_Mapping__mdt> dateFieldMappings = [SELECT Date_API_Field__c
@@ -32,6 +42,10 @@ public inherited sharing class VDT_CustomMetadataService {
         return dateField;
     }
 
+    /**
+     * @description returns the default Date field used for those objects with no mapping found on `VDT_Object_Date_Field_Mapping__mdt`
+     * @return  `String` Default Date field API name
+     */
     public static String getDefaultDateField() {
         String dateField;
         List<VDT_General_Setting__mdt> defaultSettings = [SELECT Default_Date_Field__c
@@ -49,6 +63,10 @@ public inherited sharing class VDT_CustomMetadataService {
         return dateField;
     }
 
+    /**
+     * @description Only those options returned on this method will be shown as menu options on the UI to the User
+     * @return  `String` of comma separated values with the names of the active options
+     */
     public static String getActiveMenuOptions() {
         List<String> menuOptions = new List<String>();
         List<VDT_Tab__mdt> tabs  = [SELECT  DeveloperName 
@@ -67,6 +85,10 @@ public inherited sharing class VDT_CustomMetadataService {
         return String.join(menuOptions, ',');
     }
 
+    /**
+     * @description this method determines what SOBjects should be queried on the Calculation jobs.
+     * @return  `String` the package version (it can be whether Veeva or OCE) 
+     */
     public static String getPackageVersion() {
         String packageVersion;
         List<VDT_General_Setting__mdt> defaultSettings  = [SELECT  Package_Version__c 
@@ -83,6 +105,11 @@ public inherited sharing class VDT_CustomMetadataService {
         return packageVersion;
     }
 
+    /**
+     * @param packageVersion What SObjects the jobs should run the queries based on the package version
+     * @param moduleName name of the module we want to retrieve the queries for (Master Data Analysis or Product Adoption)
+     * @return  `Map<String,String>` map of SOQL queries by their configuration name.
+     */
     public static Map<String,String> getQueriesByPackageVersionAndModule(String packageVersion, String moduleName) {
         Map<String,String> queriesByName = new Map<String,String>();
         List<VDT_Query__mdt> queries  = [SELECT  Name__c, Query__c 
@@ -99,6 +126,11 @@ public inherited sharing class VDT_CustomMetadataService {
         return queriesByName;
     }
 
+    /**
+     * @description returns the API name configured for the given search key
+     * @param mappingName Custom Metadata Type record's developer name
+     * @return  `String` Field API Name
+     */
     public static String getFieldNameForCustomObject(String mappingName) {
         String fieldName;
         List<VDT_Custom_Objects_Field_Mapping__mdt> objectFieldMappings;       
@@ -119,6 +151,11 @@ public inherited sharing class VDT_CustomMetadataService {
         return fieldName;
     }
 
+    /**
+     * @description returns the field API name that references the Product Catalog object for any SOBject.
+     * @param objectName Custom Metadata Type developer name
+     * @return  `String` Field API Name
+     */
     public static String getProductFieldForObject(String objectName) {
         String productField;
         List<VDT_Object_Product_Field_Mapping__mdt> productFieldMappings;
@@ -140,6 +177,10 @@ public inherited sharing class VDT_CustomMetadataService {
         return productField;
     }
 
+    /**
+     * @description returns a list of Options to be used in Picklist components when the configured `Country` field is a text field
+     * @return  `List<VDT_OptionWrapper>` options with all countries
+     */
     public static List<VDT_OptionWrapper> getDefaultCountries() {
         List<VDT_OptionWrapper> options = new List<VDT_OptionWrapper>();
         List<VDT_General_Setting__mdt> defaultSettings;
@@ -161,6 +202,9 @@ public inherited sharing class VDT_CustomMetadataService {
         return options;
     }
 
+    /**
+     * @return  `String` International Product Code that identifies a Product Catalog record as International
+     */
     public static String getInternationalCountryValue() {
         String intCountryVal;
         List<VDT_General_Setting__mdt> defaultSettings;
@@ -181,6 +225,9 @@ public inherited sharing class VDT_CustomMetadataService {
         return intCountryVal;
     }
 
+    /**
+     * @return  `Boolean` whether the Manage Territory calculation should be performed or not.
+     */
     public static Boolean isTerritoryManagementActive() {
         Boolean isActive = false;
         List<VDT_General_Setting__mdt> defaultSettings;        
@@ -200,6 +247,10 @@ public inherited sharing class VDT_CustomMetadataService {
         return isActive;
     }
 
+    /**
+     * @description Only Active KPIs at the time the job is run are included in the calculations
+     * @return  `List<VDT_KPI_Configuration__mdt>` List of KPIs that should be taken into account when running the `Master Data Analysis` job.
+     */
     public static List<VDT_KPI_Configuration__mdt> getActiveKpiConfigurations() {
         List<VDT_KPI_Configuration__mdt> configurations = new List<VDT_KPI_Configuration__mdt>();        
         configurations = [
@@ -215,6 +266,10 @@ public inherited sharing class VDT_CustomMetadataService {
         return configurations;
     }
 
+    /**
+     * @description Custom targets override default target values for a given Country and KPI
+     * @return  `Map<String, Decimal>` Custom Target for each KPI and Country combination
+     */
     public static Map<String, Decimal> getCountryKpiConfigurations() {
         List<VDT_KPI_by_Country__mdt> configurations = new List<VDT_KPI_by_Country__mdt>();
         configurations = [
@@ -232,6 +287,10 @@ public inherited sharing class VDT_CustomMetadataService {
         return targetByCountryAndKpi;
     }
 
+    /**
+     * @description Used to categorize whether an Account record should be treated as Internal or External Customer
+     * @return  `Map<String, List<String>>` with two keys: External_Customers and Internal_Customers, each has a List of Account Record Type names
+     */
     public static Map<String, List<String>> getAccountRecordTypesByType() {
         List<VDT_Account_Record_Type_Mapping__mdt> recordTypeConfigurations = new List<VDT_Account_Record_Type_Mapping__mdt>();
         recordTypeConfigurations = [
@@ -253,6 +312,11 @@ public inherited sharing class VDT_CustomMetadataService {
         return accountRecordTypesByType;
     }
 
+    /**
+     * @description  returns the Field to be used to filter records based on Country, if none is found, the `Default_Country_Code_Field__c` from `Default Settings` is returned
+     * @param objectName Object API Name
+     * @return  `String` Field API Name that holds the Country value for the given object
+     */
     public static String getCountryFieldForObject(String objectName) {
         String countryField;
         List<VDT_Object_Country_Field_Mapping__mdt> countryFieldMappings;
@@ -277,6 +341,9 @@ public inherited sharing class VDT_CustomMetadataService {
         return countryField;
     }
 
+    /**
+     * @return  `String` Field API Name used to Group and Filter account records based on Specialty values
+     */
     public static String getAccountSpecialtyField() {
         String specialtyField;
         List<VDT_General_Setting__mdt> defaultSettings;
@@ -296,6 +363,9 @@ public inherited sharing class VDT_CustomMetadataService {
         return specialtyField;
     }
 
+    /**
+     * @return  `String` Field API Name that holds the Country value for any SObject
+     */
     public static String getDefaultCountryField() {
         String countryField;
 
@@ -318,6 +388,10 @@ public inherited sharing class VDT_CustomMetadataService {
         return countryField;
     }
     
+    /**
+     * @param objectName SObject API Name
+     * @return  `Integer` number of records to process on each batch for the given SObject
+     */
     public static Integer getBatchSizeForObject(String objectName) {
         Integer batchSize;
         List<VDT_Object_Batch_Size_Mapping__mdt> batchSizeMappings;
@@ -341,6 +415,10 @@ public inherited sharing class VDT_CustomMetadataService {
         return batchSize;
     }
 
+    /**
+     * @description If no mapping record is found for any SObject on `VDT_Object_Batch_Size_Mapping__mdt` then the default Batch size is used.
+     * @return  `Integer` number of records to process on each batch for the given SObject
+     */
     public static Integer getDefaultBatchSize() {
         Integer batchSize;
 
@@ -362,6 +440,9 @@ public inherited sharing class VDT_CustomMetadataService {
         return batchSize;
     }
 
+    /**
+     * @return  `Integer` number of years the Date Range component should list on the Start Year picklist
+     */
     public static Integer getStartDateYearDecrement() {
         Integer yearDecrement;
 
@@ -383,6 +464,11 @@ public inherited sharing class VDT_CustomMetadataService {
         return yearDecrement;
     }
 
+    /**
+     * @description Maximun number of jobs the app allows to be added to the queue, if the number is reached, a message wil be shown to the user letting them know no more jobs
+     *              can be added.
+     * @return  `Integer` number of jobs that can be added to the queue.
+     */
     public static Integer getMaxNumberOfCalculationRequests() {
         Integer maxCalcRequests;
 
@@ -405,6 +491,9 @@ public inherited sharing class VDT_CustomMetadataService {
         return maxCalcRequests;
     }
 
+    /**
+     * @return  `Integer` number of max jobs running simultaneously
+     */
     public static Integer getMaxNumberOfRunningCalculations() {
         Integer maxRunningCalc;
 
@@ -427,6 +516,9 @@ public inherited sharing class VDT_CustomMetadataService {
         return maxRunningCalc;
     }
 
+    /**
+     * @return  `String`
+     */
     public static String getStandardFieldIdentifier() {
         String identifier;
 
@@ -448,6 +540,9 @@ public inherited sharing class VDT_CustomMetadataService {
         return identifier;
     }
 
+    /**
+     * @return  `Decimal` percentage of Daily Async Execution allowed to be used by the Appliaction.
+     */
     public static Decimal getDailyAsyncExecutionAllocation() {
         Decimal allocation;
 

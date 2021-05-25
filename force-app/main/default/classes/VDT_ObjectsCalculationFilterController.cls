@@ -1,5 +1,14 @@
+/**
+ * @description Provides Access to Apex Service Methods to LWC Javascript controllers
+ * @author BASE Life Science
+ * @since 2021.03.01
+ */
 public inherited sharing class VDT_ObjectsCalculationFilterController {
     
+    /**
+     * @return  `List<VDT_OptionWrapper>` All SObjects the user has access To, used to populate the options on the `Entity/Object` select component on the
+     *          Object-Field Analysis screen.
+     */
     @AuraEnabled(cacheable=true)
     public static List<VDT_OptionWrapper> fetchObjectOptions(){
         List<VDT_OptionWrapper> objecOptions = new List<VDT_OptionWrapper>();

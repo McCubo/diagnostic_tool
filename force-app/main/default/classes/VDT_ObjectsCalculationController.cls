@@ -1,5 +1,16 @@
+/**
+ * @description Provides Access to Apex Service Methods
+ * @author BASE Life Science
+ * @since 2021.03.01
+ */
 public inherited sharing class VDT_ObjectsCalculationController {
 
+    /**
+     * 
+     * @param jsonSearchParameters Search parameters selected by the User on the Object-Field Analysis screen
+     * @return  `VDT_DataCalculationService.DataCalculation` record with all information about the calculation job: Status, Completion Date and Output data generated
+     * @exception AuraHandledException
+     */
     @AuraEnabled
     public static VDT_DataCalculationService.DataCalculation searchExistingCalculations(String calculationParametersString) {
         try {
@@ -17,6 +28,12 @@ public inherited sharing class VDT_ObjectsCalculationController {
         }
     }
 
+    /**
+     * 
+     * @param jsonSearchParameters Search parameters selected by the User on the Object-Field Analysis screen
+     * @return  `VDT_DataCalculationService.DataCalculation` record with all information about the calculation job: Status, Completion Date and Output data generated
+     * @exception AuraHandledException
+     */    
     @AuraEnabled
     public static VDT_DataCalculationService.DataCalculation searchExistingFieldOccurrenceCalculations(String calculationParametersString) {
         try {
@@ -34,6 +51,10 @@ public inherited sharing class VDT_ObjectsCalculationController {
         }
     }
 
+    /**
+     * @return  `Boolean` value that checks if the queue still has slots available to trigger a new job
+     * @exception 
+     */
     @AuraEnabled
     public static Boolean validateCanRunCalculation(){
         try {
@@ -56,6 +77,11 @@ public inherited sharing class VDT_ObjectsCalculationController {
         }
     }
 
+    /**
+     * @description If the queue has availability, a new job is triggered for the selected jobs.
+     * @param jsonSearchParameters Search parameters selected by the User on the Object-Field Analysis screen
+     * @exception AuraHandledException
+     */     
     @AuraEnabled
     public static void recalculateObjectFieldSummary(String calculationParametersString) {
         try {
@@ -73,6 +99,11 @@ public inherited sharing class VDT_ObjectsCalculationController {
         }
     }
 
+    /**
+     * @description If the queue has availability, a new job is triggered for the selected jobs.
+     * @param jsonSearchParameters Search parameters selected by the User on the Object-Field Analysis screen
+     * @exception AuraHandledException
+     */      
     @AuraEnabled
     public static void recalculateFieldValuesOccurrences(String calculationParametersString) {
         try {

@@ -1,3 +1,8 @@
+/**
+ * @description Apex builder class used to aggregate data based on territory and account specialty
+ * @author BASE Life Science
+ * @since 2021.03.01
+ */
 public with sharing class VDT_TerritoryAnalysisBuilder {
 
     private String countryField;
@@ -12,6 +17,10 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
         this.specialtyField = specialtyField;
     }
 
+    /**
+     * @param records account records from current batch's execution
+     * @return  `VDT_TerritoryAnalysisBuilder`
+     */
     public VDT_TerritoryAnalysisBuilder withRecords(List<Account> records) {
         this.accountIds.clear();
         this.records = records;
@@ -31,6 +40,10 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
         return JSON.serialize(this.territoryAnalysisData);
     }
 
+    /**
+     * @description aggregates the number of accounts assigned for a given territory segregated by account's specialty
+     * @return  `VDT_TerritoryAnalysisBuilder`
+     */
     public VDT_TerritoryAnalysisBuilder calculate() {
         Map<Id, Account> accountsById = new Map<Id, Account>(this.records);
         List<ObjectTerritory2Association> accountTerritoryAssignments = getTerritoryAssignmentForAccounts(this.accountIds);
@@ -68,6 +81,11 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
         return this;
     }
 
+    /**
+     * @description get all territory asignment records for the given accounts
+     * @param accountIds set of ids being processed
+     * @return  `List<ObjectTerritory2Association>`
+     */
     private List<ObjectTerritory2Association> getTerritoryAssignmentForAccounts(Set<String> accountIds) {
         return [SELECT Id, Territory2Id, Territory2.Name, ObjectId, Territory2.ParentTerritory2Id FROM ObjectTerritory2Association WHERE ObjectId IN :accountIds];
     }

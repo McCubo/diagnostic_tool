@@ -1,5 +1,6 @@
 /**
- * Trigger Handler for Account object
+ * @author BASE Life Science
+ * @since 2021.03.01
  */
 public with sharing class VDT_LogTriggerHandler extends VDT_TriggerHandler.DelegateBase {
 
@@ -10,6 +11,10 @@ public with sharing class VDT_LogTriggerHandler extends VDT_TriggerHandler.Deleg
         setAfterInsert((Map<Id, VDT_Log__e>) newMap);
     }
 
+    /**
+     * @description When a new Log Platform event is fired, we need to create a new Log Event Record
+     * @param newMap A map of IDs to the new versions of the sObject records.
+     */
     private void setAfterInsert(Map<Id, VDT_Log__e> newMap) {
         system.debug('newMap :: ' + newMap);
         List<VDT_Log_Event__c> events = new List<VDT_Log_Event__c>();

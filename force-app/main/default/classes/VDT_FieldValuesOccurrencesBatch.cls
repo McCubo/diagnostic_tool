@@ -1,3 +1,8 @@
+/**
+ * @description Batch job that calculates the field values occurences for PICKLIST fields for any given object
+ * @author BASE Life Science
+ * @since 2021.03.01
+ */
 public with sharing class VDT_FieldValuesOccurrencesBatch implements Database.Batchable<SObject>, Database.Stateful, Database.AllowsCallouts {
 
     private VDT_Data_Calculation__c dataCalculationRecord;
@@ -7,6 +12,12 @@ public with sharing class VDT_FieldValuesOccurrencesBatch implements Database.Ba
         this.dataCalculationRecord = dataCalculationRecord;
     }
 
+    /**
+     * @description Creates a SOQL query for the SObject specified in the VDT_Data_Calculation__c record.
+     *              Only PICKLIST fields are included in the SELECT clause of the query.
+     * @param bc 
+     * @return  `Database.QueryLocator`
+     */
     public Database.QueryLocator start(Database.BatchableContext bc) {
         try {
             String sobjectName = this.dataCalculationRecord.VDT_Object_Name__c;
@@ -55,6 +66,11 @@ public with sharing class VDT_FieldValuesOccurrencesBatch implements Database.Ba
         }
     }
 
+    /**
+     * @description calculates the field values occurrences for all records on the current batch execution
+     * @param bc 
+     * @param records 
+     */
     public void execute(Database.BatchableContext bc, List<SObject> records) {
         try {
             this.dataCalculationRecord.Batches_Number__c += 1;
@@ -68,6 +84,12 @@ public with sharing class VDT_FieldValuesOccurrencesBatch implements Database.Ba
         }
     }
 
+    /**
+     * @description Once all batches are completed, the VDT_Data_Calculation__c record status is updated to COMPLETED,
+     *              Creates a new attachment record and links it to the VDT_Data_Calculation__c record, lastly,
+     *              a new Email alert is sent letting the user who triggered the job know the job has been completed.
+     * @param bc 
+     */    
     public void finish(Database.BatchableContext bc) {
         try {
             this.dataCalculationRecord.VDT_Job_End_Date__c = Datetime.now();

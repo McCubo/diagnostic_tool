@@ -1,6 +1,8 @@
 /**
- * @author          m.caceres@polsource.com
- * @created_date:   2021-03-16
+ * @description This Batch job queries the `Account` SObject that match the countries selected from the `Country` picklist option on the 
+ *              Master Data Analysis screen.
+ * @author BASE Life Science
+ * @since 2021.03.01
  */
 public with sharing class VDT_MasterAnalysisCalculationBatch implements Database.Batchable<SObject>, Database.Stateful {
     
@@ -16,6 +18,12 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
         this.endDate = dataCalculationRecord.End_Date__c;
     }
 
+    /**
+     * @description Builds a SOQL query for Accounts object, including all records that match the filter criterias selected by the user on the
+     *              Search Form. Queries the package version and based on it, it gets all queries to calculate the metrics for all Active KPIs
+     * @param bc 
+     * @return  `Database.QueryLocator`
+     */
     public Database.QueryLocator start(Database.BatchableContext bc) {
         try {
             String packageVersion = VDT_CustomMetadataService.getPackageVersion();
@@ -60,6 +68,11 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
         }
     }
 
+    /**
+     * @description For each set of records, we call the builder's method, It uses an internal variable to keep track of all records
+     * @param bc 
+     * @param records records to be proccessed in the current execute method
+     */
     public void execute(Database.BatchableContext bc, List<Account> records) {
         try {
             this.dataCalculationRecord.Batches_Number__c += 1;
@@ -70,6 +83,12 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
         }
     }
 
+    /**
+     * @description Once all batches are completed, the VDT_Data_Calculation__c record status is updated to COMPLETED,
+     *              Creates a new attachment record and links it to the VDT_Data_Calculation__c record, lastly,
+     *              a new Email alert is sent letting the user who triggered the job know the job has been completed.
+     * @param bc 
+     */
     public void finish(Database.BatchableContext bc) {
         try {
             this.dataCalculationRecord.VDT_Job_End_Date__c = Datetime.now();

@@ -1,5 +1,11 @@
+/**
+ * @description This Apex class contains all methods needed get information related to SObjects
+ * @author      BASE Life Science
+ * @since       2021.03.01
+ */
 public inherited sharing class VDT_ObjectService {
 
+    public static final String FIELD_LEVEL_SECURITY_ANALYSIS_FILE_NAME = 'field_level_security';
     public static final String TERRITORY_ANALYSIS_FILE_NAME = 'territory_management';
     public static final String FIELD_VALUES_OCCURRENCES_FILE_NAME = 'field_values_occurrences';
     public static final String FIELD_SUMMARY_CALCULATION_FILE_NAME = 'summary_calculation';
@@ -10,6 +16,10 @@ public inherited sharing class VDT_ObjectService {
     private static final String OBJECT_SUFFX_FEED       = 'feed';
 
 
+    /**
+     * @return  `List<Schema.SObjectType>` of SOBjects available to the running user. Used to Populate the select component on: 
+     *          `Object-Field Analysis` and `Field Level Security Analysis` screens.
+     */
     public static List<Schema.SObjectType> getAllAccessibleObjects() {
         List<Schema.SObjectType> accessibleTypes = new List<Schema.SObjectType>();
 
@@ -29,31 +39,11 @@ public inherited sharing class VDT_ObjectService {
         return accessibleTypes;
     }
 
-    public static List<Schema.SObjectField> getNumberOfAccessibleFieldsForObject(String objectName, Integer fieldsNum) {
-        
-        List<Schema.SObjectField> fields = new List<Schema.SObjectField>();
-
-        Map<String,Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
-        Schema.SObjectType sobjType = globalDescribe.get(objectName);
-        Schema.DescribeSObjectResult typeDescribe = sobjType.getDescribe();
-        Map<String, Schema.SObjectField> typeFieldsMapping = typeDescribe.fields.getMap();
-        List<String> fieldNames = new List<String>(typeFieldsMapping.keySet());
-        fieldNames.sort();
-        
-        Integer idx = 0;
-        while(fields.size() < fieldsNum) {
-            Schema.SObjectField field = typeFieldsMapping.get(fieldNames[idx]);
-            Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
-
-            if (fieldDescribe.isAccessible() == true) {
-                fields.add(field);
-            }
-            idx++;
-        }
-
-        return fields;
-    }
-
+    /**
+     * 
+     * @param objectName SObject API Name
+     * @return  `List<Schema.SObjectField>` fields the running user has access to get information on `Object-Field Analysis` and `Field Level Security Analysis` jobs.
+     */
     public static List<Schema.SObjectField> getAllAccessibleFieldsForObject(String objectName) {
         
         List<Schema.SObjectField> fields = new List<Schema.SObjectField>();
@@ -77,6 +67,12 @@ public inherited sharing class VDT_ObjectService {
         return fields;
     }
 
+    /**
+     * 
+     * @param objectName SOBject API Name
+     * @param types Field Types we want to include in calculation
+     * @return  `List<Schema.SObjectField>` accesible fields based on their type. Used in `Field Values Occurrences` Job.
+     */
     public static List<Schema.SObjectField> getAllAccessibleFieldsForObjectAndTypes(String objectName, List<DisplayType> types) {
         List<Schema.SObjectField> fieldsForTypes = new List<Schema.SObjectField>();
         List<Schema.SObjectField> accessibleFields = getAllAccessibleFieldsForObject(objectName);
@@ -89,6 +85,13 @@ public inherited sharing class VDT_ObjectService {
         return fieldsForTypes;
     }
 
+    /**
+     * 
+     * @param objectName SObject API Name
+     * @param fieldNames Field API Names
+     * @return  `Map<String, Set<String>>` Avilable values for each Field. used to determine whether a value is an active option for any PICKLIST field.
+     *          Used in `Field Values Occurrences` Job.
+     */
     public static Map<String, Set<String>> getPicklistValuesByFieldName(String objectName, Set<String> fieldNames) {
         Map<String, Set<String>> picklistOptionsByFieldName = new Map<String, Set<String>>();
         Map<String, Schema.SObjectField> fieldMap = Schema.getGlobalDescribe().get(objectName).getDescribe().fields.getMap();
@@ -103,6 +106,11 @@ public inherited sharing class VDT_ObjectService {
         return picklistOptionsByFieldName;
     }
 
+    /**
+     * @param objectDescribe SOBject
+     * @param fieldName Field API Name
+     * @return  `List<VDT_OptionWrapper>` of all Active Options for a given PICKLIST field.
+     */
     public static List<VDT_OptionWrapper> getPicklistOptionsBySObjectName(Schema.DescribeSObjectResult objectDescribe, String fieldName) {
         List<VDT_OptionWrapper> options = new List<VDT_OptionWrapper>();
         Map<String, Schema.SObjectField> fieldMap = objectDescribe.fields.getMap(); 
@@ -113,6 +121,12 @@ public inherited sharing class VDT_ObjectService {
         return options;
     }
 
+    /**
+     * 
+     * @param objectName SObject API Name
+     * @param fieldName Field API Name
+     * @return  `String` Field Type
+     */
     public static String getFieldTypeBySObjectName(String objectName, String fieldName) {
         if (fieldName.contains('__r')) {
             return 'REFERENCE';
@@ -125,6 +139,13 @@ public inherited sharing class VDT_ObjectService {
         return String.valueOf(describeResult.fields.getMap().get(fieldName).getDescribe().getType());
     }
 
+    /**
+     * @description If the Country field configured for the Account SObject is a REFERENCE to an SObject, we need to query records on the related object and create
+     *              a list of options to be used on the Country select COMPONENT on `Master Data Analysis` screen.
+     * @param objectName SObject API Name
+     * @param fieldName Field API Name
+     * @return  `List<VDT_OptionWrapper>`
+     */
     public static List<VDT_OptionWrapper> getPicklistOptionsByReference(String objectName, String fieldName) {
         List<VDT_OptionWrapper> options = new List<VDT_OptionWrapper>();
         SObjectType sobjectType = ((SObject)(Type.forName('Schema.' + objectName).newInstance())).getSObjectType();

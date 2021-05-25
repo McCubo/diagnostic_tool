@@ -1,3 +1,8 @@
+/**
+ * @description Builder apex class used to aggregate all KPI metrics for each Product records.
+ * @author BASE Life Science
+ * @since 2021.03.01
+ */
 public with sharing class VDT_ProductAdoptionBuilder {
 
     private ProductAdoptionSummary adoptionData = new ProductAdoptionSummary();
@@ -21,16 +26,29 @@ public with sharing class VDT_ProductAdoptionBuilder {
         this.internationalCountryCode = VDT_CustomMetadataService.getInternationalCountryValue();
     }
 
+    /**
+     * @param countryFieldByObject Maps the SObject API Name with their Field API Name that holds the Country information.
+     * @return  `VDT_ProductAdoptionBuilder`
+     */
     public VDT_ProductAdoptionBuilder addCountriesForObjects(Map<String, String> countryFieldByObject) {
         this.countryFieldByObject.putAll(countryFieldByObject);
         return this;
     }
 
+    /**
+     * @param productFieldByObject Maps the SObject API Name with their Field API Name that holds the Product reference
+     * @return  `VDT_ProductAdoptionBuilder`
+     */
     public VDT_ProductAdoptionBuilder addProductFieldsByObject(Map<String, String> productFieldByObject) {
         this.productFieldByObject.putAll(productFieldByObject);
         return this;
     }
 
+    /**
+     * @description set records from current batch execution
+     * @param records 
+     * @return  `VDT_ProductAdoptionBuilder`
+     */
     public VDT_ProductAdoptionBuilder withRecords(List<Product_vod__c> records) {
         this.records = records;
         productIds.clear();
@@ -40,6 +58,10 @@ public with sharing class VDT_ProductAdoptionBuilder {
         return this;
     }
 
+    /**
+     * @description Updates the Number of Key Message records related to each Product record
+     * @return  `VDT_ProductAdoptionBuilder`
+     */
     public VDT_ProductAdoptionBuilder withKeyMessages() {
         keyMessagesByProduct.clear();
         String countryField = this.countryFieldByObject.get('Key_Message_vod__c');
@@ -58,6 +80,10 @@ public with sharing class VDT_ProductAdoptionBuilder {
         return this;
     }
 
+    /**
+     * @description Updates the CLM Presentation records related to each Product record
+     * @return  `VDT_ProductAdoptionBuilder`
+     */
     public VDT_ProductAdoptionBuilder withActiveCLMs() {
         presentationsByProduct.clear();
         String countryField = this.countryFieldByObject.get('Clm_Presentation_vod__c');
@@ -77,6 +103,10 @@ public with sharing class VDT_ProductAdoptionBuilder {
         return this;
     }
 
+    /**
+     * @description Updates the Number of Approved Document records related to each Product record
+     * @return  `VDT_ProductAdoptionBuilder`
+     */
     public VDT_ProductAdoptionBuilder withApprovedDocuments() {        
         approvedDocumentsByProduct.clear();
         String countryField = this.countryFieldByObject.get('Approved_Document_vod__c');
@@ -96,6 +126,12 @@ public with sharing class VDT_ProductAdoptionBuilder {
         return this;
     }
 
+    /**
+     * @description Updates the Number of Sent Email records related to each Product record
+     * @param startDate filter Value
+     * @param endDate Filter value
+     * @return  `VDT_ProductAdoptionBuilder`
+     */
     public VDT_ProductAdoptionBuilder withSentEmails(Date startDate, Date endDate) {        
         sentEmailsByProduct.clear();
         String countryField = this.countryFieldByObject.get('Account');
@@ -115,6 +151,10 @@ public with sharing class VDT_ProductAdoptionBuilder {
         return this;
     }    
 
+    /**
+     * @description Updates the Number of Product Metric records related to each Product record
+     * @return  `VDT_ProductAdoptionBuilder`
+     */
     public VDT_ProductAdoptionBuilder withProductMetrics() {
         productMetricsByProduct.clear();
         String countryField = this.countryFieldByObject.get('Account');
@@ -132,6 +172,12 @@ public with sharing class VDT_ProductAdoptionBuilder {
         return this;
     }
 
+    /**
+     * @description Updates the Number of Event records related to each Product record
+     * @param startDate filter parameter
+     * @param endDate filter parameter
+     * @return  `VDT_ProductAdoptionBuilder`
+     */
     public VDT_ProductAdoptionBuilder withEvents(Date startDate, Date endDate) {
         eventsByProduct.clear();
         DateTime startDatetime = DateTime.newInstance(startDate.year(), startDate.month(), startDate.day());
@@ -153,6 +199,12 @@ public with sharing class VDT_ProductAdoptionBuilder {
         return this;
     }
 
+    /**
+     * @description Updates the Number of Call Detail records related to each Product record
+     * @param startDate filter parameter
+     * @param endDate filter parameter
+     * @return  `VDT_ProductAdoptionBuilder`
+     */
     public VDT_ProductAdoptionBuilder withCallDetails(Date startDate, Date endDate) {
         callsByProduct.clear();
         String countryField = this.countryFieldByObject.get('Account');
@@ -170,6 +222,11 @@ public with sharing class VDT_ProductAdoptionBuilder {
         return this;
     }
 
+    /**
+     * @description updates the KPI information for a given product and country
+     * @param genericMap 
+     * @param aggregateResult 
+     */
     private void addValueToProductAndCountry(Map<String, Map<String, Integer>> genericMap, AggregateResult aggregateResult) {
         String productId = aggregateResult.get('productid').toString();
         String country = String.valueOf(aggregateResult.get('countryname'));
@@ -187,6 +244,10 @@ public with sharing class VDT_ProductAdoptionBuilder {
         }
     }
 
+    /**
+     * @description aggregates the product's KPIs for all product records being processed on the current batch execution
+     * @return  `VDT_ProductAdoptionBuilder`
+     */
     public VDT_ProductAdoptionBuilder calculate() {
         String productCountryField = this.countryFieldByObject.get('Product_vod__c');
         for (Product_vod__c product : this.records) {
@@ -239,6 +300,12 @@ public with sharing class VDT_ProductAdoptionBuilder {
         return this.adoptionData;
     }
 
+    /**
+     * @description utility method used to get the value from any property in the Product record
+     * @param product 
+     * @param fieldName Field API Name
+     * @return  `String` field value for the given field API name
+     */
     private static String getPropertyValue(Product_vod__c product, String fieldName) {
         String value = '';
         if (fieldName.contains('.')) {

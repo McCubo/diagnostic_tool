@@ -1,6 +1,17 @@
+/**
+ * @description Provides method to perform requests via HTTP methods
+ * @author BASE Life Science
+ * @since 2021.03.01
+ */
 public inherited sharing class VDT_HttpService {
     private static final STRING METHOD_GET = 'GET';
 
+    /**
+     * @description request a REST resource using the `GET` method
+     * @param endpoint URL to perform the request to
+     * @param sessionId User Session Id
+     * @return  `String` response returned by the given endpoint
+     */
     public static String restGet(String endpoint, String sessionId) {
         try
         {

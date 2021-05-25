@@ -1,3 +1,9 @@
+/**
+ * @description Batch job used to calculate product adoption and product metrics for the records that meet the filter criterias on the
+ *              `Product Hierarchy and Adoption` screen.
+ * @author BASE Life Science
+ * @since 2021.03.01
+ */
 public with sharing class VDT_ProductAdoptionBatch implements Database.Batchable<SObject>, Database.Stateful {
 
     private VDT_Data_Calculation__c dataCalculationRecord;
@@ -12,6 +18,13 @@ public with sharing class VDT_ProductAdoptionBatch implements Database.Batchable
         this.endDate = dataCalculationRecord.End_Date__c;
     }
 
+    /**
+     * @description creates a SOQL to retrieve Product records based on the filter parameters from the `Producy Adoption` search form.
+     *              Set country reference for all SObjects related to Product object.
+     *              Set product reference for all SObjects related to Product object
+     * @param bc 
+     * @return  `Database.QueryLocator`
+     */
     public Database.QueryLocator start(Database.BatchableContext bc) {
         String productCountryField = VDT_CustomMetadataService.getCountryFieldForObject('Product_vod__c');
         List<String> countries = String.isNotBlank(this.dataCalculationRecord.VDT_Country__c) ? this.dataCalculationRecord.VDT_Country__c.split(DELIMITER_CHARACTER) : new List<String>(); 
@@ -52,6 +65,11 @@ public with sharing class VDT_ProductAdoptionBatch implements Database.Batchable
         return Database.getQueryLocator(query);
     }
 
+    /**
+     * @description aggregates KPI data for the current product records
+     * @param bc 
+     * @param records 
+     */
     public void execute(Database.BatchableContext bc, List<Product_vod__c> records) {
         try {
             this.dataCalculationRecord.Batches_Number__c += 1;
@@ -74,6 +92,11 @@ public with sharing class VDT_ProductAdoptionBatch implements Database.Batchable
         }
     }
 
+    /**
+     * @description Once all batches are completed, the VDT_Data_Calculation__c record status is updated to COMPLETED,
+     *              Creates a new attachment record and links it to the VDT_Data_Calculation__c record.
+     * @param bc 
+     */
     public void finish(Database.BatchableContext bc) {
         try {
             this.dataCalculationRecord.VDT_Job_End_Date__c = Datetime.now();

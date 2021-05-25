@@ -1,4 +1,16 @@
+/**
+ * @description Provides Apex methods to be used on the User Screen.
+ * @author BASE Life Science
+ * @since 2021.03.01
+ */
 public inherited sharing class VDT_VeevaUsersController {
+
+    /**
+     * 
+     * @param queryLimit Max number of records to be returned by the SOQL query
+     * @param queryOffset offset to apply to the query
+     * @return  `List<UserWrapper>` records to be displayed on the LWC-Datatable component
+     */
     @AuraEnabled(cacheable=true)
     public static List<UserWrapper> fetchVeevaUsers(Integer queryLimit, Integer queryOffset) {
         List<UserWrapper> wrappers = new List<UserWrapper>();

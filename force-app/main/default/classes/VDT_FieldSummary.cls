@@ -1,3 +1,8 @@
+/**
+ * @description Helper Class to parse the JSON response for each Field when Field-Analysis is run
+ * @author BASE Life Science
+ * @since 2021.03.01
+ */
 public inherited sharing class VDT_FieldSummary {
 
     public String id;

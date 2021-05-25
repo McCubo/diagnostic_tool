@@ -1,3 +1,8 @@
+/**
+ * @description Apex class to accumulate all the information about field values occurrences
+ * @author BASE Life Science
+ * @since 2021.03.01
+ */
 public with sharing class VDT_FieldValuesOccurrencesBuilder {
     
     private String objectName;
@@ -14,11 +19,19 @@ public with sharing class VDT_FieldValuesOccurrencesBuilder {
         this.countryField = VDT_CustomMetadataService.getCountryFieldForObject(objectName);
     }
 
+    /**
+     * @param records List of SObject records to be evaluated on the calculate method.
+     * @return  `VDT_FieldValuesOccurrencesBuilder`
+     */
     public VDT_FieldValuesOccurrencesBuilder withRecords(List<SObject> records) {
         this.records = records;
         return this;
     }
 
+    /**
+     * @description accumulates information for each field presented on the SObject defined on the VDT_Data_Calculation__c record.
+     * @return  `VDT_FieldValuesOccurrencesBuilder`
+     */
     public VDT_FieldValuesOccurrencesBuilder calculate() {
 
         for (String field : this.fieldNames) {
@@ -60,6 +73,9 @@ public with sharing class VDT_FieldValuesOccurrencesBuilder {
         return this;
     }
 
+    /**
+     * @return  `String` JSON Formatted version of all data calculated for the current SObject and all records that passed the filter conditions.
+     */
     public String build() {
         Map<String, Object> output = new Map<String, Object>();
         Set<String> fieldNames = new Set<String>();
@@ -75,6 +91,11 @@ public with sharing class VDT_FieldValuesOccurrencesBuilder {
         return JSON.serialize(output);
     }
 
+    /**
+     * @param field Field API Name
+     * @return  `VDT_FieldSummary` if a calculation already exists for the given Field API Name, then return the same instance of the object,
+     *          return a new instance otherwise.
+     */
     private VDT_FieldSummary initFieldSummary(String field) {
         VDT_FieldSummary fieldSummary = null;
         if (!this.fieldByName.containsKey(field)) {

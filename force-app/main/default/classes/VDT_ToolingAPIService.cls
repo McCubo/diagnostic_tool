@@ -1,5 +1,14 @@
+/**
+ * @description Used to query objects using the TOOLING API
+ * @author BASE Life Science
+ * @since 2021.03.01
+ */
 public inherited sharing class VDT_ToolingAPIService {
 
+    /**
+     * @param query SOQL Query
+     * @return  `String` Response the Tooling API returns.
+     */
     public static String toolingAPISOQL(string query) {
         String baseURL='callout:VDT_ToolingREST/';
         return VDT_HttpService.restGet( baseURL +'?q='+ (query.replace(' ', '+')), UserInfo.getSessionId());
@@ -31,6 +40,10 @@ public inherited sharing class VDT_ToolingAPIService {
         return customObjectId;
     }
 
+    /**
+     * @param objectName SObject API Name
+     * @return  `List<string>` All Page Layouts available for the given SObject
+     */
     public static List<string> getLayoutNamesForObject(string objectName) {
         String enumOrId = objectName;
         if (objectName.indexOf('__c') >= 0) {
@@ -57,6 +70,11 @@ public inherited sharing class VDT_ToolingAPIService {
         return new List<String>(layouts);
     }
 
+    /**
+     * 
+     * @param queryLocatorUrl queryLocatorURL property provided by Tooling response
+     * @return  `Set<String>` Page Layouts returned by the tooling API
+     */
     private static Set<String> queryNextPage(String queryLocatorUrl) {
         Set<String> layoutNames = new Set<String>();
         List<String> queryLocatorUrlParts = queryLocatorUrl.split('/');

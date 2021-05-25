@@ -1,3 +1,8 @@
+/**
+ * @description POJO Object to Map the Tooling API Response
+ * @author BASE Life Science
+ * @since 2021.03.01
+ */
 public inherited sharing class VDT_ToolingPageLayoutResponse {
     public class Root {
         public Integer size {get;set;} 

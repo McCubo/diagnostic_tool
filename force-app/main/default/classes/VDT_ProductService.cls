@@ -1,7 +1,15 @@
+/**
+ * @description Apex class used to retrieve the Product Tree information.
+ * @author BASE Life Science
+ * @since 2021.03.01
+ */
 public with sharing class VDT_ProductService {
 
     private static String statusField;
 
+    /**
+     * @return  `ProductAdoptionData` an object containing all product hierarchy information
+     */
     public static ProductAdoptionData getProductTreeInformation() {
         ProductAdoptionData productAdoption = new ProductAdoptionData();
         String productCountry = VDT_CustomMetadataService.getCountryFieldForObject('Product_vod__c');
@@ -30,6 +38,14 @@ public with sharing class VDT_ProductService {
         return productAdoption;
     }
 
+    /**
+     * @description recursive function used to keep adding child product for each product presented on the list given on the firt parameter
+     * @param products 
+     * @param childProductsByParent 
+     * @param productCountry 
+     * @param isRootNode 
+     * @return  `List<ProductCatalogTreeItem>`
+     */
     private static List<ProductCatalogTreeItem> getProductCatalogTree(List<Product_vod__c> products, Map<Id, List<Product_vod__c>> childProductsByParent, String productCountry, Boolean isRootNode) {
         List<ProductCatalogTreeItem> productCatalogTree = new List<ProductCatalogTreeItem>();
         for (Product_vod__c product : products) {
@@ -47,6 +63,12 @@ public with sharing class VDT_ProductService {
         return productCatalogTree;
     }
 
+    /**
+     * @description utility method to get the value from any property on the Product SObject
+     * @param product Product SObject
+     * @param fieldAPI Field API Name
+     * @return  `String` field value
+     */
     private static String getProductProperty(Product_vod__c product, String fieldAPI) {
         String value = '';
         if (fieldAPI.contains('.')) {

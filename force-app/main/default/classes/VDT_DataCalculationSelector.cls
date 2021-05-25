@@ -1,3 +1,8 @@
+/**
+ * @author      BASE Life Science
+ * @since       2021.03.01
+ * @description This Apex class provides methods to retrieve records from the VDT_Data_Calculation__c SObject.
+ */
 public inherited sharing class VDT_DataCalculationSelector {
     
     private Integer limitValue;
@@ -8,10 +13,18 @@ public inherited sharing class VDT_DataCalculationSelector {
     public static final String OBJECT_ANALYSIS_RECORD_TYPE_DEV = 'VDT_Object_Field_Analysis';
     public static final String FIELD_OCCURRENCE_RECORD_TYPE_DEV = 'VDT_Object_Field_Value_Occurrence';
     public static final String TERRITORY_ANALYSIS_RECORD_TYPE_DEV = 'VDT_Territory_Analysis';
+    public static final String FIELD_LEVEL_SECURITY_RECORD_TYPE_DEV = 'VDT_Field_Level_Security_Analysis';
 
+    /**
+     * @return  `String` SObject API Name that queries will be run on.
+     */
     public String getObjectName() {
         return 'VDT_Data_Calculation__c';
     }
+
+    /**
+     * @return  `List<String>` default field API names to be included on the SELECT statement
+     */
     public List<String> getFieldList() {
         return new List<String>{
             VDT_Data_Calculation__c.Id.getDescribe().getName(),
@@ -21,6 +34,9 @@ public inherited sharing class VDT_DataCalculationSelector {
         };
     }
 
+    /**
+     * @return  `String` all default and additional fields (if there are any) to be included in the SELECT statement
+     */
     public String getFieldListString() {
         List<String> fields = this.getFieldList();
         if (!this.additionalFields.isEmpty()) {
@@ -29,21 +45,37 @@ public inherited sharing class VDT_DataCalculationSelector {
         return String.join(fields, ',');
     }
 
+    /**
+     * @param limitValue Integer value to specify the max number of records the query can return.
+     * @return  `VDT_DataCalculationSelector` the same instance of the class
+     */
     public VDT_DataCalculationSelector withLimit(Integer limitValue) {
         this.limitValue = limitValue;
         return this;
     }
 
+    /**
+     * 
+     * @param additionalFields List of additional field API names to be added to the SELECT statement
+     * @return  `VDT_DataCalculationSelector` the same instance of the class
+     */
     public VDT_DataCalculationSelector withAdditionalFields(List<String> additionalFields) {
         this.additionalFields = additionalFields;
         return this;
     }
 
+    /**
+     * @param conditionals List of Filter Clauses to be added to the SOQL query
+     * @return  `VDT_DataCalculationSelector` the same instance of the class
+     */
     public VDT_DataCalculationSelector withConditionals(List<String> conditionals) {
         this.conditionals = conditionals;
         return this;
     }
 
+    /**
+     * @return  `String` if filter clauses are added using the `withConditionals` method, this method returns a formatted String to be used on the SOQL query
+     */
     public String getWhereClause() {
         String whereClause = '';
         if (!this.conditionals.isEmpty()) {
@@ -52,6 +84,9 @@ public inherited sharing class VDT_DataCalculationSelector {
         return whereClause;
     }
 
+    /**
+     * @return  `String` with a LIMIT clause if a limit has been set.
+     */
     public String getLimitString() {
         String limitString = '';
         if (this.limitValue != null) {
@@ -60,6 +95,12 @@ public inherited sharing class VDT_DataCalculationSelector {
         return limitString;
     }
 
+    /**
+     * 
+     * @param calculationParameters Parameters used to filter records
+     * @param recordTypeName Record Type Developer Name
+     * @return  `List<VDT_Data_Calculation__c>` that match with ALL the filter criterias from the search parameter
+     */
     public List<VDT_Data_Calculation__c> getByCalculationParameters(VDT_DataCalculationService.CalculationParameters calculationParameters, String recordTypeName) {
         String fieldAnalysisRT = VDT_RecordTypeService.getRecordTypeByObjectAndName('VDT_Data_Calculation__c', recordTypeName)[0].Id;
         String whereString = 'RecordTypeId = :fieldAnalysisRT AND VDT_Object_Name__c = \'' + String.escapeSingleQuotes(calculationParameters.objectName) +'\'';
@@ -93,12 +134,13 @@ public inherited sharing class VDT_DataCalculationSelector {
                 whereString
             }
         );
-
-        system.debug(query);
-
         return Database.query(query);
     }
 
+    /**
+     * @param recordId Data Calculation Record Id
+     * @return  `List<VDT_Data_Calculation__c>` Data Calculation record that matches the given record Id
+     */
     public List<VDT_Data_Calculation__c> getById(String recordId) {
         String query = String.format(
             'SELECT {0} FROM {1} ' + 
@@ -115,6 +157,10 @@ public inherited sharing class VDT_DataCalculationSelector {
         return Database.query(query);
     }
 
+    /**
+     * @param countries Comma Separated Country Values to filter the records
+     * @return  `List<VDT_Data_Calculation__c>` where their Country field matches the list of provided countries
+     */
     public List<VDT_Data_Calculation__c> getByCountries(String countries) {
         String query = String.format(
             'SELECT {0} FROM {1} ' + 
@@ -131,6 +177,10 @@ public inherited sharing class VDT_DataCalculationSelector {
         return Database.query(query);
     }
 
+    /**
+     * @param calculationParameters Parameters used to filter records
+     * @return  `List<VDT_Data_Calculation__c>` Territory Analysis records that passed the filters.
+     */
     public List<VDT_Data_Calculation__c> getByTerritoryCalculationParameters(VDT_DataCalculationService.TerritoryAnalysisParameters calculationParameters) {
         List<String> countryCriteria = new List<String>();
         for (String country : calculationParameters.countries) {
@@ -157,6 +207,10 @@ public inherited sharing class VDT_DataCalculationSelector {
         return Database.query(query);
     }
 
+    /**
+     * 
+     * @return  `List<VDT_Data_Calculation__c>` list of Data Calculation records that match the criterias if any is found
+     */
     public List<VDT_Data_Calculation__c> query() {
         String query = String.format(
             'SELECT {0} FROM {1} ' + 
@@ -169,10 +223,15 @@ public inherited sharing class VDT_DataCalculationSelector {
                 getWhereClause(),
                 getLimitString()
             }
-        );        
+        );
         return Database.query(query);
     }
 
+    /**
+     * @description This method is called when the user hits the `Diagnose` button on the `Master Data Analysis` screen
+     * @param calculationParameters object with all properties to be used to filter records
+     * @return  `List<VDT_Data_Calculation__c>` Master Data Analysis records
+     */
     public List<VDT_Data_Calculation__c> getByAnalysisCalculationParameters(VDT_DataCalculationService.CalculationAnalysisParameters calculationParameters) {
         List<String> countryCriteria = new List<String>();
         for (String country : calculationParameters.countries) {
@@ -208,6 +267,11 @@ public inherited sharing class VDT_DataCalculationSelector {
         return Database.query(query);
     }
 
+    /**
+     * @description This method is called when the user hits the `Show Product Adoption` button on the `Product Hierarchy and Adoption` screen
+     * @param calculationParameters 
+     * @return  `List<VDT_Data_Calculation__c>` Product Adoption records.
+     */
     public List<VDT_Data_Calculation__c> getByProductAdoptionParameters(VDT_DataCalculationService.ProductAdoptionParameters calculationParameters) {
         List<String> whereClauses = new List<String>();
         if (!calculationParameters.countries.isEmpty()) {
@@ -249,6 +313,10 @@ public inherited sharing class VDT_DataCalculationSelector {
         return Database.query(query);
     }
 
+    /**
+     * @param objectName SObject API Name the calculation job was run for.
+     * @return  `List<VDT_Data_Calculation__c>` Data Calculation record for the given SOBject
+     */
     public List<VDT_Data_Calculation__c> getByObjectName(String objectName) {
         String query = String.format(
             'SELECT {0} FROM {1} ' + 
@@ -263,6 +331,12 @@ public inherited sharing class VDT_DataCalculationSelector {
         return Database.query(query);
     }
 
+    /**
+     * 
+     * @param objectName SObject Name the Calculation was run for
+     * @param recordTypeName Data Calculation Record Type Developer Name
+     * @return  `List<VDT_Data_Calculation__c>` where their Record Type and SObject match the provided search arguments.
+     */
     public List<VDT_Data_Calculation__c> getByObjectNameAndReocordType(String objectName, String recordTypeName) {
         String query = String.format(
             'SELECT {0} FROM {1} ' + 
@@ -277,6 +351,11 @@ public inherited sharing class VDT_DataCalculationSelector {
         return Database.query(query);
     }
 
+    /**
+     * 
+     * @param statuses List of Status to filter records
+     * @return  `List<VDT_Data_Calculation__c>` records which status field value matches with one of the provided.
+     */
     public List<VDT_Data_Calculation__c> getDataCalculationsByStatus(List<String> statuses) {
         List<String> additionalFields = new List<String>{
             VDT_Data_Calculation__c.Start_Year__c.getDescribe().getName(),

@@ -1,3 +1,8 @@
+/**
+ * @description iterates over all `Account` records and accumulates all the information on the `MasterAnalysisSummary` class variable
+ * @author BASE Life Science
+ * @since 2021.03.01
+ */
 public with sharing class VDT_MasterAnalysisCalculationBuilder {
 
     private String countryField;
@@ -33,6 +38,13 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
     private final String CALLS_BY_ACCOUNT_QUERY = 'Calls_By_Account';    
     private final String PLAN_TARGETS_BY_ACCOUNT_QUERY = 'Plan_Targets_By_Account';
 
+    /**
+     * @description Class Constructor
+     * @param countryField List of Comma Separated countries included in the calculation
+     * @param specialtyField Specialty field configured in the `Default Settings`
+     * @param startDate Filter Date
+     * @param endDate Filter Date
+     */
     public VDT_MasterAnalysisCalculationBuilder(String countryField, String specialtyField, Date startDate, Date endDate) {
         this.countryField = countryField;
         this.specialtyField = specialtyField;
@@ -40,11 +52,20 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         this.endDate = endDate;
     }
 
+    /**
+     * @param queriesByName Map of queries to be used on KPI calculations (queries are based on the package version configured in the `Default Settings` Custom Metadata Type)
+     * @return  `VDT_MasterAnalysisCalculationBuilder` instance of the class
+     */
     public VDT_MasterAnalysisCalculationBuilder withCustomQueries(Map<String, String> queriesByName) {
         this.queriesByName.putAll(queriesByName);
         return this;
     }
 
+    /**
+     * @description `this.specialties` is used to determine whether the specialty option is active or not.
+     * @param activeSpecialties All active specialties from Account object
+     * @return  `VDT_MasterAnalysisCalculationBuilder` instance of the class
+     */
     public VDT_MasterAnalysisCalculationBuilder withValidOptions(List<VDT_OptionWrapper> activeSpecialties) {
         for (VDT_OptionWrapper specialty : activeSpecialties) {
             this.specialties.add(specialty.value);
@@ -52,6 +73,10 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         return this;
     }
 
+    /**
+     * @param activeKpis List of ALL active KPI records found on `VDT_KPI_Configuration__mdt`
+     * @return  `VDT_MasterAnalysisCalculationBuilder` instance of the class
+     */
     public VDT_MasterAnalysisCalculationBuilder initKpis(List<VDT_KPI_Configuration__mdt> activeKpis) {
         for (VDT_KPI_Configuration__mdt kpi : activeKpis) {
             this.analysisData.kpi_numbers.put(kpi.DeveloperName, new KPISummary(
@@ -66,16 +91,29 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         return this;
     }
 
+    /**
+     * @param accountRecordTypesByType set the mapping to classify if an account record is EXTERNAL or INTERNAL account.
+     * @return  `VDT_MasterAnalysisCalculationBuilder` instance of the class
+     */
     public VDT_MasterAnalysisCalculationBuilder withRecordTypesByType(Map<String, List<String>> accountRecordTypesByType) {
         this.accountRecordTypesByType = accountRecordTypesByType;
         return this;
     }
 
+    /**
+     * @param targetByCountryAndKpi If any custom target has been configure, we need to override its target when generating the output file
+     * @return  `VDT_MasterAnalysisCalculationBuilder` instance of the class
+     */
     public VDT_MasterAnalysisCalculationBuilder withCustomTargets(Map<String, Decimal> targetByCountryAndKpi) {
         this.targetByCountryAndKpi = targetByCountryAndKpi;
         return this;
     }
 
+    /**
+     * 
+     * @param records Records being processed on the current batch's execution
+     * @return  `VDT_MasterAnalysisCalculationBuilder` instance of the class
+     */
     public VDT_MasterAnalysisCalculationBuilder withRecords(List<Account> records) {
         this.accountIds.clear();
         this.records = records;
@@ -85,6 +123,10 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         return this;
     }
 
+    /**
+     * @description Queries the `ObjectTerritory2Association` SObject to check if the account on the current batch's execute belong to any territory
+     * @return  `VDT_MasterAnalysisCalculationBuilder` instance of the class.
+     */
     public VDT_MasterAnalysisCalculationBuilder withTerritories() {
         Set<Id> accountIds = (new Map<Id, Account>(this.records)).keySet();
         this.accountsWithTerritories = new Set<Id>();
@@ -94,6 +136,11 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         return this;
     }
 
+    /**
+     * @description calculates all kpi numbers for the current account records. Queries and SObjects used depends on the package version configured on `Default Settings`
+     *              Custom Metadata Type record.
+     * @return  `VDT_MasterAnalysisCalculationBuilder` instance of the class
+     */
     public VDT_MasterAnalysisCalculationBuilder calculate() {
         this.addressByAccount = getAddressByAccount();
         this.metricsByAccount = getMetricsByAccount();
@@ -154,6 +201,12 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         return this;
     }
 
+    /**
+     * @description Utility method to return a property's value for any SObject record
+     * @param account SOBject record we want to retrieve the property's value
+     * @param fieldName Field API Name
+     * @return  `String` value the given account has on `fieldName`
+     */
     private String getPropertyValue(Account account, String fieldName) {
         String value = '';
         if (fieldName.contains('.')) {
@@ -168,27 +221,44 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         return value;
     }
 
+    /**
+     * @return  `Map<String, Integer>` Map with number of Address records each Account has linked to
+     */
     private Map<String, Integer> getAddressByAccount() {
         Map<String, Integer> addressByAccount = new Map<String, Integer>();
         String query = String.format(this.queriesByName.get(ADDRESS_BY_ACCOUNT_QUERY), new List<String>());
         return this.getStatsByAccount(query);
     }
 
+    /**
+     * @return  `Map<String, Integer>` Map with number of Product Metric records each Account has linked to
+     */
     private Map<String, Integer> getMetricsByAccount() {        
         String query = String.format(this.queriesByName.get(PRODUCT_METRICS_BY_ACCOUNT_QUERY), new List<String>());
         return this.getStatsByAccount(query);
     }
 
+    /**
+     * @return  `Map<String, Integer>` Map with the number of Interactions/Calls each account has.
+     */
     private Map<String, Integer> getCallsByAccount() {        
         String query = String.format(this.queriesByName.get(CALLS_BY_ACCOUNT_QUERY), new List<String>());
         return this.getStatsByAccount(query);
     }
 
+    /**
+     * 
+     * @return  `Map<String, Integer>` Map with the number of Cycle Plan Target each account has.
+     */
     private Map<String, Integer> getCyclePlanTargetsByAccount() {        
         String query = String.format(this.queriesByName.get(PLAN_TARGETS_BY_ACCOUNT_QUERY), new List<String>());
         return this.getStatsByAccount(query);
     }
 
+    /**
+     * @param query SOQL Query used to calculate a given KPI
+     * @return  `Map<String,Integer>` returns a Map with Account as the key, and number of records for each account as value
+     */
     private Map<String,Integer> getStatsByAccount(String query) {
         Map<String, Integer> statsByAccount = new Map<String, Integer>();
         AggregateResult[] statsCount = (AggregateResult[]) Database.query(query);
@@ -200,10 +270,19 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         return statsByAccount;
     }
 
+    /**
+     * @return  `MasterAnalysisSummary` record with information summarized for all KPIs
+     */
     public MasterAnalysisSummary build() {
         return this.analysisData;
     }
 
+    /**
+     * @param kpiKey KPI to be Updated
+     * @param country Country KPI should be counted for
+     * @param numerator Integer number used to calculate the KPI percentage
+     * @param denominator Integer number used to calculate the KPI percentage
+     */
     private void updateKpiForCountry(String kpiKey, String country, Integer numerator, Integer denominator) {
         if (this.analysisData.kpi_numbers.containsKey(kpiKey)) {
             KPISummary kpiSummary = this.analysisData.kpi_numbers.get(kpiKey);
@@ -222,6 +301,12 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
         }
     }
 
+    /**
+     * 
+     * @param account Account record
+     * @param countrySummary 
+     * @return  `CountryUsageSummary`
+     */
     private CountryUsageSummary updateCountrySummary(Account account, CountryUsageSummary countrySummary) {
         countrySummary.totalAccounts += 1;
         Boolean hasVisits = this.callsByAccount.containsKey(account.Id) && this.callsByAccount.get(account.Id) > 0;

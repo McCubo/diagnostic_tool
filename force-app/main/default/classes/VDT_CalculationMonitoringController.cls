@@ -1,4 +1,15 @@
+/**
+ * @author      BASE Life Science
+ * @since       2021.03.01
+ * @description Exposes apex methods to be used in LWC component's Javascript controller
+ */
 public with sharing class VDT_CalculationMonitoringController {
+
+    /**
+     * @return  `VDT_DataCalculationService.MonitoringData` object containing all information regarding how many jobs are currently in 
+     *          progress, in queue and how many jobs can still be added to the queue
+     * @exception AuraHandledException exception to be handled on the LWC.
+     */
     @AuraEnabled
     public static VDT_DataCalculationService.MonitoringData getCalculationsInProgress(){
         try {
