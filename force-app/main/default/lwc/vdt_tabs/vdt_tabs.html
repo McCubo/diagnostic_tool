@@ -71,7 +71,17 @@
                     tab-name={_tabs.territory.name}
                     active={_tabs.territory.active}
                 ></c-vdt_tab-item>
-            </li>            
+            </li>
+            <li 
+                class="slds-item"
+                onclick={handleFLSClick}
+            >
+                <c-vdt_tab-item
+                    icon-name={_tabs.fieldLevelSecurity.icon}
+                    tab-name={_tabs.fieldLevelSecurity.name}
+                    active={_tabs.fieldLevelSecurity.active}
+                ></c-vdt_tab-item>
+            </li>             
         </ul>
     </div>
 </template>

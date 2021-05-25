@@ -1,18 +1,29 @@
 /**
- * Trigger Handler for Account object
+ * @description Trigger Handler for VDT_Data_Calculation__c object
+ * @author BASE Life Science
+ * @since 2021.03.01
  */
 public with sharing class VDT_DataCalculationTriggerHandler extends VDT_TriggerHandler.DelegateBase {
 
     public VDT_DataCalculationTriggerHandler() {
     }
+    /**
+     * 
+     * @param oldMap A copy of all records before they were updated
+     * @param newMap A list of new records
+     */
     public override void afterUpdate(Map<Id, sObject> oldMap, Map<Id, sObject> newMap) {
         validateRun();
         setAfterUpdate((Map<Id, VDT_Data_Calculation__c>) oldMap, (Map<Id, VDT_Data_Calculation__c>) newMap);
     }
 
     /**
-     * setAfterUpdate update field values before inserting records
-     * @param  accounts accounts to be updated
+     * @description When a Calculation job completes, it updates the status of its VDT_Data_Calculation record to `COMPLETED`
+     *              So, if there are records `IN QUEUE`, we need to trigger the appropiate job based on their record type.
+     *              Once the job has been trigger, we set the VDT_Data_Calculation status to `IN PROGRESS`.
+     *              This process will be repetead the same number of time as the number of records `IN QUEUE`
+     * @param oldMap A copy of all records before they were updated
+     * @param newMap 
      */
     private void setAfterUpdate(Map<Id, VDT_Data_Calculation__c> oldMap, Map<Id, VDT_Data_Calculation__c> newMap) {
         Integer freeCalculationSlots = 0;
@@ -53,6 +64,14 @@ public with sharing class VDT_DataCalculationTriggerHandler extends VDT_TriggerH
                     } else if (recordTypeNameById.get(queuedCalculation.RecordTypeId) == VDT_DataCalculationSelector.PRODUCT_ADOPTION_RECORD_TYPE_DEV) {
                         VDT_ProductAdoptionBatch productAdoptionBatch = new VDT_ProductAdoptionBatch(queuedCalculation);
                         Database.executeBatch(productAdoptionBatch);
+                    } else if (recordTypeNameById.get(queuedCalculation.RecordTypeId) == VDT_DataCalculationSelector.TERRITORY_ANALYSIS_RECORD_TYPE_DEV) {
+                        Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject('Account');
+                        VDT_TerritoryManagementBatch territoryAnalysisBatch = new VDT_TerritoryManagementBatch(queuedCalculation);
+                        Database.executeBatch(territoryAnalysisBatch, batchSize);
+                    } else if (recordTypeNameById.get(queuedCalculation.RecordTypeId) == VDT_DataCalculationSelector.FIELD_LEVEL_SECURITY_RECORD_TYPE_DEV) {
+                        Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject(queuedCalculation.VDT_Object_Name__c);
+                        VDT_FieldLevelSecurityBatch fieldLevelSecurityBatch = new VDT_FieldLevelSecurityBatch(queuedCalculation);
+                        Database.executeBatch(fieldLevelSecurityBatch, batchSize);
                     }
                 }
 

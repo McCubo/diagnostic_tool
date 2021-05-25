@@ -32,6 +32,10 @@ export default class Vdt_workspace extends LightningElement {
     get showTerritory() {
         return this._selectedTab === TABS.territory.name;
     }
+
+    get showFielLevelSecurity() {
+        return this._selectedTab === TABS.fieldLevelSecurity.name;
+    }
     
     handleMessage(message) {
         if (message.selectedTab) {

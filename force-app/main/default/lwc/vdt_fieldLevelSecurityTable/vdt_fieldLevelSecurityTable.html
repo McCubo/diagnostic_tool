@@ -1,0 +1,59 @@
+<template>
+    <div class="container">
+        <lightning-layout class="graphs" multiple-rows>
+            <lightning-layout-item size="12">
+                <lightning-layout>
+                    <lightning-layout-item size="2">
+                        <lightning-input 
+                            type="text" 
+                            variant="label-hidden"
+                            placeholder="Find Object"
+                            onchange={handleObjectFilterInputChange}
+                        ></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="2" class="filter-component">
+                        <lightning-input 
+                            type="text" 
+                            variant="label-hidden"
+                            placeholder="Find Field"
+                            onchange={handleFieldFilterInputChange}
+                        ></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="2" class="filter-component">
+                        <lightning-input 
+                            type="text" 
+                            variant="label-hidden"
+                            placeholder="Find Profile/Permission Set"
+                            onchange={handlePermissionFilterInputChange}
+                        ></lightning-input>
+                    </lightning-layout-item>                     
+                    <lightning-layout-item alignment-bump="left">
+                        <lightning-button
+                            variant="brand"
+                            name="export_csv"
+                            label='Export CSV'
+                            onclick={handleExportCSV}
+                        ></lightning-button>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="graphs">
+                <lightning-datatable
+                        key-field="id"
+                        data={_currentPageData}
+                        columns={columns}
+                        hide-checkbox-column>
+                </lightning-datatable>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="graphs">
+                <c-vdt_paginator
+                    page-numbers={_pageNumbers}
+                    current-page={_currentPage}
+                    onprevious={handlePreviousClick}
+                    onpageclick={handlePageClick}
+                    onnext={handleNextClick}
+                ></c-vdt_paginator>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>
