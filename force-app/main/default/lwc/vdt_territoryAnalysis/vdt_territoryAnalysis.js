@@ -8,6 +8,7 @@ import refreshMonitoringMessageChannel from '@salesforce/messageChannel/vdt_refr
 
 export default class Vdt_territoryAnalysis extends LightningElement {
 
+    calculationRecordId = null;
     _showCalculationButton = false;
     _showCalculationSection = false;
     _filterDisabled = false;
@@ -42,6 +43,7 @@ export default class Vdt_territoryAnalysis extends LightningElement {
             this._calculation = response;
             this._showCalculationSection = true;
             this._showCalculationButton = true;
+            this.calculationRecordId = response.detailData;
         }).catch(error => {
             console.log('Error in promise: %O', error);
         }).finally(() => {

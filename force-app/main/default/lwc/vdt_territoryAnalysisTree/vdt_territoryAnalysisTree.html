@@ -1,5 +1,8 @@
 <template>
-    <div class="container">
+    <div class="container" style="position:relative">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+        </template>
         <lightning-layout multiple-rows>
             <lightning-layout-item size="12">
                 <lightning-layout>
@@ -51,12 +54,21 @@
                 </lightning-layout>
             </lightning-layout-item>
             <lightning-layout-item size="12" class="graphs">
-                <lightning-tree-grid
-                    columns={_columns}
-                    data={territoryTreeData}
+                <lightning-datatable
+                    columns={tableColumns}
+                    data={_currentPageData}
                     key-field="id"
                     hide-checkbox-column
-                ></lightning-tree-grid>
+                ></lightning-datatable>
+            </lightning-layout-item>            
+            <lightning-layout-item size="12" class="paginator">
+                <c-vdt_paginator
+                    page-numbers={pageNumbers}
+                    current-page={currentPageNumber}
+                    onprevious={handlePreviousClick}
+                    onpageclick={handlePageClick}
+                    onnext={handleNextClick}
+                ></c-vdt_paginator>
             </lightning-layout-item>
         </lightning-layout>
     </div>

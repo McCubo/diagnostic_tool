@@ -20,7 +20,7 @@ public with sharing class VDT_FieldsSummaryCalculationBatch implements Database.
             if (this.dataCalculationRecord.VDT_Object_Name__c == 'PersonAccount' || this.dataCalculationRecord.VDT_Object_Name__c == 'BusinessAccount') {
                 sobjectName = 'Account';
             }
-            Map<String, List<String>> layoutWithFields = VDT_PageLayoutService.getLayoutsWithFieldsForObject(sobjectName);
+            Map<String, List<String>> layoutWithFields = VDT_PageLayoutService.getLayoutsWithFieldsForObject(this.dataCalculationRecord.VDT_Object_Name__c);
             List<String> typeFieldNames = new List<String>();
 
             for (Schema.SObjectField field : VDT_ObjectService.getAllAccessibleFieldsForObject(sobjectName)) {

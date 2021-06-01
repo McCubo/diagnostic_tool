@@ -54,6 +54,9 @@ public inherited sharing class VDT_ToolingAPIService {
         if (enumOrId == 'Account') {
             sql='SELECT Layout.Name FROM ProfileLayout WHERE TableEnumOrId IN (\'Account\',\'PersonAccount\')';
         }
+        if (enumOrId == 'BusinessAccount') {
+            enumOrId = 'Account';
+        }
         String body = toolingAPISOQL(sql.replace('enumOrId', enumOrId));
         Set<String> layouts = new Set<String>();
 

@@ -1,7 +1,8 @@
-import { LightningElement, api, wire } from 'lwc';
+import { LightningElement, api, wire, track } from 'lwc';
 import { downloadCSVFile } from 'c/vdt_csvUtil'
 import { subscribe, unsubscribe, APPLICATION_SCOPE, MessageContext } from 'lightning/messageService';
 import onekeyCountryChannel from '@salesforce/messageChannel/vdt_onekeyCountryChannel__c';
+import getRecordsPerPage from '@salesforce/apex/VDT_TerritoryAnalysisController.getRecordsPerPageSOQL';
 
 const COMPARISON_OPERATORS = [
     {label: 'equals', value: 'eq'},
@@ -19,32 +20,58 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
 
     _columnsBase = [
         { label: 'Territory Name', fieldName: 'name', type: 'text', initialWidth: 150 },
-        { label: 'Total Accounts', fieldName: 'total_accounts', type: 'number', initialWidth: 115 },
         { label: 'Territory Accounts', fieldName: 'territory_accounts', type: 'number', initialWidth: 115 }
     ];
 
-    _accountType = 'All';
     accountTypeOptions = ACCOUNT_TYPES;
-    _rawData = [];
-    _calculationData = [];
-    _columns = [];
-    territoryTreeData = [];
     _specialties = [];
     metricOptions = [];
-    filterNumberValue = null;
-    selectedMetricOption = null;
-    _territoryFilter = '';
     operators = COMPARISON_OPERATORS;
-    selectedOperator = null;
-    amountFilter = null;
-    _parentTerritories = [];
     @api
     countries = [];
+    @api
+    calculationRecordId;
+
     @wire(MessageContext)
     messageContext;
     _subscription = null;
+    // Pagination Variables
+    _recordsPerPage = 10;
+    _currentPage = 1;
+    // Filter Variables
+    _accountType = 'All';
+    _filterNumber = null;
+    _comparisonOperator = null;
+    _specialtyName = null;
+    _territoryName = null;
+    // 
+    @track
+    serverResponse = {};
+
+    loadFromServer() {
+        this.serverResponse = {};
+        getRecordsPerPage({ 
+            calculationRecordId: this.calculationRecordId,
+            pageNumber: this._currentPage, 
+            recordsPerPage: this._recordsPerPage,
+            territoryName: this._territoryName,
+            specialtyName: this._specialtyName,
+            comparisonOperator: this._comparisonOperator,
+            filterNumber: this._filterNumber,
+            accountType: this._accountType
+        }).then(result => {
+            this.serverResponse.data = result;
+        }).catch(error => {
+            this.serverResponse.error = error;
+        })
+    }    
+
+    get isLoading() {
+        return !this.serverResponse.data && !this.serverResponse.error;
+    }
 
     connectedCallback() {
+        this.loadFromServer();
         this.subscribeToMessageChannel();
     }
 
@@ -62,7 +89,6 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
     handleMessage(message) {
         if (message.countries) {
             this.countries = message.countries;
-            this.parseData(JSON.parse(this._rawData));
         }
     }
 
@@ -77,14 +103,12 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
 
     @api
     get calculationData() {
-        return this._calculationData;
+        return null;
     }
 
     set calculationData(val) {
         let data = JSON.parse(val);
-        this._rawData = val;
         this.setMetricOptions(data);
-        this.parseData(data);
     }
 
     setMetricOptions(data) {
@@ -101,19 +125,6 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
         this.metricOptions = options;
     }
 
-    refreshTreeGrid(parentTerritoriesJSON) {
-        let parentTerritories = JSON.parse(parentTerritoriesJSON);
-        let filteredTerritories = parentTerritories.filter(territory => this.shouldIncludeTerritory(territory));
-        filteredTerritories.forEach(parentTerritory => {
-            parentTerritory['total_accounts'] = this.getTotalAccounts(parentTerritory);
-        });
-        let colNames = [... new Set(this.getSpecialtyColumnsWithValues(filteredTerritories, 1))].sort();
-        this._columns = this._columnsBase.concat(colNames.map(columnName => {
-            return { label: columnName.replace('_accounts', ''), fieldName: columnName, type: 'number'}
-        }));
-        return filteredTerritories;
-    }
-
     getSpecialtyColumnsWithValues(territories) {
         let defaultProperties = ['parentId', 'name', 'id', 'businessCountrySummary', 'personCountrySummary', 'territory_accounts', 'total_accounts', '_children'];
         let columnsWithValues = territories.reduce((accumulator, territory) => {
@@ -123,85 +134,9 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
                     cols.push(propertyName);
                 }
             });
-            if (territory['_children']) {
-                cols = cols.concat(this.getSpecialtyColumnsWithValues(territory._children));
-            }
             return accumulator.concat(cols);
         }, []);
         return columnsWithValues;
-    }
-
-    parseData(data) {
-        let territoryAnalysis = data.territoryAnalysis;
-        this._parentTerritories = Object.values(territoryAnalysis)
-                                .filter(territory => territory.parentId == null)
-                                .map(territory => this.flatTerritoryRecord(territory));
-        this._parentTerritories.forEach(parentTerritory => {
-            this.addChildRecords(parentTerritory, territoryAnalysis);
-        });
-        this.territoryTreeData = this.refreshTreeGrid(JSON.stringify(this._parentTerritories));
-    }
-
-    shouldIncludeTerritory(territory) {
-        if (territory._children) {
-            let filteredChildren = territory._children.filter(childTerritory => {
-                return this.shouldIncludeTerritory(childTerritory);
-            });
-            if (filteredChildren != null && filteredChildren.length > 0) {
-                territory['_children'] = filteredChildren;
-            } else {
-                delete territory._children;
-            }
-        }
-        return this.showBasedOnChildTerritories(territory) || (this.filterByName(territory) && this.filterByMetricNumber(territory));
-    }
-
-    showBasedOnChildTerritories(territory) {
-        let show = false;
-        if (territory._children) {
-            show = territory._children.reduce((acc, childTerritory) => {
-                let _show = this.filterByMetricNumber(childTerritory) && this.filterByName(childTerritory);
-                if (childTerritory._children) {
-                    _show = _show || this.showBasedOnChildTerritories(childTerritory);
-                }
-                return acc || _show;
-            }, false);
-        }
-        return show;
-    }
-
-    filterByName(territory) {
-        if (this._territoryFilter) {
-            return territory.name.toLowerCase().includes(this._territoryFilter);
-        }
-        return true;
-    }
-
-    filterByMetricNumber(territory) {
-        let filter = true;
-        if (this.selectedMetricOption && this.selectedOperator && this.amountFilter) {
-            switch(this.selectedOperator) {
-                case 'eq':
-                    filter = territory[this.selectedMetricOption] == this.amountFilter;
-                    break;
-                case 'neq':
-                    filter = territory[this.selectedMetricOption] != this.amountFilter;
-                    break;
-                case 'lt':
-                    filter = territory[this.selectedMetricOption] < this.amountFilter;
-                    break;
-                case 'gt':
-                    filter = territory[this.selectedMetricOption] > this.amountFilter;
-                    break;
-                case 'loe':
-                    filter = territory[this.selectedMetricOption] <= this.amountFilter;
-                    break;
-                case 'goe':
-                    filter = territory[this.selectedMetricOption] >= this.amountFilter;
-                    break;
-            }
-        }
-        return filter;
     }
 
     flatTerritoryRecord(territory) {
@@ -238,65 +173,59 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
         return Object.assign(territory, specialtyNumbers);
     }
 
-    addChildRecords(parentTerritory, territoryAnalysis) {
-        let childerTerritories = Object.values(territoryAnalysis)
-                                .filter(territory => territory.parentId == parentTerritory.id)
-                                .map(childTerritory => {
-                                    this.addChildRecords(childTerritory, territoryAnalysis);
-                                    return this.flatTerritoryRecord(childTerritory);
-                                });
-        if (childerTerritories != null && childerTerritories.length > 0) {
-            parentTerritory['_children'] = childerTerritories;
-        }
-    }
-
-    getTotalAccounts(parentTerritory) {
-        let totalAccounts = parentTerritory['territory_accounts'];
-        if (parentTerritory._children != null && parentTerritory._children.length > 0) {
-            parentTerritory._children.forEach(childTerritory => {
-                let totalChildAccounts = this.getTotalAccounts(childTerritory);
-                totalAccounts += totalChildAccounts;
-                childTerritory['total_accounts'] = totalChildAccounts;
-            });
-        }
-        return totalAccounts;
-    }
-
     handleTerritoryFilterInputChange(event) {
+        this._currentPage = 1;
         let territoryFilterInput = event.target.value.toLowerCase();
-        this._territoryFilter = territoryFilterInput;
-        this.territoryTreeData = this.refreshTreeGrid(JSON.stringify(this._parentTerritories));
+        this._territoryName = territoryFilterInput;
+        this.loadFromServer();
     }
 
     handleMetricOptionSelect(event) {
-        this.selectedMetricOption = event.detail;
-        this.territoryTreeData = this.refreshTreeGrid(JSON.stringify(this._parentTerritories));
+        this._currentPage = 1;
+        this._specialtyName = null;
+        if (event.detail) {
+            this._specialtyName = event.detail.replace('_accounts', '');
+        }
+        if ((this._comparisonOperator && this._specialtyName && this._filterNumber) || !this._specialtyName) {
+            this.loadFromServer();
+        }        
     }
 
     handleOperatorOptionSelect(event) {
-        this.selectedOperator = event.detail;
-        this.territoryTreeData = this.refreshTreeGrid(JSON.stringify(this._parentTerritories));
+        this._currentPage = 1;
+        this._comparisonOperator = event.detail;
+        if ((this._comparisonOperator && this._specialtyName && this._filterNumber) || !this._comparisonOperator) {
+            this.loadFromServer();
+        }        
     }
 
-    handleAmountChange(event){
-        this.amountFilter = event.detail.value;
-        this.territoryTreeData = this.refreshTreeGrid(JSON.stringify(this._parentTerritories));
+    handleAmountChange(event) {
+        this._currentPage = 1;
+        this._filterNumber = null;
+        if (event.detail.value) {
+            this._filterNumber = event.detail.value;
+        }
+        if ((this._comparisonOperator && this._specialtyName && this._filterNumber) || !this._filterNumber) {
+            this.loadFromServer();
+        }
     }
 
     handleAccountTypeOptionSelect(event) {
-        this._accountType = event.detail;
-        if (!event.detail) {
-            this._accountType = 'All';
+        this._currentPage = 1;        
+        let accountType = 'All';
+        if (event.detail) {
+            accountType = event.detail;
         }
-        this.parseData(JSON.parse(this._rawData));
+        this._accountType = accountType;
+        this.loadFromServer();
     }
 
     handleExportCSV() {
         let headers = {};
-        this._columns.forEach(col => headers[col.fieldName] = col.label);
+        // this._columns.forEach(col => headers[col.fieldName] = col.label);
         headers['parentTerritory'] = 'Parent Territory';
         let records = [];
-        this.flatTreeData(this.territoryTreeData, records, null);
+        // this.flatTreeData(this.territoryTreeData, records, null);
         downloadCSVFile(headers, records, 'territory_analysis');
     }
 
@@ -317,4 +246,72 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
             }           
         });
     }
+
+    get _currentPageData() {
+        if (this.serverResponse.data) {
+            let cpd = this.serverResponse.data.currentPageTerritories.map(territory => {
+                return this.flatTerritoryRecord(JSON.parse(JSON.stringify(territory)));
+            });
+            return cpd;
+        }
+        return [];
+    }
+
+    get tableColumns() {        
+        if (this.serverResponse.data) {
+            let cpd = this.serverResponse.data.currentPageTerritories.map(territory => {
+                return this.flatTerritoryRecord(JSON.parse(JSON.stringify(territory)));
+            });
+            
+            let colNames = [... new Set(this.getSpecialtyColumnsWithValues(cpd))].sort();
+            return this._columnsBase.concat(colNames.map(columnName => {
+                return { label: columnName.replace('_accounts', ''), fieldName: columnName, type: 'number'}
+            }));
+        }
+        return this._columnsBase;
+    }
+
+    get totalPages() {
+        if (this.serverResponse.data) {
+            return Math.ceil(this.serverResponse.data.totalRecords / this._recordsPerPage)
+        }
+        return 1;
+    }
+
+    get currentPageNumber() {
+        if (this.serverResponse.data) {
+            return this._currentPage;
+        }
+        return 1;
+    }
+
+    get pageNumbers() {        
+        if (this.serverResponse.data) {
+            let pageNumbers = [];          
+            for (let i = 1; i <= this.totalPages; i++) {
+                pageNumbers.push(i);
+            }
+            return pageNumbers;
+        }
+        return [];
+    }
+
+    handlePreviousClick() {
+        if (this._currentPage > 1) {
+            this._currentPage--;
+            this.loadFromServer();
+        }
+    }
+    
+    handlePageClick(event) {
+        this._currentPage = event.detail;
+        this.loadFromServer();
+    }
+
+    handleNextClick() {
+        if (this._currentPage < this.totalPages) {
+            this._currentPage++;
+            this.loadFromServer();
+        }
+    }    
 }

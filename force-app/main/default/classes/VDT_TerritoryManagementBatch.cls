@@ -22,7 +22,7 @@ public with sharing class VDT_TerritoryManagementBatch implements Database.Batch
     public Database.QueryLocator start(Database.BatchableContext bc) {
         String countryField = VDT_CustomMetadataService.getCountryFieldForObject('Account');
         String specialtyField = VDT_CustomMetadataService.getAccountSpecialtyField();
-        builder = new VDT_TerritoryAnalysisBuilder(countryField, specialtyField);
+        builder = new VDT_TerritoryAnalysisBuilder(countryField, specialtyField, this.territoryDataCalculation.Id);
         List<String> countries = this.territoryDataCalculation.VDT_Country__c.split(DELIMITER_CHARACTER);
         List<String> countryCriterias = new List<String>();
         String countryClause = '';

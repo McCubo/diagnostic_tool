@@ -7,14 +7,17 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
 
     private String countryField;
     private String specialtyField;
+    private String dataCalculationId;
     private Set<String> accountIds = new Set<String>();
     private List<Account> records = new List<Account>();
     private TerritoryAnalysisOutput territoryAnalysisData = new TerritoryAnalysisOutput();
     private final String EMPTY_PLACEHOLDER = '<<EMPTY>>';
+    private final String DELIMITER_CHAR = '_';
 
-    public VDT_TerritoryAnalysisBuilder(String countryField, String specialtyField) {
+    public VDT_TerritoryAnalysisBuilder(String countryField, String specialtyField, String dataCalculationId) {
         this.countryField = countryField;
         this.specialtyField = specialtyField;
+        this.dataCalculationId = dataCalculationId;
     }
 
     /**
@@ -31,12 +34,6 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
     }
 
     public String build() {
-        for (Territory2 territory : [SELECT Id, Name, ParentTerritory2Id FROM Territory2]) {
-            if (!this.territoryAnalysisData.territoryAnalysis.containsKey(territory.Id)) {
-                TerritoryAnalysis territoryAnalysis = new TerritoryAnalysis(territory.Name, territory.Id, territory.ParentTerritory2Id);
-                this.territoryAnalysisData.territoryAnalysis.put(territory.Id, territoryAnalysis);
-            }
-        }
         return JSON.serialize(this.territoryAnalysisData);
     }
 
@@ -47,9 +44,14 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
     public VDT_TerritoryAnalysisBuilder calculate() {
         Map<Id, Account> accountsById = new Map<Id, Account>(this.records);
         List<ObjectTerritory2Association> accountTerritoryAssignments = getTerritoryAssignmentForAccounts(this.accountIds);
+        System.debug('TEST:accountTerritoryAssignments: ' + accountTerritoryAssignments.size());
+        Set<String> territoryIds = getTerritoryIdsFromCurrentAssociations(accountTerritoryAssignments);
+        System.debug('TEST:territoryIds: ' + territoryIds.size());
+        Map<String, VDT_Transaction_Result__c> transactionResultsByTerritory = getTransactionResultsByTerritory(territoryIds);
+        System.debug('TEST:transactionResultsByTerritory: ' + transactionResultsByTerritory.size());
         for (ObjectTerritory2Association accountTerritory : accountTerritoryAssignments) {
             Account account = accountsById.get(accountTerritory.ObjectId);
-            TerritoryAnalysis territoryAnalysis = getTerritoryById(accountTerritory);
+            String accountType = account.IsPersonAccount ? 'Person' : 'Business';
             String countryValue = this.getPropertyValue(account, this.countryField);
             if (String.isBlank(countryValue)) {
                 countryValue = EMPTY_PLACEHOLDER;
@@ -59,25 +61,26 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
                 specialtyValue = EMPTY_PLACEHOLDER;
             }
             this.territoryAnalysisData.specialties.add(specialtyValue);
-            Map<String, Map<String, Integer>> countrySummaryMap = null;
-            if (account.IsPersonAccount) {
-                countrySummaryMap = territoryAnalysis.personCountrySummary;
+            String key = accountTerritory.Territory2Id + DELIMITER_CHAR + countryValue + DELIMITER_CHAR + specialtyValue + DELIMITER_CHAR + accountType;
+            System.debug('TEST:key: ' + key);
+            VDT_Transaction_Result__c territoryTransaction = null;
+            System.debug('TEST:transactionResultsByTerritory.containsKey(key): ' + transactionResultsByTerritory.containsKey(key));
+            if (transactionResultsByTerritory.containsKey(key)) {
+                territoryTransaction = transactionResultsByTerritory.get(key);
             } else {
-                countrySummaryMap = territoryAnalysis.businessCountrySummary;
+                territoryTransaction = new VDT_Transaction_Result__c(
+                    Territory_Id__c = accountTerritory.Territory2Id,
+                    Country__c = countryValue,
+                    Specialty__c = specialtyValue,
+                    Account_Type__c = accountType,
+                    Data_Calculation__c = this.dataCalculationId,
+                    Total_Accounts__c = 0
+                );                
             }
-            if (countrySummaryMap.containsKey(countryValue)) {
-                Map<String, Integer> specialties = countrySummaryMap.get(countryValue);
-                if (specialties.containsKey(specialtyValue)) {
-                    specialties.put(specialtyValue, specialties.get(specialtyValue) + 1);
-                } else {
-                    specialties.put(specialtyValue, 1);
-                }
-            } else {
-                Map<String, Integer> specialties = new Map<String, Integer>();
-                specialties.put(specialtyValue, 1);
-                countrySummaryMap.put(countryValue, specialties);
-            }
+            territoryTransaction.Total_Accounts__c += 1;
+            transactionResultsByTerritory.put(key, territoryTransaction);
         }
+        upsert transactionResultsByTerritory.values();
         return this;
     }
 
@@ -90,15 +93,36 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
         return [SELECT Id, Territory2Id, Territory2.Name, ObjectId, Territory2.ParentTerritory2Id FROM ObjectTerritory2Association WHERE ObjectId IN :accountIds];
     }
 
-    private TerritoryAnalysis getTerritoryById(ObjectTerritory2Association accountTerritory) {
-        TerritoryAnalysis territoryAnalysis = null;
-        if (this.territoryAnalysisData.territoryAnalysis.containsKey(accountTerritory.Territory2Id)) {
-            territoryAnalysis = this.territoryAnalysisData.territoryAnalysis.get(accountTerritory.Territory2Id);
-        } else {
-            territoryAnalysis = new TerritoryAnalysis(accountTerritory.Territory2.Name, accountTerritory.Territory2Id, accountTerritory.Territory2.ParentTerritory2Id);
-            this.territoryAnalysisData.territoryAnalysis.put(accountTerritory.Territory2Id, territoryAnalysis);
+    private Set<String> getTerritoryIdsFromCurrentAssociations(List<ObjectTerritory2Association> associations) {
+        Set<String> territoryIds = new Set<String>();
+        for (ObjectTerritory2Association association : associations) {
+            territoryIds.add('\'' + association.Territory2Id + '\'');
         }
-        return territoryAnalysis;
+        return territoryIds;
+    }
+
+    private Map<String, VDT_Transaction_Result__c> getTransactionResultsByTerritory(Set<String> territoryIds) {
+        Map<String, VDT_Transaction_Result__c> transactionResultsByKey = new Map<String, VDT_Transaction_Result__c>();
+        List<RecordType> recordTypes = VDT_RecordTypeService.getRecordTypeByObjectAndName('VDT_Transaction_Result__c', VDT_TransactionResultService.TERRITORY_ANALYSIS_RECORD_TYPE_DEV);
+        List<VDT_Transaction_Result__c> transactions = new VDT_TransactionResultSelector()
+            .withAdditionalFields(new List<String> {
+                'Territory_Id__c',
+                'Country__c',
+                'Specialty__c',
+                'Account_Type__c',
+                'Total_Accounts__c'
+            })
+            .addWhereClauses(new List<String> {
+                'RecordTypeId = \'' + recordTypes.get(0).Id + '\'',
+                'Data_Calculation__c = \'' + this.dataCalculationId + '\'',
+                'Territory_Id__c IN (' + String.join(new List<String>(territoryIds), ',') + ')'
+            })
+            .query();
+        for (VDT_Transaction_Result__c territoryTransaction : transactions) {
+            String key = territoryTransaction.Territory_Id__c + DELIMITER_CHAR + territoryTransaction.Country__c + DELIMITER_CHAR + territoryTransaction.Specialty__c + DELIMITER_CHAR + territoryTransaction.Account_Type__c;
+            transactionResultsByKey.put(key, territoryTransaction);
+        }
+        return transactionResultsByKey;
     }
 
     private String getPropertyValue(Account account, String fieldName) {
@@ -116,24 +140,6 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
     }
 
     public class TerritoryAnalysisOutput {
-        public Map<String, TerritoryAnalysis> territoryAnalysis = new Map<String, TerritoryAnalysis>();
         public Set<String> specialties = new Set<String>();
-    }
-
-    public class TerritoryAnalysis {
-
-        public String name;
-        public String id;
-        public String parentId;
-
-        public TerritoryAnalysis(String name, String id, String parentId) {
-            this.name = name;
-            this.id = id;
-            this.parentId = parentId;
-        }
-
-        public Map<String, Map<String, Integer>> businessCountrySummary = new Map<String, Map<String, Integer>>();
-        public Map<String, Map<String, Integer>> personCountrySummary = new Map<String, Map<String, Integer>>();
-
     }
 }

@@ -353,7 +353,7 @@ public inherited sharing class VDT_DataCalculationService {
                 VDT_AttachmentService.JSON_FORMAT, 
                 calculations[0].Id
             );
-
+            calculation.detailData = calculations.get(0).Id;
             if (att != null) {
                 calculation.data = att.Body.toString();
             }

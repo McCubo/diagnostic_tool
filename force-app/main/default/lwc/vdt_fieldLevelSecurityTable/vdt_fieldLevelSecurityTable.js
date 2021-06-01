@@ -9,6 +9,7 @@ const COLUMNS = [
     { label: 'FLS Edit', fieldName: 'flsEdit', type: 'boolean', initialWidth: 75 },
     { label: 'Page Layout Read Only', fieldName: 'pagelayoutRead', type: 'text'},
     { label: 'Page Layout Edit', fieldName: 'pagelayoutEdit', type: 'text'},
+    { label: 'Available on Page Layout?', fieldName: 'availableOnPageLayout', type: 'boolean', initialWidth: 75},
     { label: 'Create?', fieldName: 'objectCreate', type: 'boolean', initialWidth: 75},
     { label: 'Read?', fieldName: 'objectRead', type: 'boolean', initialWidth: 75},
     { label: 'Edit?', fieldName: 'objectEdit', type: 'boolean', initialWidth: 75},

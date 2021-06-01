@@ -30,7 +30,8 @@
                         </template>
                         <template if:true={_showCalculation}>
                             <lightning-layout-item size="12" class="graphs">
-                                <c-vdt_territory-analysis-tree countries={countries} calculation-data={_calculation.data}></c-vdt_territory-analysis-tree>
+                                <c-vdt_territory-analysis-tree countries={countries} calculation-record-id={calculationRecordId} calculation-data={_calculation.data}>                                    
+                                </c-vdt_territory-analysis-tree>
                             </lightning-layout-item>
                         </template>
                     </template>

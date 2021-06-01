@@ -103,10 +103,11 @@ public without sharing class VDT_PageLayoutService {
         for (List<String> chunk : layoutNamesChunks) {
             List<String> layoutFullNames = new List<String>();
             for (String layoutName : chunk) {
-                layoutFullNames.add(String.format('{0}-{1}', new String[]{objectName, layoutName}));
                 if (objectName == 'Account') {
                     layoutFullNames.add(String.format('{0}-{1}', new String[]{'PersonAccount', layoutName}));
                 }
+                objectName = objectName == 'BusinessAccount' ? 'Account' : objectName;
+                layoutFullNames.add(String.format('{0}-{1}', new String[]{objectName, layoutName}));
             }
             List<Metadata.Metadata> layoutMetadata = 
                 Metadata.Operations.retrieve(Metadata.MetadataType.Layout, layoutFullNames);

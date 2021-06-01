@@ -85,6 +85,7 @@ public inherited sharing class VDT_FieldLevelSecurityBuilder {
         public Boolean flsRead;
         public String pagelayoutRead;
         public String pagelayoutEdit;
+        public Boolean availableOnPageLayout;
         public Boolean objectCreate;
         public Boolean objectRead;
         public Boolean objectEdit;
@@ -99,7 +100,7 @@ public inherited sharing class VDT_FieldLevelSecurityBuilder {
                 this.profilePermissionSet = 'PF:' + fieldPermission.Parent.Profile.Name;
             } else {
                 this.profilePermissionSet = 'PS:' + fieldPermission.Parent.Name;
-            }            
+            }
             this.fieldName = fieldPermission.Field.split('\\.').get(1);
             this.flsEdit = fieldPermission.PermissionsEdit;
             this.flsRead = fieldPermission.PermissionsRead;
@@ -121,6 +122,7 @@ public inherited sharing class VDT_FieldLevelSecurityBuilder {
             if (editPageLayouts != null) {
                 this.pagelayoutEdit = String.join(new List<String>(editPageLayouts), ',');
             }
+            this.availableOnPageLayout = readOnlyPageLayouts != null || editPageLayouts != null;
         }
 
     }
