@@ -33,6 +33,7 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
     @api
     calculationRecordId;
 
+    isfullSearch = false;
     isExportLoading = false;
     treeItems = [];
     selectedItem = null;
@@ -64,7 +65,8 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
             specialtyName: this._specialtyName,
             comparisonOperator: this._comparisonOperator,
             filterNumber: this._filterNumber,
-            accountType: this._accountType
+            accountType: this._accountType,
+            isFullSearch: this.isfullSearch
         }).then(result => {
             this.serverResponse.data = result;
         }).catch(error => {
@@ -223,6 +225,12 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
         }        
     }
 
+    handleChangeFullSeach(event) {
+        this.isfullSearch = event.detail.checked;
+        this._currentPage = 1;
+        this.loadFromServer();
+    }
+
     handleAmountChange(event) {
         this._currentPage = 1;
         this._filterNumber = null;
@@ -255,7 +263,8 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
             specialtyName: this._specialtyName,
             comparisonOperator: this._comparisonOperator,
             filterNumber: this._filterNumber,
-            accountType: this._accountType
+            accountType: this._accountType,
+            isFullSearch: this.isfullSearch
         }).then(result => {
             
         }).catch(error => {

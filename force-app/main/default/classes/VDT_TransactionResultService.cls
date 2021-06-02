@@ -2,12 +2,16 @@ public inherited sharing class VDT_TransactionResultService {
 
     public static final String TERRITORY_ANALYSIS_RECORD_TYPE_DEV = 'VDT_Territory_Analysis';
 
-    private static Set<String> getTerritoryIdsByName(String territoryName) {
+    private static Set<String> getTerritoryIdsByName(String territoryName, Boolean isFullSearch) {
         Set<String> territoryIds = new Set<String>();
         if (String.isNotBlank(territoryName)) {
             String territoryLike = '%' + territoryName + '%';
             for (Territory2 territory : [SELECT Id FROM Territory2 WHERE Name LIKE :territoryLike]) {
-                territoryIds.add('\'' + territory.Id + '\'');
+                territoryIds.add(territory.Id);
+            }
+            if (!territoryIds.isEmpty() && isFullSearch) {
+                List<Territory2> allTerritories = [SELECT Id, ParentTerritory2Id FROM Territory2 WHERE ParentTerritory2Id != NULL];
+                territoryIds.addAll(getChildTerritories(territoryIds, allTerritories));
             }
             if (territoryIds.isEmpty()) {
                 territoryIds.add('000000000000000000');
@@ -16,11 +20,26 @@ public inherited sharing class VDT_TransactionResultService {
         return territoryIds;
     }
 
+    private static Set<String> getChildTerritories(Set<String> parentTerritoryIds, List<Territory2> allTerritories) {
+        Set<String> childTerritories = new Set<String>();
+        for (String territoryId : parentTerritoryIds) {
+            for (Territory2 territory : allTerritories) {
+                if (territory.ParentTerritory2Id == territoryId) {
+                    childTerritories.add(territory.Id);
+                }
+            }
+        }
+        if (!childTerritories.isEmpty()) {
+            childTerritories.addAll(getChildTerritories(childTerritories, allTerritories));
+        }
+        return childTerritories;
+    }
+
     public static Map<String, List<String>> getWhereAndHavingClauses(TerritorySearchParameter searchParameters) {
 
         List<String> whereClauses = new List<String>();
         List<String> havingClauses = new List<String>();
-        Set<String> territoryIds = getTerritoryIdsByName(searchParameters.territoryName);
+        Set<String> territoryIds = getTerritoryIdsByName(searchParameters.territoryName, searchParameters.isFullSearch);
 
         whereClauses.add('Data_Calculation__c = \''+ searchParameters.calculationRecordId + '\'');
         if (String.isNotBlank(searchParameters.specialtyName) && String.isNotBlank(searchParameters.comparisonOperator) && searchParameters.filterNumber != null) {
@@ -47,7 +66,11 @@ public inherited sharing class VDT_TransactionResultService {
             }
         }
         if (!territoryIds.isEmpty()) {
-            whereClauses.add('Territory_Id__c IN (' + String.join(new List<String>(territoryIds), ',') + ')');
+            List<String> territoryIdsQuoted = new List<String>();
+            for (String territoryId : territoryIds) {
+                territoryIdsQuoted.add('\'' + territoryId + '\'');
+            }
+            whereClauses.add('Territory_Id__c IN (' + String.join(territoryIdsQuoted, ',') + ')');
         }
         if (!searchParameters.countries.isEmpty() && !searchParameters.countries.contains('All')) {
             List<String> countryCriterias = new List<String>();
@@ -168,8 +191,9 @@ public inherited sharing class VDT_TransactionResultService {
         private String comparisonOperator;
         private Integer filterNumber;
         private String accountType;
+        private Boolean isFullSearch;
 
-        public TerritorySearchParameter(String calculationRecordId, Integer pageNumber, Integer recordsPerPage, List<String> countries, String territoryName, String specialtyName, String comparisonOperator, Integer filterNumber, String accountType) {
+        public TerritorySearchParameter(String calculationRecordId, Integer pageNumber, Integer recordsPerPage, List<String> countries, String territoryName, String specialtyName, String comparisonOperator, Integer filterNumber, String accountType, Boolean isFullSearch) {
             this.calculationRecordId = calculationRecordId;
             this.pageNumber = pageNumber;
             this.recordsPerPage = recordsPerPage;
@@ -179,6 +203,7 @@ public inherited sharing class VDT_TransactionResultService {
             this.comparisonOperator = comparisonOperator;
             this.filterNumber = filterNumber;
             this.accountType = accountType;
+            this.isFullSearch = isFullSearch;
         }
 
         public String getAccountType() {

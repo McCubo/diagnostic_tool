@@ -8,6 +8,19 @@
                 <lightning-layout>
                     <lightning-layout-item size="2">
                         <lightning-input 
+                            type="toggle" 
+                            label="Include Child Territories" 
+                            message-toggle-active=""
+                            message-toggle-inactive=""
+                            onchange={handleChangeFullSeach}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                </lightning-layout>            
+            </lightning-layout-item>
+            <lightning-layout-item size="12">
+                <lightning-layout>
+                    <lightning-layout-item size="2">
+                        <lightning-input 
                             type="text" 
                             variant="label-hidden"
                             name="field" 

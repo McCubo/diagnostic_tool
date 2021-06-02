@@ -27,18 +27,24 @@ public inherited sharing class VDT_TerritoryAnalysisController {
     }
 
     @AuraEnabled(cacheable=true)
-    public static PaginationWrapper getRecordsPerPageSOQL(String calculationRecordId, Integer pageNumber, Integer recordsPerPage, List<String> countries, String territoryName, String specialtyName, String comparisonOperator, Integer filterNumber, String accountType) {
-
-        VDT_TransactionResultService.TerritorySearchParameter searchParameters = 
-            new VDT_TransactionResultService.TerritorySearchParameter(calculationRecordId, pageNumber, recordsPerPage, countries, territoryName, specialtyName, comparisonOperator, filterNumber, accountType);
-        
-        List<VDT_TransactionResultService.TerritoryItem> territoriesInPage = VDT_TransactionResultService.getTransactionResultRecordsForCurrentPage(searchParameters);
-
-        PaginationWrapper pw = new PaginationWrapper();
-
-        pw.currentPageTerritories = territoriesInPage;
-        pw.totalRecords = VDT_TransactionResultService.getTransactionTotalRecords(searchParameters);
-        return pw;
+    public static PaginationWrapper getRecordsPerPageSOQL(String calculationRecordId, Integer pageNumber, Integer recordsPerPage, List<String> countries, String territoryName, String specialtyName, String comparisonOperator, Integer filterNumber, String accountType, Boolean isFullSearch) {
+        try {
+            isFullSearch = isFullSearch != null ? isFullSearch : false;
+            VDT_TransactionResultService.TerritorySearchParameter searchParameters = 
+                new VDT_TransactionResultService.TerritorySearchParameter(calculationRecordId, pageNumber, recordsPerPage, countries, territoryName, specialtyName, comparisonOperator, filterNumber, accountType, isFullSearch);
+            
+            List<VDT_TransactionResultService.TerritoryItem> territoriesInPage = VDT_TransactionResultService.getTransactionResultRecordsForCurrentPage(searchParameters);
+    
+            PaginationWrapper pw = new PaginationWrapper();
+    
+            pw.currentPageTerritories = territoriesInPage;
+            pw.totalRecords = VDT_TransactionResultService.getTransactionTotalRecords(searchParameters);
+            return pw;            
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());            
+        }
     }
 
     public class PaginationWrapper {
@@ -71,10 +77,12 @@ public inherited sharing class VDT_TerritoryAnalysisController {
     }
 
     @AuraEnabled
-    public static void exportReport(String calculationRecordId, Integer pageNumber, Integer recordsPerPage, List<String> countries, String territoryName, String specialtyName, String comparisonOperator, Integer filterNumber, String accountType) {
+    public static void exportReport(String calculationRecordId, Integer pageNumber, Integer recordsPerPage, List<String> countries, String territoryName, String specialtyName, String comparisonOperator, Integer filterNumber, String accountType, Boolean isFullSearch) {
         try {
+            isFullSearch = isFullSearch != null ? isFullSearch : false;
+            isFullSearch = isFullSearch != null ? isFullSearch : false;
             VDT_TransactionResultService.TerritorySearchParameter searchParameters = 
-                                new VDT_TransactionResultService.TerritorySearchParameter(calculationRecordId, pageNumber, recordsPerPage, countries, territoryName, specialtyName, comparisonOperator, filterNumber, accountType);
+                                new VDT_TransactionResultService.TerritorySearchParameter(calculationRecordId, pageNumber, recordsPerPage, countries, territoryName, specialtyName, comparisonOperator, filterNumber, accountType, false);
             Database.executeBatch(new VDT_TerritoryAnalysisExportBatch(searchParameters));
         } catch (Exception e) {
             VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
