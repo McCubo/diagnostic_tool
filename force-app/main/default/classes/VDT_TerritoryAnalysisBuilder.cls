@@ -34,6 +34,7 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
     }
 
     public String build() {
+        this.territoryAnalysisData.items = this.getTerritoryHierarchy();
         return JSON.serialize(this.territoryAnalysisData);
     }
 
@@ -44,11 +45,11 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
     public VDT_TerritoryAnalysisBuilder calculate() {
         Map<Id, Account> accountsById = new Map<Id, Account>(this.records);
         List<ObjectTerritory2Association> accountTerritoryAssignments = getTerritoryAssignmentForAccounts(this.accountIds);
-        System.debug('TEST:accountTerritoryAssignments: ' + accountTerritoryAssignments.size());
+        
         Set<String> territoryIds = getTerritoryIdsFromCurrentAssociations(accountTerritoryAssignments);
-        System.debug('TEST:territoryIds: ' + territoryIds.size());
+        
         Map<String, VDT_Transaction_Result__c> transactionResultsByTerritory = getTransactionResultsByTerritory(territoryIds);
-        System.debug('TEST:transactionResultsByTerritory: ' + transactionResultsByTerritory.size());
+        
         for (ObjectTerritory2Association accountTerritory : accountTerritoryAssignments) {
             Account account = accountsById.get(accountTerritory.ObjectId);
             String accountType = account.IsPersonAccount ? 'Person' : 'Business';
@@ -62,9 +63,9 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
             }
             this.territoryAnalysisData.specialties.add(specialtyValue);
             String key = accountTerritory.Territory2Id + DELIMITER_CHAR + countryValue + DELIMITER_CHAR + specialtyValue + DELIMITER_CHAR + accountType;
-            System.debug('TEST:key: ' + key);
+            
             VDT_Transaction_Result__c territoryTransaction = null;
-            System.debug('TEST:transactionResultsByTerritory.containsKey(key): ' + transactionResultsByTerritory.containsKey(key));
+            
             if (transactionResultsByTerritory.containsKey(key)) {
                 territoryTransaction = transactionResultsByTerritory.get(key);
             } else {
@@ -139,7 +140,48 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
         return value;
     }
 
+    private List<TerritoryItem> getTerritoryHierarchy() {        
+        Map<String, List<Territory2>> territoriesByParent = new Map<String, List<Territory2>>();
+        for (Territory2 territory : [SELECT Id, Name, ParentTerritory2Id FROM Territory2]) {
+            String parentId = String.isBlank(territory.ParentTerritory2Id) ? 'NULL' : territory.ParentTerritory2Id;
+            if (territoriesByParent.containsKey(parentId)) {
+                territoriesByParent.get(parentId).add(territory);
+            } else {
+                territoriesByParent.put(parentId, new List<Territory2> {territory});
+            }
+        }
+        List<TerritoryItem> parentTerritories = addChildrenTerritories(territoriesByParent.get('NULL'), territoriesByParent);
+        return parentTerritories;
+    }
+
+    private List<TerritoryItem> addChildrenTerritories(List<Territory2> parentTerritories, Map<String, List<Territory2>> territoriesByParent) {
+        List<TerritoryItem> parentItems = new List<TerritoryItem>();
+        for (Territory2 parentTerritory : parentTerritories) {
+            TerritoryItem territoryItem = new TerritoryItem(parentTerritory.Name);
+            if (territoriesByParent.containsKey(parentTerritory.Id)) {
+                territoryItem.items = addChildrenTerritories(territoriesByParent.get(parentTerritory.Id), territoriesByParent);
+            }
+            parentItems.add(territoryItem);
+        }
+        return parentItems;
+    }
+
     public class TerritoryAnalysisOutput {
         public Set<String> specialties = new Set<String>();
+        public List<TerritoryItem> items = new List<TerritoryItem>();
+    }
+
+    public class TerritoryItem {
+
+        public String label;
+        public String name;
+        public Boolean expanded = false;
+        public List<TerritoryItem> items;
+
+        public TerritoryItem(String label) {
+            this.label = label;
+            this.name = label;
+        }
+
     }
 }

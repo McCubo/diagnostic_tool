@@ -10,6 +10,7 @@ public inherited sharing class VDT_EmailService {
     public static final String TEMPLATE_FIELDS_OCCURRENCES_FINISHED = 'VDT_FieldsOccurrencesFinished';
     public static final String TEMPLATE_TERRITORY_ANALYSIS_FINISHED = 'VDT_TerritoryAnalysisFinished';
     public static final String TEMPLATE_FLS_ANALYSIS_FINISHED = 'VDT_FieldLevelSecurityFinished';
+    public static final String TEMPLATE_TERRITORY_EXPORT_FINISHED = 'VDT_TerritoryExportCompleted';
     public static final String SENDER_DISPLAY_NAME = 'BASELife CRM [TBD]';
     public static final String REPLY_TO = 'no-reply@base-crm.com.TBD';
 
@@ -123,6 +124,14 @@ public inherited sharing class VDT_EmailService {
         if (!results[0].success) {
             throw new EmailServiceException('Email Failed To Send: ' +  results[0].errors[0].message);
         } 
+    }
+
+    public static void sendTerritoryExportNotification() {
+        List<EmailTemplate> emailTemplates = new VDT_EmailTemplateSelector().getByName(TEMPLATE_TERRITORY_EXPORT_FINISHED);
+        if (emailTemplates.isEmpty()) {
+            throw new EmailServiceException('Email Template Not Found');
+        }
+        sendEmail(emailTemplates.get(0).Id, UserInfo.getUserId(), null);
     }
 
     /**

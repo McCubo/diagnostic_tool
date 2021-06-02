@@ -173,7 +173,30 @@ public inherited sharing class VDT_TransactionResultSelector {
                 getOffsetString()
             }
         );
+        System.debug('TEST:query: ' + query);
         return (AggregateResult[]) Database.query(query);
+    }
+
+    public String getQueryString() {
+        String query = String.format(
+            'SELECT {0} FROM {1} ' + 
+            '{2} ' +
+            'WITH SECURITY_ENFORCED ' +
+            '{3} ' +
+            '{4} ' + 
+            '{5} ' +
+            '{6} ', 
+            new List<String>{
+                getFieldListString(),
+                getObjectName(),
+                getWhereClause(),
+                getGroupByString(),
+                getHavingClause(),
+                getLimitString(),
+                getOffsetString()
+            }
+        );
+        return query;
     }
 
     /**
@@ -194,6 +217,7 @@ public inherited sharing class VDT_TransactionResultSelector {
                 getHavingClause()
             }
         );
+        System.debug('TEST:query: ' + query);
         return (AggregateResult[]) Database.query(query);
     }    
     /**

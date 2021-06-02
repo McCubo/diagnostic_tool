@@ -9,11 +9,14 @@ public inherited sharing class VDT_TransactionResultService {
             for (Territory2 territory : [SELECT Id FROM Territory2 WHERE Name LIKE :territoryLike]) {
                 territoryIds.add('\'' + territory.Id + '\'');
             }
+            if (territoryIds.isEmpty()) {
+                territoryIds.add('000000000000000000');
+            }
         }
         return territoryIds;
     }
 
-    private static Map<String, List<String>> getWhereAndHavingClauses(TerritorySearchParameter searchParameters) {
+    public static Map<String, List<String>> getWhereAndHavingClauses(TerritorySearchParameter searchParameters) {
 
         List<String> whereClauses = new List<String>();
         List<String> havingClauses = new List<String>();
@@ -46,8 +49,12 @@ public inherited sharing class VDT_TransactionResultService {
         if (!territoryIds.isEmpty()) {
             whereClauses.add('Territory_Id__c IN (' + String.join(new List<String>(territoryIds), ',') + ')');
         }
-        if (String.isNotBlank(searchParameters.country) && searchParameters.country != 'All') {
-            whereClauses.add('Country__c = \'' + searchParameters.country + '\'');
+        if (!searchParameters.countries.isEmpty() && !searchParameters.countries.contains('All')) {
+            List<String> countryCriterias = new List<String>();
+            for (String country : searchParameters.countries) {
+                countryCriterias.add('Country__c = \'' + country + '\'');
+            }
+            whereClauses.add('(' + String.join(countryCriterias, ' OR ') + ')');
         }
 
         if (String.isNotBlank(searchParameters.accountType) && searchParameters.accountType != 'All') {
@@ -155,23 +162,31 @@ public inherited sharing class VDT_TransactionResultService {
         private String calculationRecordId;
         private Integer pageNumber;
         private Integer recordsPerPage;
-        private String country;
+        private List<String> countries;
         private String territoryName;
         private String specialtyName;
         private String comparisonOperator;
         private Integer filterNumber;
         private String accountType;
 
-        public TerritorySearchParameter(String calculationRecordId, Integer pageNumber, Integer recordsPerPage, String country, String territoryName, String specialtyName, String comparisonOperator, Integer filterNumber, String accountType) {
+        public TerritorySearchParameter(String calculationRecordId, Integer pageNumber, Integer recordsPerPage, List<String> countries, String territoryName, String specialtyName, String comparisonOperator, Integer filterNumber, String accountType) {
             this.calculationRecordId = calculationRecordId;
             this.pageNumber = pageNumber;
             this.recordsPerPage = recordsPerPage;
-            this.country = country;
+            this.countries = countries;
             this.territoryName = territoryName;
             this.specialtyName = specialtyName;
             this.comparisonOperator = comparisonOperator;
             this.filterNumber = filterNumber;
             this.accountType = accountType;
+        }
+
+        public String getAccountType() {
+            return this.accountType;
+        }
+
+        public List<String> getCountries() {
+            return this.countries;
         }
     }
 

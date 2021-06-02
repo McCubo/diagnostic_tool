@@ -43,7 +43,10 @@
                             onoptionselect={handleAccountTypeOptionSelect}
                         ></c-vdt_autocomplete-input>
                     </lightning-layout-item>                    
-                    <lightning-layout-item alignment-bump="left">
+                    <lightning-layout-item alignment-bump="left" style="position:relative">
+                        <template if:true={isExportLoading}>
+                            <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                        </template>
                         <lightning-button
                             variant="brand"
                             name="export_csv"
@@ -52,6 +55,9 @@
                         ></lightning-button>
                     </lightning-layout-item>
                 </lightning-layout>
+            </lightning-layout-item>
+            <lightning-layout-item>
+                <lightning-tree items={treeItems} header="Territories" onselect={handleOnTerritoryselect} selected-item={selectedItem}></lightning-tree>
             </lightning-layout-item>
             <lightning-layout-item size="12" class="graphs">
                 <lightning-datatable

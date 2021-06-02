@@ -102,5 +102,17 @@ public inherited sharing class VDT_AttachmentService {
         return contentByParentId;
     }
 
+    public static void insertDocument(String name, String content, String format) {
+        Blob bodyBlob = Blob.valueOf(content);
+
+        ContentVersion cv = new ContentVersion(
+            Title = name + format,
+            PathOnClient = name + format,
+            VersionData = bodyBlob,
+            origin = 'H'
+        );
+        insert cv;
+    }
+
     public class AttachmentServiceException extends Exception {}
 }

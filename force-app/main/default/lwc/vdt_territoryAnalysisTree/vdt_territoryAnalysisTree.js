@@ -1,8 +1,9 @@
 import { LightningElement, api, wire, track } from 'lwc';
-import { downloadCSVFile } from 'c/vdt_csvUtil'
 import { subscribe, unsubscribe, APPLICATION_SCOPE, MessageContext } from 'lightning/messageService';
+import { showToast } from 'c/vdt_utils';
 import onekeyCountryChannel from '@salesforce/messageChannel/vdt_onekeyCountryChannel__c';
 import getRecordsPerPage from '@salesforce/apex/VDT_TerritoryAnalysisController.getRecordsPerPageSOQL';
+import exportReport from '@salesforce/apex/VDT_TerritoryAnalysisController.exportReport';
 
 const COMPARISON_OPERATORS = [
     {label: 'equals', value: 'eq'},
@@ -32,6 +33,10 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
     @api
     calculationRecordId;
 
+    isExportLoading = false;
+    treeItems = [];
+    selectedItem = null;
+    prevSelection = null;
     @wire(MessageContext)
     messageContext;
     _subscription = null;
@@ -54,6 +59,7 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
             calculationRecordId: this.calculationRecordId,
             pageNumber: this._currentPage, 
             recordsPerPage: this._recordsPerPage,
+            countries: this.countries,
             territoryName: this._territoryName,
             specialtyName: this._specialtyName,
             comparisonOperator: this._comparisonOperator,
@@ -89,6 +95,8 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
     handleMessage(message) {
         if (message.countries) {
             this.countries = message.countries;
+            this._currentPage = 1;
+            this.loadFromServer();
         }
     }
 
@@ -109,6 +117,7 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
     set calculationData(val) {
         let data = JSON.parse(val);
         this.setMetricOptions(data);
+        this.treeItems = data.items;
     }
 
     setMetricOptions(data) {
@@ -175,9 +184,24 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
 
     handleTerritoryFilterInputChange(event) {
         this._currentPage = 1;
+        this.selectedItem = null;
         let territoryFilterInput = event.target.value.toLowerCase();
         this._territoryName = territoryFilterInput;
         this.loadFromServer();
+    }
+
+    handleOnTerritoryselect(event) {
+        try {
+            this._currentPage = 1;
+            if (this.prevSelection == null || this.prevSelection != event.detail.name.toLowerCase()) {
+                this._territoryName = event.detail.name.toLowerCase();
+                this.loadFromServer(); 
+            }
+            this.prevSelection = event.detail.name.toLowerCase();
+                       
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     handleMetricOptionSelect(event) {
@@ -221,30 +245,25 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
     }
 
     handleExportCSV() {
-        let headers = {};
-        // this._columns.forEach(col => headers[col.fieldName] = col.label);
-        headers['parentTerritory'] = 'Parent Territory';
-        let records = [];
-        // this.flatTreeData(this.territoryTreeData, records, null);
-        downloadCSVFile(headers, records, 'territory_analysis');
-    }
-
-    flatTreeData(treeData, records, parentTerritory) {
-        treeData.forEach(territory => {
-            let flatTerritory = Object.assign({}, territory);
-            // removing unneeded properties
-            delete flatTerritory.parentId;
-            delete flatTerritory.businessCountrySummary;
-            delete flatTerritory.personCountrySummary;
-            delete flatTerritory._children;
-            if (parentTerritory) {
-                flatTerritory['parentTerritory'] = parentTerritory;
-            }             
-            records.push(flatTerritory);
-            if (territory._children) {
-                this.flatTreeData(territory._children, records, territory.name);
-            }           
-        });
+        this.isExportLoading = true;
+        exportReport({ 
+            calculationRecordId: this.calculationRecordId,
+            countries: this.countries,
+            pageNumber: this._currentPage, 
+            recordsPerPage: this._recordsPerPage,
+            territoryName: this._territoryName,
+            specialtyName: this._specialtyName,
+            comparisonOperator: this._comparisonOperator,
+            filterNumber: this._filterNumber,
+            accountType: this._accountType
+        }).then(result => {
+            
+        }).catch(error => {
+            
+        }).finally(() => {
+            this.isExportLoading = false;
+            this.dispatchEvent(showToast('You will receive an Email once the report file is created.', 'success'));
+        })
     }
 
     get _currentPageData() {
