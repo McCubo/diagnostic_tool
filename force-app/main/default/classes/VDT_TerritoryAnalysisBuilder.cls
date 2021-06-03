@@ -13,6 +13,7 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
     private TerritoryAnalysisOutput territoryAnalysisData = new TerritoryAnalysisOutput();
     private final String EMPTY_PLACEHOLDER = '<<EMPTY>>';
     private final String DELIMITER_CHAR = '_';
+    private Map<String, Integer> associationsByParentAccount = new Map<String, Integer>();
 
     public VDT_TerritoryAnalysisBuilder(String countryField, String specialtyField, String dataCalculationId) {
         this.countryField = countryField;
@@ -80,6 +81,12 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
             }
             territoryTransaction.Total_Accounts__c += 1;
             transactionResultsByTerritory.put(key, territoryTransaction);
+            if (String.isNotBlank(accountTerritory.Territory2Id) && associationsByParentAccount.containsKey(accountTerritory.Territory2Id)) {
+                Integer numOfAssociations = associationsByParentAccount.get(accountTerritory.Territory2Id) + 1;
+                associationsByParentAccount.put(accountTerritory.Territory2Id, numOfAssociations);
+            } else if (String.isNotBlank(accountTerritory.Territory2Id)) {
+                associationsByParentAccount.put(accountTerritory.Territory2Id, 1);
+            }
         }
         upsert transactionResultsByTerritory.values();
         return this;
@@ -157,7 +164,7 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
     private List<TerritoryItem> addChildrenTerritories(List<Territory2> parentTerritories, Map<String, List<Territory2>> territoriesByParent) {
         List<TerritoryItem> parentItems = new List<TerritoryItem>();
         for (Territory2 parentTerritory : parentTerritories) {
-            TerritoryItem territoryItem = new TerritoryItem(parentTerritory.Name);
+            TerritoryItem territoryItem = new TerritoryItem(parentTerritory.Id, parentTerritory.Name, this.associationsByParentAccount.get(parentTerritory.Id));
             if (territoriesByParent.containsKey(parentTerritory.Id)) {
                 territoryItem.items = addChildrenTerritories(territoriesByParent.get(parentTerritory.Id), territoriesByParent);
             }
@@ -169,18 +176,25 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
     public class TerritoryAnalysisOutput {
         public Set<String> specialties = new Set<String>();
         public List<TerritoryItem> items = new List<TerritoryItem>();
+        
     }
 
     public class TerritoryItem {
 
+        public String id;
         public String label;
         public String name;
         public Boolean expanded = false;
+        public Integer totalAccounts = 0;
         public List<TerritoryItem> items;
 
-        public TerritoryItem(String label) {
+        public TerritoryItem(String id, String label, Integer totalAccounts) {
+            this.id = id;
             this.label = label;
             this.name = label;
+            if (totalAccounts != null) {
+                this.totalAccounts = totalAccounts;
+            }
         }
 
     }

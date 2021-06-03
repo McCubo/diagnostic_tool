@@ -21,6 +21,8 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
 
     _columnsBase = [
         { label: 'Territory Name', fieldName: 'name', type: 'text', initialWidth: 150 },
+        { label: 'Is Leaf?', fieldName: 'is_leaf', type: 'boolean', initialWidth: 100 },
+        { label: 'Total Accounts', fieldName: 'total_accounts', type: 'number', initialWidth: 115 },
         { label: 'Territory Accounts', fieldName: 'territory_accounts', type: 'number', initialWidth: 115 }
     ];
 
@@ -137,7 +139,7 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
     }
 
     getSpecialtyColumnsWithValues(territories) {
-        let defaultProperties = ['parentId', 'name', 'id', 'businessCountrySummary', 'personCountrySummary', 'territory_accounts', 'total_accounts', '_children'];
+        let defaultProperties = ['parentId', 'name', 'id', 'businessCountrySummary', 'personCountrySummary', 'territory_accounts', 'total_accounts', '_children', 'is_leaf'];
         let columnsWithValues = territories.reduce((accumulator, territory) => {
             let cols = [];
             Object.keys(territory).forEach(propertyName => {
@@ -181,7 +183,40 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
             }
         })
         territory['territory_accounts'] = accountsInTerritory;
+        let territoryItem = this.findTerritory(this.treeItems, territory.id);
+        territory['total_accounts'] = this.getTotalChildAccounts(territoryItem) + accountsInTerritory;
+        territory['is_leaf'] = territoryItem.items == null;
+        
         return Object.assign(territory, specialtyNumbers);
+    }
+
+    findTerritory(obj, territoryId) {
+        let territoryObject = null;
+        for (let i = 0, len = Object.values(obj).length; i < len; i++) {
+            let territory = obj[i];
+            if (territory.id == territoryId) {
+                territoryObject = territory;
+                break;
+            } else if (territory.items != null) {
+                territoryObject = this.findTerritory(territory.items, territoryId);
+                if (territoryObject) {
+                    break;
+                }
+            }
+        }
+        return territoryObject;
+    }
+
+    getTotalChildAccounts(territoryItem) {
+        let childCounter = 0;
+        if (territoryItem.items) {
+            childCounter = territoryItem.items.reduce((accumulator, currentTerritory) => {
+                let childs = this.getTotalChildAccounts(currentTerritory);
+                return accumulator + currentTerritory.totalAccounts + childs;
+                
+            }, 0);
+        }
+        return childCounter;
     }
 
     handleTerritoryFilterInputChange(event) {
