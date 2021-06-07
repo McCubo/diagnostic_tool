@@ -5,7 +5,7 @@
     <encodingKey>ISO-8859-1</encodingKey>
     <name>VDT_TerritoryAnalysisFinished</name>
     <style>none</style>
-    <subject>Territory Analysis for {!VDT_Data_Calculation__c.VDT_Country__c} Finished!</subject>
+    <subject>Territory Analysis for {!IF(VDT_Data_Calculation__c.VDT_Country__c =&quot;&quot;,VDT_Data_Calculation__c.Territory__c, VDT_Data_Calculation__c.VDT_Country__c)}  Finished!</subject>
     <type>text</type>
     <uiType>Aloha</uiType>
 </EmailTemplate>

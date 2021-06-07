@@ -1,1 +1,1 @@
-Territory Analysis calculations for: {!VDT_Data_Calculation__c.VDT_Country__c} countries finished. You can come back to Veeva Diagnostic Tool and see the results.
+Territory Analysis calculations for: {!IF(VDT_Data_Calculation__c.VDT_Country__c ="",VDT_Data_Calculation__c.Territory__c, VDT_Data_Calculation__c.VDT_Country__c)} {!IF(VDT_Data_Calculation__c.VDT_Country__c ="","territory", "countries")} finished. You can come back to Veeva Diagnostic Tool and see the results.
