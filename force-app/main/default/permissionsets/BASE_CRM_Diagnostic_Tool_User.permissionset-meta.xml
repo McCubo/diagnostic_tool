@@ -41,6 +41,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>VDT_TerritoryAnalysisController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>VDT_VeevaUsersController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -76,6 +80,7 @@
         <enabled>true</enabled>
         <name>VDT_Object_Product_Field_Mapping__mdt</name>
     </customMetadataTypeAccesses>
+    <description>Provides access to all objects, tabs and fields needed for CDT</description>
     <fieldPermissions>
         <editable>false</editable>
         <field>VDT_Data_Calculation_Entry__c.VDT_Object_Name__c</field>
@@ -124,6 +129,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>VDT_Data_Calculation__c.Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>VDT_Data_Calculation__c.Territory__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -206,6 +216,36 @@
         <field>VDT_Log_Event__c.Severity__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>VDT_Transaction_Result__c.Account_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>VDT_Transaction_Result__c.Country__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>VDT_Transaction_Result__c.Parent_Territory_Id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>VDT_Transaction_Result__c.Specialty__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>VDT_Transaction_Result__c.Territory_Id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>VDT_Transaction_Result__c.Total_Accounts__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>BASE CRM Diagnostic Tool User</label>
     <objectPermissions>
@@ -235,6 +275,19 @@
         <object>VDT_Log_Event__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>VDT_Transaction_Result__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <recordTypeVisibilities>
+        <recordType>VDT_Data_Calculation__c.VDT_Field_Level_Security_Analysis</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
     <recordTypeVisibilities>
         <recordType>VDT_Data_Calculation__c.VDT_Master_Data_Analysis</recordType>
         <visible>true</visible>
@@ -255,8 +308,16 @@
         <recordType>VDT_Data_Calculation__c.VDT_Territory_Analysis</recordType>
         <visible>true</visible>
     </recordTypeVisibilities>
+    <recordTypeVisibilities>
+        <recordType>VDT_Transaction_Result__c.VDT_Territory_Analysis</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
     <tabSettings>
         <tab>VDT_Data_Calculation__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>VDT_Field_Summary__c</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>

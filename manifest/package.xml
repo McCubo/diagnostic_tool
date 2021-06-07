@@ -156,7 +156,6 @@
         <members>VDT_Object_Product_Field_Mapping__mdt</members>
         <members>VDT_Query__mdt</members>
         <members>VDT_Tab__mdt</members>
-        <members>VDT_Territory_Range_Filter__mdt</members>
         <members>VDT_Transaction_Result__c</members>
         <name>CustomObject</name>
     </types>

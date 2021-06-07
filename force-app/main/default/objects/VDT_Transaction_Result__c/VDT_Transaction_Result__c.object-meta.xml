@@ -141,25 +141,25 @@
         <type>Default</type>
     </actionOverrides>
     <allowInChatterGroups>false</allowInChatterGroups>
-    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <compactLayoutAssignment>Custom_Information</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
-    <enableActivities>true</enableActivities>
+    <enableActivities>false</enableActivities>
     <enableBulkApi>true</enableBulkApi>
     <enableFeeds>false</enableFeeds>
     <enableHistory>false</enableHistory>
     <enableLicensing>false</enableLicensing>
     <enableReports>false</enableReports>
-    <enableSearch>true</enableSearch>
+    <enableSearch>false</enableSearch>
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
-    <label>Data Calculation</label>
+    <label>VDT Transaction Result</label>
     <nameField>
-        <displayFormat>DC-{00000}</displayFormat>
-        <label>Data Calculation Name</label>
+        <displayFormat>TR-{00000}</displayFormat>
+        <label>VDT Transaction Result</label>
         <type>AutoNumber</type>
     </nameField>
-    <pluralLabel>Data Calculations</pluralLabel>
+    <pluralLabel>VDT Transaction Results</pluralLabel>
     <searchLayouts></searchLayouts>
-    <sharingModel>ReadWrite</sharingModel>
+    <sharingModel>ControlledByParent</sharingModel>
     <visibility>Public</visibility>
 </CustomObject>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Email send as notification the Territory Export job has been completed.</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <name>VDT_TerritoryExportCompleted</name>
+    <style>none</style>
+    <subject>Your export file has been completed.</subject>
+    <type>text</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>
