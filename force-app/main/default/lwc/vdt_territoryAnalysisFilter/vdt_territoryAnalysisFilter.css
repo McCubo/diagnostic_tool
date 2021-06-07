@@ -2,3 +2,14 @@
     margin-top: 0.75rem;
     position: relative;
 }
+.search-component {
+    margin-top: 0.75rem;
+    position: relative;    
+}
+.input-label {
+    font-size: medium;
+}
+
+.label {
+    margin: 2.7rem 0 0 2rem; 
+}

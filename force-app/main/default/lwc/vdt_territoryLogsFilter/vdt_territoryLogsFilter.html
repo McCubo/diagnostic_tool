@@ -1,0 +1,46 @@
+<template>
+    <div class="container">
+        <lightning-layout>
+            <lightning-layout-item size="2">
+                <lightning-input 
+                    type="text" 
+                    variant="label-hidden"
+                    name="findTerritory" 
+                    placeholder="Find a Territory"
+                    value={_filter.territory}
+                    onchange={handleTerritoryChange}
+                ></lightning-input>
+            </lightning-layout-item>            
+            <lightning-layout-item size="2">
+                <lightning-input 
+                    type="text" 
+                    variant="label-hidden"
+                    name="findCountry" 
+                    placeholder="Find a Country"
+                    value={_filter.country}
+                    onchange={handleCountryChange}
+                ></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="2">
+                <lightning-input 
+                    type="date" 
+                    variant="label-hidden"
+                    name="jobstart"
+                    placeholder="Find Job Start Date"
+                    value={_filter.jobStartDate}
+                    onchange={handleJobStartDateChange}
+                ></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="2">
+                <lightning-input 
+                    type="date" 
+                    variant="label-hidden"
+                    name="jobend"
+                    placeholder="Find Job End Date"
+                    value={_filter.jobEndDate}
+                    onchange={handleJobEndDateChange}
+                ></lightning-input>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

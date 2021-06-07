@@ -23,10 +23,10 @@ public with sharing class VDT_TerritoryManagementBatch implements Database.Batch
         String countryField = VDT_CustomMetadataService.getCountryFieldForObject('Account');
         String specialtyField = VDT_CustomMetadataService.getAccountSpecialtyField();
         builder = new VDT_TerritoryAnalysisBuilder(countryField, specialtyField, this.territoryDataCalculation.Id);
-        List<String> countries = this.territoryDataCalculation.VDT_Country__c.split(DELIMITER_CHARACTER);
+        List<String> countries = String.isNotBlank(this.territoryDataCalculation.VDT_Country__c) ? this.territoryDataCalculation.VDT_Country__c.split(DELIMITER_CHARACTER) : new List<String>();
         List<String> countryCriterias = new List<String>();
         String countryClause = '';
-        if (!countries.contains('All')) {
+        if (!countries.contains('All') && !countries.isEmpty()) {
             for (String countrycode : countries) {
                 countryCriterias.add(countryField + ' = \'' + countrycode + '\'');
             }
@@ -41,6 +41,7 @@ public with sharing class VDT_TerritoryManagementBatch implements Database.Batch
             }
         );
 
+        builder.withTerritories(this.territoryDataCalculation.Territory__c);
         this.territoryDataCalculation.VDT_Job_Start_Date__c = Datetime.now();
         this.territoryDataCalculation.Batches_Number__c = 0;
         update this.territoryDataCalculation;
@@ -78,8 +79,8 @@ public with sharing class VDT_TerritoryManagementBatch implements Database.Batch
                 VDT_ObjectService.TERRITORY_ANALYSIS_FILE_NAME,
                 VDT_AttachmentService.JSON_FORMAT,
                 this.territoryDataCalculation.Id
-            );            
-            VDT_EmailService.sendTerritoryAnalysisFinishedEmailNotification(this.territoryDataCalculation.VDT_Country__c);
+            );
+            VDT_EmailService.sendTerritoryAnalysisFinishedEmailNotification(this.territoryDataCalculation.Id);
         } catch (Exception e) {
             VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
             VDT_Log.get().publish();

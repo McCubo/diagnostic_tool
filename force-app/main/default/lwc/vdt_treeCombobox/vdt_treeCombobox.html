@@ -1,0 +1,23 @@
+<template>
+    <lightning-layout>
+        <lightning-layout-item size="11">
+            <p class="input-label">
+                Territory&nbsp;
+                <lightning-button-icon 
+                    onclick={handleClearSelection}
+                    icon-name="utility:clear" 
+                    variant="bare" 
+                    alternative-text="Clear"
+                    title="Clear Selection">
+                </lightning-button-icon>
+            </p>
+        </lightning-layout-item>
+    </lightning-layout>
+    <lightning-button-menu alternative-text="Show menu" label={buttonLabel}>
+        <lightning-tree 
+            items={items}
+            onselect={handleOnselect}
+            selected-item={selectedItem}>
+        </lightning-tree>
+    </lightning-button-menu>
+</template>

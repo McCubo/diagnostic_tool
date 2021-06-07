@@ -1,0 +1,11 @@
+.input-label {
+    font-size: medium;
+}
+
+.slds-modal__content{
+    min-width: 500px;
+}
+
+.slds-listbox {
+    min-width: 500px;
+}

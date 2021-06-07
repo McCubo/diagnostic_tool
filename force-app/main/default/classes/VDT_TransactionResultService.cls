@@ -6,11 +6,14 @@ public inherited sharing class VDT_TransactionResultService {
         Set<String> territoryIds = new Set<String>();
         if (String.isNotBlank(territoryName)) {
             String territoryLike = '%' + territoryName + '%';
-            for (Territory2 territory : [SELECT Id FROM Territory2 WHERE Name LIKE :territoryLike]) {
+            for (Territory2 territory : new VDT_Territory2Selector().addWhereClauses(new List<String>{'Name LIKE \'' + territoryLike + '\''}).query()) {
                 territoryIds.add(territory.Id);
             }
             if (!territoryIds.isEmpty() && isFullSearch) {
-                List<Territory2> allTerritories = [SELECT Id, ParentTerritory2Id FROM Territory2 WHERE ParentTerritory2Id != NULL];
+                List<Territory2> allTerritories = new VDT_Territory2Selector()
+                                                    .addWhereClauses(new List<String>{'ParentTerritory2Id != NULL'})
+                                                    .withAdditionalFields(new List<String>{'ParentTerritory2Id'})
+                                                    .query();
                 territoryIds.addAll(getChildTerritories(territoryIds, allTerritories));
             }
             if (territoryIds.isEmpty()) {
@@ -110,7 +113,7 @@ public inherited sharing class VDT_TransactionResultService {
         
 
         // get names for all territories
-        for (Territory2 territory : [SELECT Id, Name FROM Territory2]) {
+        for (Territory2 territory : new VDT_Territory2Selector().query()) {
             territoryNameById.put(territory.Id, territory.Name);
         }
         

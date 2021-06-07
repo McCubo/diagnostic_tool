@@ -31,7 +31,12 @@ export default class Vdt_territoryAnalysis extends LightningElement {
     }
 
     get _emptyMessage() {
-        return `No Calculations have been run for ${this._filter.countries} yet.`;
+        if (this._filter.countries.length > 0) {
+            return `No Calculations have been run for ${this._filter.countries} countries yet.`;
+        }
+        if (this._filter.territory) {
+            return `No Calculations have been run for ${this._filter.territoryLabel} territory yet.`;
+        }
     }
 
     handleShowInfo(event) {        

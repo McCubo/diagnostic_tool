@@ -28,6 +28,31 @@ public inherited sharing class VDT_DataCalculationService {
         VDT_DataCalculationService.STATUS_ERROR 
     };
 
+    public static void deleteCalculationRecordsById(List<String> ids) {
+        List<VDT_Data_Calculation__c> records = new List<VDT_Data_Calculation__c>();
+        for (String recordId : ids) {
+            records.add(new VDT_Data_Calculation__c(Id = recordId));
+        }
+        delete records;
+    }
+
+    public static List<DataCalculationLog> getFinishedCalculationsWithDetailsByRecordType(String recordTypeDevName, List<String> fields) {
+        List<VDT_Data_Calculation__c> dataCalculations = new VDT_DataCalculationSelector().withConditionals(new List<String>{
+            'RecordType.DeveloperName = \'' + recordTypeDevName + '\'',
+            '(Status__c = \'' + VDT_DataCalculationService.STATUS_COMPLETED + '\' OR Status__c = \'' + VDT_DataCalculationService.STATUS_ERROR + '\')'
+        }).withAdditionalFields(fields)
+        .query();
+        Map<String, Integer> rowsByParent = VDT_TransactionResultSelector.getTransactionNumberByParent();
+        List<DataCalculationLog> logs = new List<DataCalculationLog>();
+        for (VDT_Data_Calculation__c dataCalculation : dataCalculations) {
+            DataCalculationLog log = new DataCalculationLog();
+            log.record = dataCalculation;
+            log.totalTransactions = rowsByParent.containsKey(dataCalculation.Id) ? rowsByParent.get(dataCalculation.Id) : 0;
+            logs.add(log);
+        }
+        return logs;
+    }
+
     /**
      * @description Creates a new VDT_Data_Calculation__c record, set its record type to `VDT_Field_Level_Security_Analysis`
      *              and checks whether there are free slots to start the calculation, if so, it triggers a new batch job, if not,
@@ -136,7 +161,7 @@ public inherited sharing class VDT_DataCalculationService {
 
             if (dataCalculationRecord.Status__c == STATUS_IN_PROGRESS) {
                 Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject('Account');
-                List<String> additionalFields = new List<String>{'VDT_Country__c'};
+                List<String> additionalFields = new List<String>{'VDT_Country__c', 'Territory__c'};
                 List<VDT_Data_Calculation__c> records = new VDT_DataCalculationSelector().withAdditionalFields(additionalFields).getById(dataCalculationRecord.Id);
                 VDT_TerritoryManagementBatch territoryAnalysisBatch = new VDT_TerritoryManagementBatch(records.get(0));
                 Database.executeBatch(territoryAnalysisBatch, batchSize);
@@ -328,6 +353,7 @@ public inherited sharing class VDT_DataCalculationService {
         List<RecordType> recordTypes = VDT_RecordTypeService.getRecordTypeByObjectAndName('VDT_Data_Calculation__c', VDT_DataCalculationSelector.TERRITORY_ANALYSIS_RECORD_TYPE_DEV);
         VDT_Data_Calculation__c dataCalculationRecord = new VDT_Data_Calculation__c(
             VDT_Country__c = String.join(searchParameters.countries, ','),
+            Territory__c = searchParameters.territory,
             Status__c = searchParameters.status, 
             RecordTypeId = recordTypes[0].Id
         );
@@ -562,6 +588,8 @@ public inherited sharing class VDT_DataCalculationService {
 
         @AuraEnabled
         public List<String> countries;
+        @AuraEnabled
+        public String territory;
 
         public String status;
     }
@@ -571,6 +599,14 @@ public inherited sharing class VDT_DataCalculationService {
         @AuraEnabled
         public List<String> objectNames;
         public String status;
+
+    }
+
+    public class DataCalculationLog {
+        @AuraEnabled
+        public VDT_Data_Calculation__c record;
+        @AuraEnabled
+        public Integer totalTransactions = 0;
 
     }
 }

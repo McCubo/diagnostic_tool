@@ -1,10 +1,11 @@
 /**
- * @description Provides methods to retrieve records from `Transaction Result` SObject
+ * @description Provides methods to retrieve records from `Territory2` SObject
  * @author BASE Life Science
  * @since 2021.03.01
  */
-public inherited sharing class VDT_TransactionResultSelector {
+public inherited sharing class VDT_Territory2Selector {
 
+    
     private Integer limitValue;
     private Integer offsetValue;
     private List<String> groupByFields = new List<String>();
@@ -16,7 +17,7 @@ public inherited sharing class VDT_TransactionResultSelector {
      * @return  `String` name of SObject the query will be run against
      */
     private String getObjectName() {
-        return 'VDT_Transaction_Result__c';
+        return 'Territory2';
     }
 
     /**
@@ -24,8 +25,8 @@ public inherited sharing class VDT_TransactionResultSelector {
      */
     private List<String> getFieldList() {
         return new List<String>{
-            VDT_Transaction_Result__c.Id.getDescribe().getName(),
-            VDT_Transaction_Result__c.RecordTypeId.getDescribe().getName()
+            Territory2.Id.getDescribe().getName(),
+            Territory2.Name.getDescribe().getName()
         };
     }
 
@@ -48,7 +49,11 @@ public inherited sharing class VDT_TransactionResultSelector {
     }
 
     private String getGroupByString() {
-        return 'GROUP BY ' + String.join(this.groupByFields, ',');
+        String groupByClause = '';
+        if (!this.groupByFields.isEmpty()) {
+            return 'GROUP BY ' + String.join(this.groupByFields, ',');
+        }
+        return groupByClause;
     }
 
     /**
@@ -97,36 +102,36 @@ public inherited sharing class VDT_TransactionResultSelector {
 
     /**
      * @param limitValue Limit the number of max number of records to be returned by the query
-     * @return  `VDT_TransactionResultSelector` instance
+     * @return  `VDT_Territory2Selector` instance
      */
-    public VDT_TransactionResultSelector withLimit(Integer limitValue) {
+    public VDT_Territory2Selector withLimit(Integer limitValue) {
         this.limitValue = limitValue;
         return this;
     }
 
     /**
      * @param limitValue Offset records
-     * @return  `VDT_TransactionResultSelector` instance
+     * @return  `VDT_Territory2Selector` instance
      */
-    public VDT_TransactionResultSelector withOffset(Integer offsetValue) {
+    public VDT_Territory2Selector withOffset(Integer offsetValue) {
         this.offsetValue = offsetValue;
         return this;
     }
 
     /**
      * @param whereClause List containing a valid SOQL comparison to be added to the WHERE clause
-     * @return  `VDT_TransactionResultSelector` instance of the class
+     * @return  `VDT_Territory2Selector` instance of the class
     */
-    public VDT_TransactionResultSelector addWhereClauses(List<String> whereClauses) {
+    public VDT_Territory2Selector addWhereClauses(List<String> whereClauses) {
         this.whereClauses.addAll(whereClauses);
         return this;
     }
 
     /**
      * @param whereClause List containing a valid SOQL comparison to be added to the WHERE clause
-     * @return  `VDT_TransactionResultSelector` instance of the class
+     * @return  `VDT_Territory2Selector` instance of the class
     */
-    public VDT_TransactionResultSelector addHavingClauses(List<String> havingClauses) {
+    public VDT_Territory2Selector addHavingClauses(List<String> havingClauses) {
         this.havingClauses.addAll(havingClauses);
         return this;
     }
@@ -134,9 +139,9 @@ public inherited sharing class VDT_TransactionResultSelector {
     /**
      * 
      * @param additionalFields 
-     * @return  `VDT_TransactionResultSelector`
+     * @return  `VDT_Territory2Selector`
      */
-    public VDT_TransactionResultSelector withAdditionalFields(List<String> additionalFields) {        
+    public VDT_Territory2Selector withAdditionalFields(List<String> additionalFields) {        
         this.additionalFields.addAll(additionalFields);
         return this;
     }
@@ -144,17 +149,17 @@ public inherited sharing class VDT_TransactionResultSelector {
     /**
      * 
      * @param groupByFields 
-     * @return  `VDT_TransactionResultSelector`
+     * @return  `VDT_Territory2Selector`
      */
-    public VDT_TransactionResultSelector withGroupByFields(List<String> groupByFields) {        
+    public VDT_Territory2Selector withGroupByFields(List<String> groupByFields) {        
         this.groupByFields.addAll(groupByFields);
         return this;
     }
-
+    
     /**
-     * @return  `AggregateResult[]` executes the query with all conditions and limit
+     * @return  `List<Territory2>` executes the query with all conditions and limit
      */
-    public AggregateResult[] queryAggregate() {
+    public List<Territory2> query() {
         String query = String.format(
             'SELECT {0} FROM {1} ' + 
             '{2} ' +
@@ -173,76 +178,30 @@ public inherited sharing class VDT_TransactionResultSelector {
                 getOffsetString()
             }
         );
-        System.debug('TEST:query: ' + query);
-        return (AggregateResult[]) Database.query(query);
-    }
-
-    public String getQueryString() {
-        String query = String.format(
-            'SELECT {0} FROM {1} ' + 
-            '{2} ' +
-            'WITH SECURITY_ENFORCED ' +
-            '{3} ' +
-            '{4} ' + 
-            '{5} ' +
-            '{6} ', 
-            new List<String>{
-                getFieldListString(),
-                getObjectName(),
-                getWhereClause(),
-                getGroupByString(),
-                getHavingClause(),
-                getLimitString(),
-                getOffsetString()
-            }
-        );
-        return query;
-    }
-
-    /**
-     * @return  `AggregateResult[]` executes the query with all conditions and limit
-     */
-    public AggregateResult[] queryCount() {
-        String query = String.format(
-            'SELECT {0} FROM {1} ' + 
-            '{2} ' +
-            // 'WITH SECURITY_ENFORCED ' +
-            '{3} ' +
-            '{4} ', 
-            new List<String>{
-                getFieldListString(),
-                getObjectName(),
-                getWhereClause(),
-                getGroupByString(),
-                getHavingClause()
-            }
-        );
-        System.debug('TEST:query: ' + query);
-        return (AggregateResult[]) Database.query(query);
-    }    
-    /**
-     * @return  `AggregateResult[]` executes the query with all conditions and limit
-     */
-    public List<VDT_Transaction_Result__c> query() {
-        String query = String.format(
-            'SELECT {0} FROM {1} ' + 
-            '{2} ' +
-            'WITH SECURITY_ENFORCED ', 
-            new List<String>{
-                getFieldListString(),
-                getObjectName(),
-                getWhereClause()
-            }
-        );
+        
         return Database.query(query);
     }
-
-    public static Map<String, Integer> getTransactionNumberByParent() {
-        Map<String, Integer> transactionNumberByParent = new Map<String, Integer>();
-        AggregateResult[] results = (AggregateResult[]) Database.query('SELECT Data_Calculation__c, COUNT(Id) total_records FROM VDT_Transaction_Result__c GROUP BY Data_Calculation__c');
-        for (AggregateResult result : results) {
-            transactionNumberByParent.put(String.valueOf(result.get('Data_Calculation__c')), Integer.valueOf(result.get('total_records')));
+    
+    public List<String> getAllTerritoryIdsInHierarchy(List<String> territoryDeveloperNames) {
+        List<Territory2> allTerritories = this.withAdditionalFields(new List<String>{'DeveloperName', 'ParentTerritory2Id'}).query();
+        List<String> territoriesInCalculation = new List<String>();
+        for (Territory2 territory : allTerritories) {
+            if (territoryDeveloperNames.contains(territory.DeveloperName)) {
+                territoriesInCalculation.add(territory.Id);
+                territoriesInCalculation.addAll(this.getChildIdsForParents(territory.Id, allTerritories));
+            }
         }
-        return transactionNumberByParent;
+        return territoriesInCalculation;
+    }
+
+    private List<String> getChildIdsForParents(String parentId, List<Territory2> allTerritories) {
+        List<String> childIds = new List<String>();
+        for (Territory2 territory : allTerritories) {
+            if (territory.ParentTerritory2Id == parentId) {
+                childIds.add(territory.Id);
+                childIds.addAll(this.getChildIdsForParents(territory.Id, allTerritories));
+            }
+        }
+        return childIds;
     }
 }

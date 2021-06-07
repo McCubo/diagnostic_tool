@@ -164,7 +164,7 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
         }
         countrySummaryProperties.forEach(countrySummaryProperty => {
             Object.keys(territory[countrySummaryProperty]).forEach(countryCode => {
-                if (this.countries.includes(countryCode) || this.countries.includes('All')) {
+                if (this.countries.includes(countryCode) || this.countries.includes('All') || this.countries.length == 0) {
                     Object.keys(territory[countrySummaryProperty][countryCode]).forEach(specialty => {
                         if (specialtyNumbers[`${specialty}_accounts`]) {
                             specialtyNumbers[`${specialty}_accounts`] += territory[countrySummaryProperty][countryCode][specialty];

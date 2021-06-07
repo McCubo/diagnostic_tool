@@ -43,14 +43,13 @@ public inherited sharing class VDT_EmailService {
      * @param country Comma Separated List of all Countries included in the calculation
      * @exception EmailServiceException
      */
-    public static void sendTerritoryAnalysisFinishedEmailNotification(String country) {
+    public static void sendTerritoryAnalysisFinishedEmailNotification(String id) {
         List<EmailTemplate> emailTemplates = new VDT_EmailTemplateSelector().getByName(TEMPLATE_TERRITORY_ANALYSIS_FINISHED);
         List<VDT_Data_Calculation__c> calculationObjects = new VDT_DataCalculationSelector()
                                                             .withLimit(1)
                                                             .withAdditionalFields(new List<String>{'CreatedById'})
                                                             .withConditionals(new List<String> {
-                                                                'VDT_Country__c = \'' + country + '\'',
-                                                                'RecordType.DeveloperName = \'' + VDT_DataCalculationSelector.TERRITORY_ANALYSIS_RECORD_TYPE_DEV + '\''
+                                                                'Id = \'' + id + '\''
                                                             })
                                                             .query();
         if (emailTemplates.isEmpty()) {

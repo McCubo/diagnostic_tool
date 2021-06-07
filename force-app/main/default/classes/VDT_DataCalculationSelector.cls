@@ -182,16 +182,16 @@ public inherited sharing class VDT_DataCalculationSelector {
      * @return  `List<VDT_Data_Calculation__c>` Territory Analysis records that passed the filters.
      */
     public List<VDT_Data_Calculation__c> getByTerritoryCalculationParameters(VDT_DataCalculationService.TerritoryAnalysisParameters calculationParameters) {
-        List<String> countryCriteria = new List<String>();
-        for (String country : calculationParameters.countries) {
-            countryCriteria.add('VDT_Country__c LIKE \'%'+ country + '%\'');
+        List<String> whereClauses = new List<String>();
+        if (!calculationParameters.countries.isEmpty()) {
+            whereClauses.add('VDT_Country__c = \'' + String.join(calculationParameters.countries, ',') + '\'');
         }
-        countryCriteria.add('VDT_Country__c LIKE \'%All%\'');
-
-
-        String whereString = '(' + String.join(countryCriteria, ' OR ') + ')';
-
-        whereString += ' AND RecordType.DeveloperName = :TERRITORY_ANALYSIS_RECORD_TYPE_DEV';
+        if (String.isNotBlank(calculationParameters.territory)) {
+            whereClauses.add('Territory__c = \'' + calculationParameters.territory + '\'');
+        }
+        whereClauses.add('RecordType.DeveloperName = :TERRITORY_ANALYSIS_RECORD_TYPE_DEV');
+        String whereString = String.join(whereClauses, ' AND ');
+        
         String query = String.format(
             'SELECT {0} FROM {1} ' + 
             'WHERE {2} '+

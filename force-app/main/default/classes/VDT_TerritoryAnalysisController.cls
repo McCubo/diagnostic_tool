@@ -5,6 +5,59 @@
  */
 public inherited sharing class VDT_TerritoryAnalysisController {
 
+    @AuraEnabled
+    public static List<VDT_TerritoryAnalysisBuilder.TerritoryItem> getTerritoryHierarchy() {
+        try {
+             return new VDT_TerritoryAnalysisBuilder().getTerritoryHierarchy();
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+    @AuraEnabled
+    public static void deleteCalculationRecords(List<String> ids) {
+        try {
+            VDT_DataCalculationService.deleteCalculationRecordsById(ids);
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+    @AuraEnabled
+    public static List<VDT_DataCalculationService.DataCalculationLog> fetchFinishedCalculations() {
+        try {
+            return VDT_DataCalculationService.getFinishedCalculationsWithDetailsByRecordType(
+                VDT_DataCalculationSelector.TERRITORY_ANALYSIS_RECORD_TYPE_DEV, 
+                new List<String>{
+                    'Territory__c', 'VDT_Country__c', 'VDT_Job_Start_Date__c', 'VDT_Job_End_Date__c', 'CreatedBy.Name'
+                });
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+    @AuraEnabled
+    public static List<VDT_OptionWrapper> getAllTerritoryOptions() {
+        try {
+            List<VDT_OptionWrapper> options = new List<VDT_OptionWrapper>();
+            options.add(new VDT_OptionWrapper('All', 'All'));
+            for (Territory2 territory : new VDT_Territory2Selector()
+                                        .withAdditionalFields(new List<String>{'DeveloperName'})
+                                        .addWhereClauses(new List<String>{'ParentTerritory2Id = NULL'})
+                                        .query()) {
+                options.add(new VDT_OptionWrapper(territory.Name, territory.DeveloperName));
+            }
+            return options;
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
     /**
      * 
      * @param jsonSearchParameters Search parameters selected by the User on the Territory Analysis screen
