@@ -12,13 +12,13 @@ public with sharing class VDT_TerritoryAnalysisExportBatch implements Database.B
     public VDT_TerritoryAnalysisExportBatch(VDT_TransactionResultService.TerritorySearchParameter searchParameters) {
         this.searchParameters = searchParameters;
         // get names for all territories
-        for (Territory2 territory : [SELECT Id, Name FROM Territory2]) {
+        for (Territory2 territory : new VDT_Territory2Selector().query()) {
             this.territoryNameById.put(territory.Id, territory.Name);
         }        
     }
 
     // The batch job starts
-    public Iterable<AggregateResult> start(Database.BatchableContext bc){
+    public Iterable<AggregateResult> start(Database.BatchableContext bc) {
         Map<String, List<String>> filterCriteriasByName = VDT_TransactionResultService.getWhereAndHavingClauses(this.searchParameters);
         List<String> whereClauses = filterCriteriasByName.get('WHERE');
         List<String> havingClauses = filterCriteriasByName.get('HAVING');
@@ -43,6 +43,7 @@ public with sharing class VDT_TerritoryAnalysisExportBatch implements Database.B
             this.territoryAnalyses.addAll(new VDT_TransactionResultSelector()
                 .withAdditionalFields(new List<String>{'Country__c', 'Specialty__c', 'Territory_Id__c', 'Total_Accounts__c', 'Account_Type__c'})
                 .addWhereClauses(new List<String> {
+                    'Data_Calculation__c = \'' + this.searchParameters.getCalculationRecordId() +'\'',
                     'Territory_Id__c IN (' + String.join(new List<String>(territoriesInPageIds), ',') + ')'
                 })
                 .query());
@@ -54,13 +55,13 @@ public with sharing class VDT_TerritoryAnalysisExportBatch implements Database.B
         String csvContent = headers;
         for (VDT_Transaction_Result__c territoryAnalysis : this.territoryAnalyses) {
             Boolean accountTypeMatch = this.searchParameters.getAccountType() == 'All' || territoryAnalysis.Account_Type__c == this.searchParameters.getAccountType();
-            Boolean countryMatch = this.searchParameters.getCountries().contains('All') || this.searchParameters.getCountries().contains(territoryAnalysis.Country__c);
+            Boolean countryMatch = this.searchParameters.getCountries().isEmpty() || this.searchParameters.getCountries().contains('All') || this.searchParameters.getCountries().contains(territoryAnalysis.Country__c);
             if (accountTypeMatch && countryMatch) {
                 String recordData = String.join(new List<String> {
                     this.territoryNameById.get(territoryAnalysis.Territory_Id__c),
                     territoryAnalysis.Country__c,
                     territoryAnalysis.Account_Type__c,
-                    territoryAnalysis.Specialty__c,
+                    territoryAnalysis.Specialty__c.escapeCsv(),
                     String.valueOf(territoryAnalysis.Total_Accounts__c)
                 }, ',') + '\n';   
                 csvContent += recordData;

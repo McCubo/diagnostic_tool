@@ -133,7 +133,6 @@ public inherited sharing class VDT_TerritoryAnalysisController {
     public static void exportReport(String calculationRecordId, Integer pageNumber, Integer recordsPerPage, List<String> countries, String territoryName, String specialtyName, String comparisonOperator, Integer filterNumber, String accountType, Boolean isFullSearch) {
         try {
             isFullSearch = isFullSearch != null ? isFullSearch : false;
-            isFullSearch = isFullSearch != null ? isFullSearch : false;
             VDT_TransactionResultService.TerritorySearchParameter searchParameters = 
                                 new VDT_TransactionResultService.TerritorySearchParameter(calculationRecordId, pageNumber, recordsPerPage, countries, territoryName, specialtyName, comparisonOperator, filterNumber, accountType, false);
             Database.executeBatch(new VDT_TerritoryAnalysisExportBatch(searchParameters));

@@ -216,6 +216,10 @@ public inherited sharing class VDT_TransactionResultService {
         public List<String> getCountries() {
             return this.countries;
         }
+
+        public String getCalculationRecordId() {
+            return this.calculationRecordId;
+        }
     }
 
     public class TerritoryItem {
