@@ -317,10 +317,6 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>VDT_Field_Summary__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
         <tab>VDT_Log_Event__c</tab>
         <visibility>Visible</visibility>
     </tabSettings>
