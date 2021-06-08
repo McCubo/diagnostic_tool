@@ -14,8 +14,9 @@
         </lightning-layout-item>
     </lightning-layout>
     <lightning-button-menu alternative-text="Show menu" label={buttonLabel}>
+        <lightning-input onchange={handleSearchTextChanged} type="text" placeholder="Filter Items by Name" variant="label-hidden"></lightning-input>
         <lightning-tree 
-            items={items}
+            items={treeData}
             onselect={handleOnselect}
             selected-item={selectedItem}>
         </lightning-tree>
