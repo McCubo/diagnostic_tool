@@ -1,0 +1,36 @@
+<template>
+    <div class="container">
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12">
+                <lightning-layout>
+                    <lightning-layout-item size="4" class="input_component">
+                        <c-vdt_autocomplete-input
+                            class="validate"
+                            label="Profile/Permission Set"
+                            placeholder="Select a Profile or Permission set"
+                            options={_objectOptions}
+                            onoptionselect={handleOptionsSelected}
+                            empty-validation-message="Select an option from the list"
+                            disabled={disabled}
+                            multiselect
+                        ></c-vdt_autocomplete-input>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+        </lightning-layout>
+        <lightning-layout>
+            <lightning-layout-item class="search-button">
+                <template if:true={disabled}>
+                    <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                </template>
+                <lightning-button
+                    variant="brand"
+                    name="display-info"
+                    label='Diagnose Usage'
+                    onclick={handleDisplayInfoClick}
+                    disabled={disabled}
+                ></lightning-button>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

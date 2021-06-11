@@ -1,0 +1,27 @@
+<template>
+    <div class="container">
+        <lightning-tabset>
+            <lightning-tab label="Analysis">
+                <lightning-radio-group name="radioGroup"
+                    label="Analysis Option"
+                    options={analysisOptions}
+                    onchange={handleAnalysisOptionChange}
+                    value={selectedAnalysisOption}
+                    type="button">
+                </lightning-radio-group>
+                <template if:true={isFieldLevelSecuritySelected}>
+                    <c-vdt_field-level-security-analysis></c-vdt_field-level-security-analysis>
+                </template>
+                <template if:true={isProfileAndPermissionSetSelected}>
+                    <c-vdt_profile-and-permission-set-analysis></c-vdt_profile-and-permission-set-analysis>
+                </template>
+            </lightning-tab>
+            <lightning-tab label="Monitoring">
+                <c-vdt_calculation-monitoring></c-vdt_calculation-monitoring>
+            </lightning-tab>
+            <lightning-tab label="Logs">
+                <!-- <c-vdt_onekey-logs></c-vdt_onekey-logs> -->
+            </lightning-tab>
+        </lightning-tabset>
+    </div>
+</template>

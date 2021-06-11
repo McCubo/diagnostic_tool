@@ -1,0 +1,95 @@
+<template>
+    <lightning-tabset>
+        <lightning-tab label="Object Permissions">
+            <lightning-layout multiple-rows>
+                <lightning-layout-item size="12">
+                    <lightning-layout>
+                        <lightning-layout-item size="2" class="filter-component">
+                            <lightning-input type="text" variant="label-hidden" placeholder="Search Profile/Permission Set Name"></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="2" class="filter-component">
+                            <lightning-input type="text" variant="label-hidden" placeholder="Search SObject Name"></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="2" class="filter-component">
+                            <lightning-input type="text" variant="label-hidden" placeholder="Search Record Type Name"></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="2" class="filter-component">
+                            <c-vdt_autocomplete-input
+                                placeholder="Select a Profile or Permission set Type"
+                                options={sobjectTypes}
+                                onoptionselect={handleSObjectTypeChange}
+                            ></c-vdt_autocomplete-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item alignment-bump="left">
+                            <lightning-button
+                                variant="brand"
+                                name="export_xlsx"
+                                label='Export Excel File'
+                                onclick={handleExportSObjectExcel}
+                            ></lightning-button>
+                        </lightning-layout-item>                        
+                    </lightning-layout>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" style="margin-top: 0.5rem;">
+                    <lightning-datatable
+                            key-field="id"
+                            data={sobjectData}
+                            columns={sobjectColumns}
+                            hide-checkbox-column>
+                    </lightning-datatable>
+                    <div class="section">
+                        <c-vdt_paginator
+                            page-numbers={_pageNumbersSObject}
+                            current-page={_currentPageSObject}
+                            onprevious={handlePreviousClickSObject}
+                            onpageclick={handlePageClickSObject}
+                            onnext={handleNextClickSObject}
+                        ></c-vdt_paginator>                        
+                    </div>
+                </lightning-layout-item>
+            </lightning-layout>
+        </lightning-tab>
+        <lightning-tab label="Field Permissions" title="Field Permissions for each profile and SObject">
+            <lightning-layout multiple-rows>
+                <lightning-layout-item size="12">
+                    <lightning-layout>
+                        <lightning-layout-item size="2" class="filter-component">
+                            <lightning-input type="text" variant="label-hidden" placeholder="Search Profile/Permission Set Name"></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="2" class="filter-component">
+                            <lightning-input type="text" variant="label-hidden" placeholder="Search SObject Name"></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="2" class="filter-component">
+                            <lightning-input type="text" variant="label-hidden" placeholder="Search Field"></lightning-input>
+                        </lightning-layout-item>                        
+                        <lightning-layout-item alignment-bump="left">
+                            <lightning-button
+                                variant="brand"
+                                name="export_xlsx"
+                                label='Export Excel File'
+                                onclick={handleExportSObjectExcel}
+                            ></lightning-button>
+                        </lightning-layout-item>                        
+                    </lightning-layout>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" style="margin-top: 0.5rem;">
+                    <lightning-datatable
+                            key-field="id"
+                            data={flsData}
+                            columns={flsColumns}
+                            hide-checkbox-column>
+                    </lightning-datatable>
+                    <div class="section">
+                        <c-vdt_paginator
+                            page-numbers={_pageNumbersFLS}
+                            current-page={_currentPageFLS}
+                            onprevious={handlePreviousClickFLS}
+                            onpageclick={handlePageClickFLS}
+                            onnext={handleNextClickFLS}
+                        ></c-vdt_paginator>                        
+                    </div>
+                </lightning-layout-item>
+            </lightning-layout>            
+        </lightning-tab>
+    </lightning-tabset>
+</template>

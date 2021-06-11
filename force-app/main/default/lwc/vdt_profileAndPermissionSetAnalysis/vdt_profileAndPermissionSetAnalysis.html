@@ -3,7 +3,7 @@
         <lightning-layout-item size="12">
             <lightning-layout horizontal-align="spread">
                 <lightning-layout-item size="10">
-                    <c-vdt_field-level-security-filter onshowinfo={handleShowInfo} disabled={_filterDisabled}></c-vdt_field-level-security-filter>
+                    <c-vdt_profile-and-permission-set-filter onshowinfo={handleShowInfo} disabled={_filterDisabled}></c-vdt_profile-and-permission-set-filter>
                 </lightning-layout-item>
                 <template if:true={_showCalculationButton}>
                     <lightning-layout-item>
@@ -26,8 +26,8 @@
                 </lightning-layout-item>
             </template>
             <template if:true={_showCalculation}>
-                <lightning-layout-item size="12" class="graphs">
-                    <c-vdt_field-level-security-table calculation-data={_calculation.data}></c-vdt_field-level-security-table>
+                <lightning-layout-item size="12" class="results">
+                    <c-vdt_profile-and-permission-set-results></c-vdt_profile-and-permission-set-results>
                 </lightning-layout-item>
             </template>
         </template>
