@@ -27,7 +27,11 @@
             </template>
             <template if:true={_showCalculation}>
                 <lightning-layout-item size="12" class="results">
-                    <c-vdt_profile-and-permission-set-results></c-vdt_profile-and-permission-set-results>
+                    <c-vdt_profile-and-permission-set-results 
+                        selected-objects={_filter.objectNames}
+                        fls-data={_calculation.detailData} 
+                        sobject-data={_calculation.data}>
+                    </c-vdt_profile-and-permission-set-results>
                 </lightning-layout-item>
             </template>
         </template>

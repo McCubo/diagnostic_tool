@@ -60,4 +60,29 @@ public with sharing class VDT_FieldLevelSecurityController {
         }
     }
 
+    @AuraEnabled
+    public static List<VDT_OptionWrapper> getProfilesAndPermissionSets() {
+        try {
+            return VDT_PermissionSetService.getPermissionSets();
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled
+    public static VDT_DataCalculationService.DataCalculation searchExistingProfilePermissionSetCalculations(String jsonSearchParameters) {
+        try {
+            VDT_DataCalculationService.FieldLevelSecurityParameter calculationParameters = (VDT_DataCalculationService.FieldLevelSecurityParameter)JSON.deserialize(
+                jsonSearchParameters, 
+                VDT_DataCalculationService.FieldLevelSecurityParameter.class
+                );
+            return VDT_DataCalculationService.getExistingProfileAndPermissionAnalysisCalculation(calculationParameters);
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
 }

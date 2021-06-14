@@ -10,6 +10,7 @@ public inherited sharing class VDT_DataCalculationService {
     public static final String PRODUCT_ADOPTION_FILE_NAME = 'product_adoption_summary';
     public static final String TERRITORY_ANALYSIS_FILE_NAME = 'territory_management';
     public static final String FIELD_LEVEL_SECURITY_FILE_NAME = 'field_level_security';
+    public static final String OBJECT_PROFILE_PERMISSIONS_FILE_NAME = 'object_permissions';
 
     public static final String STATUS_COMPLETED = 'Completed';
     public static final String STATUS_ERROR = 'Error';
@@ -27,6 +28,50 @@ public inherited sharing class VDT_DataCalculationService {
         VDT_DataCalculationService.STATUS_COMPLETED, 
         VDT_DataCalculationService.STATUS_ERROR 
     };
+
+    /**
+     * @description Search for a VDT_Data_Calculation record that matches with all the criterias from the search parameter,
+     *              If a record is found, then the calculations output is returned on the `data` property of the returned object.
+     *              The returned object also contains information about when the calculation was ran and its status.
+     * @param searchParameters Object with parameters used to find records (Object Names)
+     * @return  `DataCalculation` Object with all information for the Calculation Job
+     */
+    public static DataCalculation getExistingProfileAndPermissionAnalysisCalculation(FieldLevelSecurityParameter searchParameters) {
+        List<String> permissionAndProfileCriterias = new List<String>();
+        for (String profilePermissionSetName : searchParameters.objectNames) {
+            permissionAndProfileCriterias.add('Permission_Set_Profile_Name__c LIKE \'%' + profilePermissionSetName + '%\'');
+        }
+        List<VDT_Data_Calculation__c> calculations = new VDT_DataCalculationSelector()
+                                                        .withLimit(1)
+                                                        .withConditionals(new List<String>{
+                                                            'RecordType.DeveloperName = \'' + VDT_DataCalculationSelector.FIELD_LEVEL_SECURITY_RECORD_TYPE_DEV + '\'',
+                                                            '(' + String.join(permissionAndProfileCriterias, ' OR ') + ')'
+                                                        }).query();
+        
+        DataCalculation calculation = new DataCalculation();
+        if (!calculations.isEmpty()) {
+            calculation.status = calculations[0].Status__c;
+            calculation.calculationDate = String.valueOf(calculations[0].VDT_Calculation_Date__c);
+            Attachment objectPermissions = VDT_AttachmentService.getAttachmentForRecord(
+                VDT_DataCalculationService.OBJECT_PROFILE_PERMISSIONS_FILE_NAME,
+                VDT_AttachmentService.JSON_FORMAT, 
+                calculations[0].Id
+            );
+
+            if (objectPermissions != null) {
+                calculation.data = objectPermissions.Body.toString();
+            }
+            Attachment flsPermissions = VDT_AttachmentService.getAttachmentForRecord(
+                VDT_DataCalculationService.FIELD_LEVEL_SECURITY_FILE_NAME,
+                VDT_AttachmentService.JSON_FORMAT, 
+                calculations[0].Id
+            );
+            if (flsPermissions != null) {
+                calculation.detailData = flsPermissions.Body.toString();
+            }            
+        }
+        return calculation;
+    }
 
     public static void deleteCalculationRecordsById(List<String> ids) {
         List<VDT_Data_Calculation__c> records = new List<VDT_Data_Calculation__c>();

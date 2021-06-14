@@ -5,17 +5,26 @@
                 <lightning-layout-item size="12">
                     <lightning-layout>
                         <lightning-layout-item size="2" class="filter-component">
-                            <lightning-input type="text" variant="label-hidden" placeholder="Search Profile/Permission Set Name"></lightning-input>
+                            <lightning-input type="text" 
+                                variant="label-hidden" 
+                                placeholder="Search Profile/Permission Set Name"
+                                onchange={handlePermissionNameChange}>
+                            </lightning-input>
                         </lightning-layout-item>
                         <lightning-layout-item size="2" class="filter-component">
-                            <lightning-input type="text" variant="label-hidden" placeholder="Search SObject Name"></lightning-input>
+                            <lightning-input 
+                                type="text" 
+                                variant="label-hidden" 
+                                placeholder="Search SObject Name"
+                                onchange={handleSobjectNameChange}>
+                            </lightning-input>
                         </lightning-layout-item>
                         <lightning-layout-item size="2" class="filter-component">
                             <lightning-input type="text" variant="label-hidden" placeholder="Search Record Type Name"></lightning-input>
                         </lightning-layout-item>
                         <lightning-layout-item size="2" class="filter-component">
                             <c-vdt_autocomplete-input
-                                placeholder="Select a Profile or Permission set Type"
+                                placeholder="Select Object Type"
                                 options={sobjectTypes}
                                 onoptionselect={handleSObjectTypeChange}
                             ></c-vdt_autocomplete-input>
@@ -33,7 +42,7 @@
                 <lightning-layout-item size="12" style="margin-top: 0.5rem;">
                     <lightning-datatable
                             key-field="id"
-                            data={sobjectData}
+                            data={currentPageSObjectData}
                             columns={sobjectColumns}
                             hide-checkbox-column>
                     </lightning-datatable>
@@ -54,13 +63,28 @@
                 <lightning-layout-item size="12">
                     <lightning-layout>
                         <lightning-layout-item size="2" class="filter-component">
-                            <lightning-input type="text" variant="label-hidden" placeholder="Search Profile/Permission Set Name"></lightning-input>
+                            <lightning-input 
+                                type="text" 
+                                variant="label-hidden" 
+                                placeholder="Search Profile/Permission Set Name"
+                                onchange={handlePermissionNameChangeFLS}>
+                            </lightning-input>
                         </lightning-layout-item>
                         <lightning-layout-item size="2" class="filter-component">
-                            <lightning-input type="text" variant="label-hidden" placeholder="Search SObject Name"></lightning-input>
+                            <lightning-input 
+                                type="text" 
+                                variant="label-hidden" 
+                                placeholder="Search SObject Name"
+                                onchange={handleSObjectNameChangeFLS}>
+                            </lightning-input>
                         </lightning-layout-item>
                         <lightning-layout-item size="2" class="filter-component">
-                            <lightning-input type="text" variant="label-hidden" placeholder="Search Field"></lightning-input>
+                            <lightning-input 
+                                type="text" 
+                                variant="label-hidden" 
+                                placeholder="Search Field"
+                                onchange={handleFieldNameChangeFLS}>
+                            </lightning-input>
                         </lightning-layout-item>                        
                         <lightning-layout-item alignment-bump="left">
                             <lightning-button
@@ -75,7 +99,7 @@
                 <lightning-layout-item size="12" style="margin-top: 0.5rem;">
                     <lightning-datatable
                             key-field="id"
-                            data={flsData}
+                            data={currentPageFLSData}
                             columns={flsColumns}
                             hide-checkbox-column>
                     </lightning-datatable>

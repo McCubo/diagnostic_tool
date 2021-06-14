@@ -1,4 +1,4 @@
-import { LightningElement } from 'lwc';
+import { api, LightningElement } from 'lwc';
 import { showToast } from 'c/vdt_utils';
 import { loadScript } from 'lightning/platformResourceLoader';
 import vdt_xlsx from '@salesforce/resourceUrl/vdt_xlsx';
@@ -8,6 +8,7 @@ const SOBJECT_COLUMNS = [
     { label: 'API Object Name', fieldName: 'objectAPIName', type: 'text' },
     { label: 'Object Name', fieldName: 'objectName', type: 'text' },
     { label: 'Type', fieldName: 'sobjectType', type: 'text' },
+    { label: 'Tab Visibility', fieldName: 'tabVisibility', type: 'text' },
     { label: 'Read?', fieldName: 'isReadEnabled', type: 'boolean', initialWidth: 75 },
     { label: 'Create?', fieldName: 'isCreateEnabled', type: 'boolean', initialWidth: 75 },
     { label: 'Edit?', fieldName: 'isEditEnabled', type: 'boolean', initialWidth: 75 },
@@ -28,218 +29,109 @@ const FLS_COLUMNS = [
 
 const SOBJECT_TYPES = [
     {label: 'Standard Object', value: 'Standard Object'},
-    {label: 'Custom Object', value: 'Standard Object'}
-];
-
-const TEMP_SOBJECT_DATA = [
-    {
-        permissionsetName: '[PF] System Administrator',
-        objectAPIName: 'Account',
-        objectName: 'Account',
-        sobjectType: 'Standard Object',
-        isReadEnabled: true,
-        isCreateEnabled: true,
-        isEditEnabled: true,
-        isDeleteEnabled: true,
-        isViewAllEnabled: true,
-        isModifyAllEnabled: true
-    },
-    {
-        permissionsetName: '[PF] System Administrator',
-        objectAPIName: 'Opportunity',
-        objectName: 'Opportunity',
-        sobjectType: 'Standard Object',
-        isReadEnabled: true,
-        isCreateEnabled: false,
-        isEditEnabled: false,
-        isDeleteEnabled: false,
-        isViewAllEnabled: true,
-        isModifyAllEnabled: false
-    },
-    {
-        permissionsetName: '[PF] System Administrator',
-        objectAPIName: 'VDT_Data_Calculation__c',
-        objectName: 'Data Calculation',
-        sobjectType: 'Custom Object',
-        isReadEnabled: true,
-        isCreateEnabled: true,
-        isEditEnabled: true,
-        isDeleteEnabled: true,
-        isViewAllEnabled: true,
-        isModifyAllEnabled: true
-    },
-    {
-        permissionsetName: '[PF] System Administrator',
-        objectAPIName: 'VDT_Log_Event__c',
-        objectName: 'Log Event',
-        sobjectType: 'Custom Object',
-        isReadEnabled: true,
-        isCreateEnabled: true,
-        isEditEnabled: true,
-        isDeleteEnabled: true,
-        isViewAllEnabled: true,
-        isModifyAllEnabled: true
-    },
-    {
-        permissionsetName: '[PF] System Administrator',
-        objectAPIName: 'Product_vod__c',
-        objectName: 'Product Catalog',
-        sobjectType: 'Custom Object',
-        isReadEnabled: true,
-        isCreateEnabled: true,
-        isEditEnabled: true,
-        isDeleteEnabled: true,
-        isViewAllEnabled: true,
-        isModifyAllEnabled: true
-    },
-    {
-        permissionsetName: '[PF] System Administrator',
-        objectAPIName: 'Call2_vod__c',
-        objectName: 'Call',
-        sobjectType: 'Custom Object',
-        isReadEnabled: true,
-        isCreateEnabled: true,
-        isEditEnabled: true,
-        isDeleteEnabled: true,
-        isViewAllEnabled: true,
-        isModifyAllEnabled: true
-    },
-    {
-        permissionsetName: '[PF] System Administrator',
-        objectAPIName: 'Call2_Detail_vod__c',
-        objectName: 'Call Detail',
-        sobjectType: 'Custom Object',
-        isReadEnabled: true,
-        isCreateEnabled: true,
-        isEditEnabled: true,
-        isDeleteEnabled: true,
-        isViewAllEnabled: true,
-        isModifyAllEnabled: true
-    },
-    {
-        permissionsetName: '[PF] System Administrator',
-        objectAPIName: 'Account_Plan_vod__c',
-        objectName: 'Account Plan',
-        sobjectType: 'Custom Object',
-        isReadEnabled: false,
-        isCreateEnabled: false,
-        isEditEnabled: false,
-        isDeleteEnabled: false,
-        isViewAllEnabled: false,
-        isModifyAllEnabled: false
-    },
-    {
-        permissionsetName: '[PF] System Administrator',
-        objectAPIName: 'Content_Acknowledgement_Item_vod__c',
-        objectName: 'Content Acknowledgement Item',
-        sobjectType: 'Custom Object',
-        isReadEnabled: true,
-        isCreateEnabled: true,
-        isEditEnabled: true,
-        isDeleteEnabled: true,
-        isViewAllEnabled: false,
-        isModifyAllEnabled: false
-    },
-];
-
-const TEMP_FLS_DATA = [
-    {
-        permissionsetName: '[PF] System Administrator',
-        objectAPIName: 'VDT_Data_Calculation__c',
-        objectName: 'Data Calculation',
-        fieldAPIName: 'Batches_Number__c',
-        fieldName: 'Batches Number',
-        flsRead: true,
-        flsEdit: true
-    },
-    {
-        permissionsetName: '[PF] System Administrator',
-        objectAPIName: 'VDT_Data_Calculation__c',
-        objectName: 'Data Calculation',
-        fieldAPIName: 'VDT_Calculation_Date__c',
-        fieldName: 'Calculation Date',
-        flsRead: true,
-        flsEdit: true
-    },
-    {
-        permissionsetName: '[PF] System Administrator',
-        objectAPIName: 'VDT_Data_Calculation__c',
-        objectName: 'Data Calculation',
-        fieldAPIName: 'End_Date__c',
-        fieldName: 'End Date',
-        flsRead: true,
-        flsEdit: false
-    },
-    {
-        permissionsetName: '[PF] System Administrator',
-        objectAPIName: 'VDT_Data_Calculation__c',
-        objectName: 'Data Calculation',
-        fieldAPIName: 'Start_Date__c',
-        fieldName: 'Start Date',
-        flsRead: true,
-        flsEdit: false
-    },
-    {
-        permissionsetName: '[PF] System Administrator',
-        objectAPIName: 'VDT_Data_Calculation__c',
-        objectName: 'Data Calculation',
-        fieldAPIName: 'Status__c',
-        fieldName: 'Status',
-        flsRead: true,
-        flsEdit: true
-    },
-    {
-        permissionsetName: '[PF] System Administrator',
-        objectAPIName: 'VDT_Data_Calculation__c',
-        objectName: 'Data Calculation',
-        fieldAPIName: 'RecordTypeId',
-        fieldName: 'Record Type',
-        flsRead: true,
-        flsEdit: true
-    },
-    {
-        permissionsetName: '[PF] System Administrator',
-        objectAPIName: 'VDT_Data_Calculation__c',
-        objectName: 'Data Calculation',
-        fieldAPIName: 'VDT_Object_Name__c',
-        fieldName: 'Object Name',
-        flsRead: true,
-        flsEdit: true
-    },
-    {
-        permissionsetName: '[PF] System Administrator',
-        objectAPIName: 'VDT_Data_Calculation__c',
-        objectName: 'Data Calculation',
-        fieldAPIName: 'Territory__c',
-        fieldName: 'Territory',
-        flsRead: true,
-        flsEdit: true
-    }    
+    {label: 'Custom Object', value: 'Custom Object'}
 ];
 
 export default class Vdt_profileAndPermissionSetResults extends LightningElement {
-
-    _selectedSObjectType;
+    
     _recordsPerPage = 10;
+
+    _flsData;
+    _flsRawData;
+    @api
+    get flsData() {
+        return this._flsData;
+    }; 
+
+    set flsData(data) {
+        this._flsRawData = data;
+        this._flsData = this.paseFlsData(JSON.parse(this._flsRawData));
+        this.initializeFlsPaginator();
+    }
+
+    _sobjectDataRaw;
+    _sobjectData;
+    @api
+    get sobjectData() {
+        return this._sobjectData;
+    }
+
+    set sobjectData(data) {
+        this._sobjectDataRaw = data;
+        this._sobjectData = this.parseSobjectData(JSON.parse(this._sobjectDataRaw));
+        this.initializeSObjectPaginator();
+    }
+
+    _selectedObjects;
+
+    @api
+    get selectedObjects() {
+        return this._selectedObjects;
+    }
+
+    set selectedObjects(data) {        
+        this._selectedObjects = data;
+    }
 
     connectedCallback() {
         Promise.all([
             loadScript(this, vdt_xlsx)
-        ]).then(() => {
-            this.fetchProfilePermissionSerResults();
+        ]).then(() => {            
         }).catch(error => {
             this.dispatchEvent(showToast(error, 'error'));
         });
     }
 
-    fetchProfilePermissionSerResults() {
-        console.log('fetchProfilePermissionSerResults: fired');
+    parseSobjectData(data) {
+        let parsedData = data.filter(permissionRecord => {
+            if (this._selectedSObjectType) {
+                return permissionRecord.sobjectType == this._selectedSObjectType;
+            }
+            return true;
+        }).filter(permissionRecord => {
+            if (this.sobjectName) {
+                return permissionRecord.objectAPIName.toLowerCase().includes(this.sobjectName) || permissionRecord.objectName.toLowerCase().includes(this.sobjectName);
+            }
+            return true;
+        }).filter(permissionRecord => {
+            if (this.sobject_permissionName) {
+                return permissionRecord.permissionsetName.toLowerCase().includes(this.sobject_permissionName);
+            }
+            return true;
+        }).filter(permissionRecord => {
+            if (this._selectedObjects && this._selectedObjects.length > 0) {
+                return this._selectedObjects.includes(permissionRecord.permissionsetAPIName);
+            }
+            return true;
+        });
+        
+        return parsedData;
     }
 
     //  SObject Pagination variables
     _totalPagesSObject = 1;
     _currentPageSObject = 1;
     _pageNumbersSObject = [1];
+    _selectedSObjectType;
+    sobjectName;
+    sobject_permissionName;
+
+    get _currentSObjectOffset() {
+        return (this._currentPageSObject - 1) * this._recordsPerPage;
+    }
+
+    initializeSObjectPaginator() {
+        this._totalPagesSObject = Math.ceil(this._sobjectData.length / this._recordsPerPage);
+        this._pageNumbersSObject = [];
+        this._currentPageSObject = 1;
+        for (let i = 1; i <= this._totalPagesSObject; i++) {
+            this._pageNumbersSObject.push(i);
+        }
+    }
+
+    get currentPageSObjectData() {
+        return this._sobjectData.slice(this._currentSObjectOffset, this._currentPageSObject * this._recordsPerPage);
+    }
 
     handlePreviousClickSObject() {
         if (this._currentPageSObject > 1) {
@@ -261,7 +153,79 @@ export default class Vdt_profileAndPermissionSetResults extends LightningElement
     _totalPagesFLS = 1
     _currentPageFLS = 1;
     _pageNumbersFLS = [1];
+    permissionsetNameFLS;
+    sobjectNameFLS;
+    fieldNameFLS;
 
+    handleFieldNameChangeFLS(event) {
+        this.fieldNameFLS = event.detail.value;
+        if (this.fieldNameFLS) {
+            this.fieldNameFLS = this.fieldNameFLS.toLowerCase();
+        }
+        this._flsData = this.paseFlsData(JSON.parse(this._flsRawData));
+        this.initializeFlsPaginator();
+    }
+
+    handleSObjectNameChangeFLS(event) {
+        this.sobjectNameFLS = event.detail.value;
+        if (this.sobjectNameFLS) {
+            this.sobjectNameFLS = this.sobjectNameFLS.toLowerCase();
+        }
+        this._flsData = this.paseFlsData(JSON.parse(this._flsRawData));
+        this.initializeFlsPaginator();
+    }
+
+    handlePermissionNameChangeFLS(event) {
+        this.permissionsetNameFLS = event.detail.value;
+        if (this.permissionsetNameFLS) {
+            this.permissionsetNameFLS = this.permissionsetNameFLS.toLowerCase();
+        }
+        this._flsData = this.paseFlsData(JSON.parse(this._flsRawData));
+        this.initializeFlsPaginator();
+    }
+
+    paseFlsData(data) {
+        let parsedData = data.filter(permissionRecord => {
+            if (this._selectedObjects && this._selectedObjects.length > 0) {
+                return this._selectedObjects.includes(permissionRecord.permissionsetAPIName);
+            }
+            return true;
+        }).filter(permissionRecord => {
+            if (this.permissionsetNameFLS) {
+                return permissionRecord.permissionsetName.toLowerCase().includes(this.permissionsetNameFLS);
+            }
+            return true;
+        }).filter(permissionRecord => {
+            if (this.sobjectNameFLS) {
+                return permissionRecord.objectAPIName.toLowerCase().includes(this.sobjectNameFLS) || permissionRecord.objectName.toLowerCase().includes(this.sobjectNameFLS);
+            }
+            return true;
+        }).filter(permissionRecord => {
+            if (this.fieldNameFLS) {
+                return permissionRecord.fieldAPIName.toLowerCase().includes(this.fieldNameFLS) || permissionRecord.fieldName.toLowerCase().includes(this.fieldNameFLS);
+            }
+            return true;
+        });
+        return parsedData;
+    }
+
+    get _currentFLSOffset() {
+        return (this._currentPageFLS - 1) * this._recordsPerPage;
+    }
+
+    get currentPageFLSData() {
+        return this._flsData.slice(this._currentFLSOffset, this._currentPageFLS * this._recordsPerPage);
+    }
+
+    initializeFlsPaginator() {
+        this._totalPagesFLS = Math.ceil(this._flsData.length / this._recordsPerPage);
+        this._pageNumbersFLS = [];
+        this._currentPageFLS = 1;
+        for (let i = 1; i <= this._totalPagesFLS; i++) {
+            this._pageNumbersFLS.push(i);
+        }
+    }
+    
     handlePreviousClickFLS() {
         if (this._currentPageFLS > 1) {
             this._currentPageFLS--;
@@ -278,9 +242,6 @@ export default class Vdt_profileAndPermissionSetResults extends LightningElement
         }
     }
 
-    sobjectData = TEMP_SOBJECT_DATA;
-    flsData = TEMP_FLS_DATA;
-
     get sobjectColumns() {
         return SOBJECT_COLUMNS;
     }
@@ -295,6 +256,26 @@ export default class Vdt_profileAndPermissionSetResults extends LightningElement
     
     handleSObjectTypeChange(event) {
         this._selectedSObjectType = event.detail;
+        this._sobjectData = this.parseSobjectData(JSON.parse(this._sobjectDataRaw));
+        this.initializeSObjectPaginator();
+    }
+
+    handleSobjectNameChange(event) {
+        this.sobjectName = event.detail.value;
+        if (this.sobjectName) {
+            this.sobjectName = this.sobjectName.toLowerCase();
+        }
+        this._sobjectData = this.parseSobjectData(JSON.parse(this._sobjectDataRaw));
+        this.initializeSObjectPaginator();
+    }
+
+    handlePermissionNameChange(event) {
+        this.sobject_permissionName = event.detail.value;
+        if (this.sobject_permissionName) {
+            this.sobject_permissionName = this.sobject_permissionName.toLowerCase();
+        }
+        this._sobjectData = this.parseSobjectData(JSON.parse(this._sobjectDataRaw));
+        this.initializeSObjectPaginator();
     }
 
     handleExportSObjectExcel(event) {
@@ -307,25 +288,27 @@ export default class Vdt_profileAndPermissionSetResults extends LightningElement
                 CreatedDate: new Date(2017,12,19)
             };
             wb.SheetNames.push("Object Permissions", "Field Level Security");
-            let dataSheet = this.sobjectData.map(record => Object.values(record));
-            var ws = window.XLSX.utils.aoa_to_sheet(dataSheet);
-            wb.Sheets["Object Permissions"] = ws;
+            let dataSheet = new Array(SOBJECT_COLUMNS.reduce((accumulator, currentHeader) => { 
+                    accumulator.push(currentHeader.label);
+                    return accumulator;
+                }, []))
+                .concat(this._sobjectData.map(record => Object.values(record)));
 
-            let flsDataSheet = this.flsData.map(record => Object.values(record));
-            var ws2 = window.XLSX.utils.aoa_to_sheet(flsDataSheet);
-            wb.Sheets["Field Level Security"] = ws2;
+            var objectPermissionWorkSheet = window.XLSX.utils.aoa_to_sheet(dataSheet);
+            wb.Sheets["Object Permissions"] = objectPermissionWorkSheet;
 
-            // var wbout = window.XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
-            window.XLSX.writeFile(wb, 'XXXX.xlsx');
+            let flsDataSheet = new Array(FLS_COLUMNS.reduce((accumulator, currentHeader) => { 
+                accumulator.push(currentHeader.label);
+                return accumulator;
+            }, []))
+            .concat(this._flsData.map(record => Object.values(record)));
+            var flsWorkSheet = window.XLSX.utils.aoa_to_sheet(flsDataSheet);
+            wb.Sheets["Field Level Security"] = flsWorkSheet;
+
+            window.XLSX.writeFile(wb, 'ProfileAndPermissionSetAnalysis.xlsx');
         } catch (error) {
-            console.log(error)
+            console.error(error)
         }
     }
 
-    s2ab(s) { 
-        var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
-        var view = new Uint8Array(buf);  //create uint8array as viewer
-        for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
-        return buf;    
-    }
 }

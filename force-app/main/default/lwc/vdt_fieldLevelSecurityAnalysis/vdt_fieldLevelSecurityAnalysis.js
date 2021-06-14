@@ -31,7 +31,6 @@ export default class Vdt_fieldLevelSecurityAnalysis extends LightningElement {
         this._showCalculationSection = false;
         this._filterDisabled = true;
         this._filter = event.detail;
-        console.log('this._filter: %O', JSON.stringify(this._filter));
         searchExistingCalculations({ jsonSearchParameters: JSON.stringify(this._filter) }).then(response => {
             this._calculation = response;
             this._showCalculationSection = true;
