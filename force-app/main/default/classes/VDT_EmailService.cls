@@ -11,8 +11,29 @@ public inherited sharing class VDT_EmailService {
     public static final String TEMPLATE_TERRITORY_ANALYSIS_FINISHED = 'VDT_TerritoryAnalysisFinished';
     public static final String TEMPLATE_FLS_ANALYSIS_FINISHED = 'VDT_FieldLevelSecurityFinished';
     public static final String TEMPLATE_TERRITORY_EXPORT_FINISHED = 'VDT_TerritoryExportCompleted';
+    public static final String TEMPLATE_FLS_AND_OBJECT_FINISHED = 'VDT_FlsAndObjectPermissionFinished';    
     public static final String SENDER_DISPLAY_NAME = 'BASELife CRM [TBD]';
     public static final String REPLY_TO = 'no-reply@base-crm.com.TBD';
+
+    /**
+     * @description Send an Email alert when the Field Level Security And Object Analysis Job is completed
+     * @param sobjects Comma Separated List of all permissions included in the calculation
+     * @exception EmailServiceException
+     */
+    public static void sendFlsAndObjectPermissionAnalysisFinished(String calculationId) {
+        List<EmailTemplate> emailTemplates = new VDT_EmailTemplateSelector().getByName(TEMPLATE_FLS_AND_OBJECT_FINISHED);
+        List<VDT_Data_Calculation__c> calculationObjects = new VDT_DataCalculationSelector()
+                                                            .withLimit(1)
+                                                            .withAdditionalFields(new List<String>{'CreatedById'})
+                                                            .getById(calculationId);
+        if (emailTemplates.isEmpty()) {
+            throw new EmailServiceException('Email Template Not Found');
+        }
+        if (calculationObjects.isEmpty()) {
+            throw new EmailServiceException('Calculation For Notification Not Found');
+        }
+        VDT_EmailService.sendEmail(emailTemplates[0].Id, calculationObjects[0].CreatedById, calculationObjects[0].Id);
+    }
 
     /**
      * @description Send an Email alert when the Field Level Security Job is completed

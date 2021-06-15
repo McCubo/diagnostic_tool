@@ -38,9 +38,9 @@ export default class Vdt_profileAndPermissionSetAnalysis extends LightningElemen
         validateCanRunCalculation()
         .then((response) => {
             if (response) {
+                this._calculation.status = 'In Progress';
                 recalculateFlsAndObjectPermissionAnalysis({jsonSearchParameters: JSON.stringify(this._filter)})
-                .then(() => {
-                    this._calculation.status = 'In Progress';
+                .then(() => {                    
                     publish(this._messageContext, refreshMonitoringMessageChannel);
                 })
                 .catch(error => {

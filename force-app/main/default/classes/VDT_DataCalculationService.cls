@@ -56,10 +56,8 @@ public inherited sharing class VDT_DataCalculationService {
         if (dataCalculationRecord.Status__c == STATUS_IN_PROGRESS) {
             List<String> additionalFields = new List<String>{'Permission_Set_Profile_Name__c'};
             List<VDT_Data_Calculation__c> records = new VDT_DataCalculationSelector().withAdditionalFields(additionalFields).getById(dataCalculationRecord.Id);
-            VDT_PermissionSetAnalysisBuilder builder = new VDT_PermissionSetAnalysisBuilder(records.get(0))
-                                                        .calculateSObject()
-                                                        .calculateFLS()
-                                                        .finish();
+            VDT_PermissionSetAnalysisBuilder builder = new VDT_PermissionSetAnalysisBuilder(records.get(0));
+            System.enqueueJob(builder);
         }
     }
 

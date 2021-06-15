@@ -3,15 +3,21 @@
  * @author BASE Life Science
  * @since 2021.03.01
  */
-public inherited sharing class VDT_PermissionSetAnalysisBuilder {
+public inherited sharing class VDT_PermissionSetAnalysisBuilder implements Queueable {
 
     private VDT_Data_Calculation__c permissionSetCalculation;
     private Set<String> permissionSetIds = new Set<String>();
     private final String DELIMITER = ',';
 
-    public VDT_PermissionSetAnalysisBuilder(VDT_Data_Calculation__c permissionSetCalculation) {
-        this.permissionSetCalculation = permissionSetCalculation;
+    public void execute(QueueableContext context) {
         this.setPermissionSetIds();
+        this.calculateSObject();
+        this.calculateFLS();
+        this.finish();
+    }
+
+    public VDT_PermissionSetAnalysisBuilder(VDT_Data_Calculation__c permissionSetCalculation) {
+        this.permissionSetCalculation = permissionSetCalculation;        
         this.permissionSetCalculation.VDT_Job_Start_Date__c = Datetime.now();
         this.permissionSetCalculation.Batches_Number__c = 0;
         update this.permissionSetCalculation;        
@@ -74,6 +80,7 @@ public inherited sharing class VDT_PermissionSetAnalysisBuilder {
         this.permissionSetCalculation.Status__c = VDT_DataCalculationService.STATUS_COMPLETED;
         this.permissionSetCalculation.VDT_Calculation_Date__c = Date.today();
         update this.permissionSetCalculation;
+        VDT_EmailService.sendFlsAndObjectPermissionAnalysisFinished(this.permissionSetCalculation.Id);
         return this;
     }
 
