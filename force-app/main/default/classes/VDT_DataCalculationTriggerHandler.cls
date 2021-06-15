@@ -69,9 +69,14 @@ public with sharing class VDT_DataCalculationTriggerHandler extends VDT_TriggerH
                         VDT_TerritoryManagementBatch territoryAnalysisBatch = new VDT_TerritoryManagementBatch(queuedCalculation);
                         Database.executeBatch(territoryAnalysisBatch, batchSize);
                     } else if (recordTypeNameById.get(queuedCalculation.RecordTypeId) == VDT_DataCalculationSelector.FIELD_LEVEL_SECURITY_RECORD_TYPE_DEV) {
-                        Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject(queuedCalculation.VDT_Object_Name__c);
-                        VDT_FieldLevelSecurityBatch fieldLevelSecurityBatch = new VDT_FieldLevelSecurityBatch(queuedCalculation);
-                        Database.executeBatch(fieldLevelSecurityBatch, batchSize);
+                        if (String.isNotBlank(queuedCalculation.VDT_Object_Name__c)) {
+                            Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject(queuedCalculation.VDT_Object_Name__c);
+                            VDT_FieldLevelSecurityBatch fieldLevelSecurityBatch = new VDT_FieldLevelSecurityBatch(queuedCalculation);
+                            Database.executeBatch(fieldLevelSecurityBatch, batchSize);
+                        } else if (String.isNotBlank(queuedCalculation.Permission_Set_Profile_Name__c)) {
+                            VDT_PermissionSetAnalysisBuilder builder = new VDT_PermissionSetAnalysisBuilder(queuedCalculation);
+                            System.enqueueJob(builder);
+                        }
                     }
                 }
 
