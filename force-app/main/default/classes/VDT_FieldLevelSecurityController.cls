@@ -101,4 +101,19 @@ public with sharing class VDT_FieldLevelSecurityController {
         }
     }
 
+    @AuraEnabled
+    public static void recalculateFlsAndObjectPermissionAnalysis(String jsonSearchParameters) {
+        try {
+            VDT_DataCalculationService.FieldLevelSecurityParameter calculationParameters = (VDT_DataCalculationService.FieldLevelSecurityParameter)JSON.deserialize(
+                jsonSearchParameters, 
+                VDT_DataCalculationService.FieldLevelSecurityParameter.class
+                );
+            VDT_DataCalculationService.triggerFlsAndObjectAnalysisCalculation(calculationParameters);
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
 }

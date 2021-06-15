@@ -12,6 +12,9 @@ public inherited sharing class VDT_PermissionSetAnalysisBuilder {
     public VDT_PermissionSetAnalysisBuilder(VDT_Data_Calculation__c permissionSetCalculation) {
         this.permissionSetCalculation = permissionSetCalculation;
         this.setPermissionSetIds();
+        this.permissionSetCalculation.VDT_Job_Start_Date__c = Datetime.now();
+        this.permissionSetCalculation.Batches_Number__c = 0;
+        update this.permissionSetCalculation;        
     }
 
     public void setPermissionSetIds() {
@@ -22,7 +25,7 @@ public inherited sharing class VDT_PermissionSetAnalysisBuilder {
         this.permissionSetIds = new Set<String>(new Map<String, PermissionSet>(fieldPermissionSets).keySet());
     }
 
-    public void calculateSObject() {
+    public VDT_PermissionSetAnalysisBuilder calculateSObject() {
         List<ObjectPermission> calculations = new List<ObjectPermission>();
         Map<String, String> permissionSetTabSetting = getPermissionSetTabSetting();
         for (ObjectPermissions op : [SELECT ParentId, Parent.Label, Parent.Name, Parent.Profile.Name, SobjectType, PermissionsCreate, PermissionsRead, PermissionsEdit, PermissionsDelete, PermissionsViewAllRecords, PermissionsModifyAllRecords 
@@ -37,6 +40,7 @@ public inherited sharing class VDT_PermissionSetAnalysisBuilder {
             VDT_AttachmentService.JSON_FORMAT,
             this.permissionSetCalculation.Id
         );
+        return this;
     }
 
     private Map<String, String> getPermissionSetTabSetting() {
@@ -48,7 +52,7 @@ public inherited sharing class VDT_PermissionSetAnalysisBuilder {
         return permissionSetTabSetting;
     }
 
-    public void calculateFLS() {
+    public VDT_PermissionSetAnalysisBuilder calculateFLS() {
         List<FieldLevelSecurity> calculations = new List<FieldLevelSecurity>();
 
         for (FieldPermissions fp : [SELECT Parent.Label, Parent.Name, Parent.Profile.Name, SobjectType, Field, PermissionsEdit, PermissionsRead 
@@ -62,6 +66,15 @@ public inherited sharing class VDT_PermissionSetAnalysisBuilder {
             VDT_AttachmentService.JSON_FORMAT,
             this.permissionSetCalculation.Id
         );
+        return this;
+    }
+
+    public VDT_PermissionSetAnalysisBuilder finish() {
+        this.permissionSetCalculation.VDT_Job_End_Date__c = Datetime.now();
+        this.permissionSetCalculation.Status__c = VDT_DataCalculationService.STATUS_COMPLETED;
+        this.permissionSetCalculation.VDT_Calculation_Date__c = Date.today();
+        update this.permissionSetCalculation;
+        return this;
     }
 
     public class ObjectPermission {

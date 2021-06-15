@@ -30,6 +30,40 @@ public inherited sharing class VDT_DataCalculationService {
     };
 
     /**
+     * @description Creates a new VDT_Data_Calculation__c record, set its record type to `VDT_Field_Level_Security_Analysis`
+     *              and checks whether there are free slots to start the calculation, if so, it triggers a new batch job, if not,
+     *              the Calculation record's status is set to `In Queue` and the batch job will be triggered once a slot becomes available
+     * @param calculationParameters Object that contains the SObject API names the job will include in its calculations
+     */
+    public static void triggerFlsAndObjectAnalysisCalculation(FieldLevelSecurityParameter calculationParameters) {
+        Integer maxRunningCalculations = VDT_CustomMetadataService.getMaxNumberOfRunningCalculations();
+        List<VDT_Data_Calculation__c> inProgressCalculations = 
+            new VDT_DataCalculationSelector().getDataCalculationsByStatus(
+                new List<String>{
+                    VDT_DataCalculationService.STATUS_IN_PROGRESS
+                }
+            );
+        
+        if (inProgressCalculations.size() < maxRunningCalculations) {
+            calculationParameters.status = STATUS_IN_PROGRESS;
+        } else {
+            calculationParameters.status = STATUS_IN_QUEUE;
+        }
+
+        VDT_Data_Calculation__c dataCalculationRecord = initRecordForFlsAndObject(calculationParameters);
+        insert dataCalculationRecord;
+
+        if (dataCalculationRecord.Status__c == STATUS_IN_PROGRESS) {
+            List<String> additionalFields = new List<String>{'Permission_Set_Profile_Name__c'};
+            List<VDT_Data_Calculation__c> records = new VDT_DataCalculationSelector().withAdditionalFields(additionalFields).getById(dataCalculationRecord.Id);
+            VDT_PermissionSetAnalysisBuilder builder = new VDT_PermissionSetAnalysisBuilder(records.get(0))
+                                                        .calculateSObject()
+                                                        .calculateFLS()
+                                                        .finish();
+        }
+    }
+
+    /**
      * @description Search for a VDT_Data_Calculation record that matches with all the criterias from the search parameter,
      *              If a record is found, then the calculations output is returned on the `data` property of the returned object.
      *              The returned object also contains information about when the calculation was ran and its status.
@@ -142,6 +176,16 @@ public inherited sharing class VDT_DataCalculationService {
             RecordTypeId = recordTypes[0].Id
         );
         return dataCalculationRecord;
+    }
+
+    public static VDT_Data_Calculation__c initRecordForFlsAndObject(FieldLevelSecurityParameter searchParameters) {
+        List<RecordType> recordTypes = VDT_RecordTypeService.getRecordTypeByObjectAndName('VDT_Data_Calculation__c', VDT_DataCalculationSelector.FIELD_LEVEL_SECURITY_RECORD_TYPE_DEV);
+        VDT_Data_Calculation__c dataCalculationRecord = new VDT_Data_Calculation__c(
+            Permission_Set_Profile_Name__c = String.join(searchParameters.objectNames, ','),
+            Status__c = searchParameters.status, 
+            RecordTypeId = recordTypes[0].Id
+        );
+        return dataCalculationRecord;        
     }
 
     /**

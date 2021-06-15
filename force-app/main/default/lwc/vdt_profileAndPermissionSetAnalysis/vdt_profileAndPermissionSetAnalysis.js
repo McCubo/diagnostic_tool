@@ -1,7 +1,12 @@
-import { LightningElement, track } from 'lwc';
+import { LightningElement, track, wire } from 'lwc';
+import { publish, MessageContext } from 'lightning/messageService';
 
 import validateCanRunCalculation from '@salesforce/apex/VDT_ObjectsCalculationController.validateCanRunCalculation';
 import getProfilesAndPermissionSets from '@salesforce/apex/VDT_FieldLevelSecurityController.searchExistingProfilePermissionSetCalculations';
+import recalculateFlsAndObjectPermissionAnalysis from '@salesforce/apex/VDT_FieldLevelSecurityController.recalculateFlsAndObjectPermissionAnalysis';
+import { showToast } from 'c/vdt_utils';
+import refreshMonitoringMessageChannel from '@salesforce/messageChannel/vdt_refreshMonitoring__c';
+
 export default class Vdt_profileAndPermissionSetAnalysis extends LightningElement {
 
     _showCalculationButton = false;
@@ -9,6 +14,9 @@ export default class Vdt_profileAndPermissionSetAnalysis extends LightningElemen
     _filterDisabled = false;
     _calculationInProgress = false;
     _filter;
+
+    @wire(MessageContext)
+    _messageContext;
 
     @track 
     _calculation = {};
@@ -22,7 +30,30 @@ export default class Vdt_profileAndPermissionSetAnalysis extends LightningElemen
     }
 
     get _emptyMessage() {
-        return `No Calculations have been run for ${this._filter.objectNames} yet.`;
+        return `No Calculations have been run for ${this._filter.profilesOrPermissionSetsLabels} yet.`;
+    }
+
+    handleCalculate(event) {
+        this._calculationInProgress = true;
+        validateCanRunCalculation()
+        .then((response) => {
+            if (response) {
+                recalculateFlsAndObjectPermissionAnalysis({jsonSearchParameters: JSON.stringify(this._filter)})
+                .then(() => {
+                    this._calculation.status = 'In Progress';
+                    publish(this._messageContext, refreshMonitoringMessageChannel);
+                })
+                .catch(error => {
+                     console.error(error);
+                })
+            } else {
+                this.dispatchEvent(showToast('Limit of calculation requests has been reached', 'warning'));
+            }
+        })
+        .catch((error) => {
+            this.dispatchEvent(showToast(error, 'error'));
+        })
+        .finally(() => this._calculationInProgress = false);
     }
 
     handleShowInfo(event) {
