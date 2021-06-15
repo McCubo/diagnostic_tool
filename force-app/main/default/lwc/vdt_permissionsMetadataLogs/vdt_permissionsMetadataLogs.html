@@ -1,0 +1,48 @@
+<template>
+    <div class="container">
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12">
+                <c-vdt_permissions-metadata-log-filters onfilterchange={handleFilterChange}>
+                </c-vdt_permissions-metadata-log-filters>
+            </lightning-layout-item>
+            <lightning-layout-item size="12">
+                <lightning-layout multiple-rows>
+                    <lightning-layout-item size="12">
+                        <lightning-layout horizontal-align="end">                          
+                            <lightning-layout-item style="margin-left: 0.5rem;">
+                                <lightning-button
+                                    variant="brand"
+                                    name="refresh"
+                                    label='Refresh'
+                                    onclick={handleRefresh}
+                                    disabled={_disableRefresh}
+                                ></lightning-button>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12">
+                        <template if:true={_showEmpty}>
+                            <c-vdt_illustration-provider
+                                svgname="showempty"
+                                message="No calculations performed yet."
+                            ></c-vdt_illustration-provider>
+                        </template>
+                        <template if:true={_showTable}>
+                            <div class="logs-table" style="position:relative">
+                                <template if:true={isLoading}>
+                                    <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+                                </template>
+                                <lightning-datatable
+                                    key-field="id"
+                                    data={_filteredLogs}
+                                    columns={columns}
+                                    hide-checkbox-column
+                                ></lightning-datatable>
+                            </div>
+                        </template>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

@@ -1,16 +1,14 @@
 import { LightningElement } from 'lwc';
+
+import fetchFinishedCalculations from '@salesforce/apex/VDT_FieldLevelSecurityController.fetchFinishedCalculations';
 import { loadScript, } from 'lightning/platformResourceLoader';
 import MOMENT from '@salesforce/resourceUrl/vdt_moment';
-import fetchFinishedCalculations from '@salesforce/apex/VDT_TerritoryAnalysisController.fetchFinishedCalculations';
-import deleteCalculationRecords from '@salesforce/apex/VDT_TerritoryAnalysisController.deleteCalculationRecords';
-import { showToast } from 'c/vdt_utils';
 
-export default class Vdt_territoryLogs extends LightningElement {
+export default class Vdt_permissionsMetadataLogs extends LightningElement {
 
-    _columns = [
-        { label: 'Country', fieldName: 'country' },
-        { label: 'Territory ', fieldName: 'territory', type: 'text' },
-        { label: 'Total Transactions ', fieldName: 'totalTransactions', type: 'number' },
+    columns = [
+        { label: 'Object Name', fieldName: 'objectname', type: 'text' },
+        { label: 'Profile/Permission Set Names ', fieldName: 'permissionSetNames', type: 'text' },
         { label: 'Job Start Date', fieldName: 'jobStartDateString', type: 'text' },
         { label: 'Job End Date', fieldName: 'jobEndDateString', type: 'text' },
         { label: 'Created By', fieldName: 'createdByName', type: 'text' },
@@ -26,47 +24,34 @@ export default class Vdt_territoryLogs extends LightningElement {
     _disableRefresh = false;
     isLoading = false;
 
-    handleDelete() {        
-        let selectedRecords = this.template.querySelector('lightning-datatable').getSelectedRows();
-        if (selectedRecords.length > 0) {
-            this.isLoading = true;
-            let ids = selectedRecords.map(record => record.id);
-            console.log(ids);
-            deleteCalculationRecords({ids: ids}).then(result => {
-                this.dispatchEvent(showToast('Transaction record have been successfully deleted', 'success'));
-                this.fetchFinishedCalculationsExecuteion();
-            }).catch(error => {
-                console.error(error)
-            }).finally(() => { this.isLoading = false;})
-        } else {
-            this.dispatchEvent(showToast('Select at least one record from the table in order to delete them', 'warning'));
-        }
-    }
-
-    handleRefresh() {
-        this.fetchFinishedCalculationsExecuteion();
+    connectedCallback() {
+        Promise.all([
+            loadScript(this, MOMENT + '/moment.js')
+        ])
+        .then(() => {this.fetchFinishedCalculationsExecution()})
+        .catch(error => {
+            console.error(error);
+        });
     }
 
     handleFilterChange(evt) {
         try {
             let filter = evt.detail;
-            console.log('filter: %O', JSON.stringify(filter))
-            this._filteredLogs = 
-                this._logs
+            this._filteredLogs = this._logs
                 .filter(log => {
-                    if (filter.country && log.country) {
-                        return log.country.toLowerCase().indexOf(filter.country.toLowerCase()) >= 0
+                    if (filter.objectname && log.objectname) {
+                        return log.objectname.toLowerCase().indexOf(filter.objectname.toLowerCase()) >= 0
                     }
-                    if (filter.country && !log.country) {
+                    if (filter.objectname && !log.objectname) {
                         return false;
                     }
                     return true;
                 })
                 .filter(log => {
-                    if (filter.territory && log.territory) {
-                        return log.territory.toLowerCase().indexOf(filter.territory.toLowerCase()) >= 0
+                    if (filter.permissionSetNames && log.permissionSetNames) {
+                        return log.permissionSetNames.toLowerCase().indexOf(filter.permissionSetNames.toLowerCase()) >= 0
                     }
-                    if (filter.territory && !log.territory) {
+                    if (filter.permissionSetNames && !log.permissionSetNames) {
                         return false;
                     }
                     return true;
@@ -78,17 +63,7 @@ export default class Vdt_territoryLogs extends LightningElement {
         }
     }
 
-    connectedCallback() {
-        Promise.all([
-            loadScript(this, MOMENT + '/moment.js')
-        ])
-        .then(() => {this.fetchFinishedCalculationsExecuteion()})
-        .catch(error => {
-            console.log(error.message);
-        });
-    }
-
-    fetchFinishedCalculationsExecuteion() {
+    fetchFinishedCalculationsExecution() {
         this._disableRefresh = true;
         fetchFinishedCalculations()
         .then(data => {
@@ -98,9 +73,8 @@ export default class Vdt_territoryLogs extends LightningElement {
                 this._logs = logs.map(log => {
                     let logEntry = {
                         id: log.record.Id,
-                        country: log.record.VDT_Country__c,
-                        territory: log.record.Territory__c,
-                        totalTransactions: log.totalTransactions,
+                        objectname: log.record.VDT_Object_Name__c,
+                        permissionSetNames: log.record.Permission_Set_Profile_Name__c,
                         status: log.record.Status__c,
                         jobStartDateString: log.record.VDT_Job_Start_Date__c ? moment(log.record.VDT_Job_Start_Date__c).format(this._jobDateFormat) : null,
                         VDT_Job_Start_Date__c: log.record.VDT_Job_Start_Date__c,
@@ -122,6 +96,10 @@ export default class Vdt_territoryLogs extends LightningElement {
             console.log(error.message);
         })
         .finally(() => this._disableRefresh = false);
+    }
+
+    handleRefresh() {
+        this.fetchFinishedCalculationsExecution();
     }
 
 }

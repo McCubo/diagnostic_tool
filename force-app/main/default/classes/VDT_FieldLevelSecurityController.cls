@@ -85,4 +85,20 @@ public with sharing class VDT_FieldLevelSecurityController {
             throw new AuraHandledException(e.getMessage());
         }
     }
+
+    @AuraEnabled
+    public static List<VDT_DataCalculationService.DataCalculationLog> fetchFinishedCalculations() {
+        try {
+            return VDT_DataCalculationService.getFinishedCalculationsWithDetailsByRecordType(
+                VDT_DataCalculationSelector.FIELD_LEVEL_SECURITY_RECORD_TYPE_DEV, 
+                new List<String>{
+                    'Permission_Set_Profile_Name__c', 'VDT_Job_Start_Date__c', 'VDT_Job_End_Date__c', 'CreatedBy.Name'
+                });
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
 }
