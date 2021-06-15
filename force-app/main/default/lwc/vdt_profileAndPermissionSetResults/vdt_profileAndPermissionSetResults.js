@@ -8,6 +8,7 @@ const SOBJECT_COLUMNS = [
     { label: 'API Object Name', fieldName: 'objectAPIName', type: 'text' },
     { label: 'Object Name', fieldName: 'objectName', type: 'text' },
     { label: 'Type', fieldName: 'sobjectType', type: 'text' },
+    { label: 'Record Types Assigned', fieldName: 'recTypesAssigned', type: 'text' },
     { label: 'Tab Visibility', fieldName: 'tabVisibility', type: 'text' },
     { label: 'Read?', fieldName: 'isReadEnabled', type: 'boolean', initialWidth: 75 },
     { label: 'Create?', fieldName: 'isCreateEnabled', type: 'boolean', initialWidth: 75 },
