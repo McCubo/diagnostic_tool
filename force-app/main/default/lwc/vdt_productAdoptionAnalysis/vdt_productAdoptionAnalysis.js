@@ -40,6 +40,15 @@ export default class Vdt_productAdoptionAnalysis extends LightningElement {
         return `No information was found for the selected filter criteria`;
     }
 
+    @api
+    set countries(data) {
+        this._countries = data;
+    }
+
+    get countries() {
+        return this._countries;
+    }
+    
     connectedCallback() {
         this.subscribeToMessageChannel();
     }
@@ -73,19 +82,23 @@ export default class Vdt_productAdoptionAnalysis extends LightningElement {
     }
 
     handleShowInfo(event) {
-        this._showCalculationSection = false;
-        this._filterDisabled = true;
-        this._filter = event.detail;
-        this._filter.countries = this._countries;
-        searchExistingCalculations({ jsonSearchParameters: JSON.stringify(this._filter) }).then(response => {
-            this._calculation = response;
-            this._showCalculationSection = true;
-            this._showCalculationButton = true;
-        }).catch(error => {
-            console.log('Error in promise: %O', error);
-        }).finally(() => {
-            this._filterDisabled = false;
-        });
+        if (this._countries.length > 0) {
+            this._showCalculationSection = false;
+            this._filterDisabled = true;
+            this._filter = event.detail;
+            this._filter.countries = this._countries;            
+            searchExistingCalculations({ jsonSearchParameters: JSON.stringify(this._filter) }).then(response => {
+                this._calculation = response;
+                this._showCalculationSection = true;
+                this._showCalculationButton = true;
+            }).catch(error => {
+                console.log('Error in promise: %O', error);
+            }).finally(() => {
+                this._filterDisabled = false;
+            });
+        } else {
+            this.dispatchEvent(showToast('Select at least one country from the options above', 'warning'));
+        }
     }
 
     handleCalculate(event) {

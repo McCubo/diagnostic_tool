@@ -281,8 +281,6 @@ public inherited sharing class VDT_DataCalculationSelector {
             }
             countryCriteria.add('VDT_Country__c LIKE \'%All%\'');
             whereClauses.add('(' + String.join(countryCriteria, ' OR ') + ')');
-        } else {
-            whereClauses.add('VDT_Country__c = NULL');
         }
         if (calculationParameters.startYear != null) {
             whereClauses.add('Start_Year__c = ' + calculationParameters.startYear);
