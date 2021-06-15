@@ -369,7 +369,6 @@ public inherited sharing class VDT_DataCalculationSelector {
             VDT_Data_Calculation__c.VDT_Country__c.getDescribe().getName(),
             VDT_Data_Calculation__c.RecordTypeId.getDescribe().getName(),
             VDT_Data_Calculation__c.Permission_Set_Profile_Name__c.getDescribe().getName(),
-            VDT_Data_Calculation__c.VDT_Object_Name__c.getDescribe().getName(),
             'CreatedBy.Name',
             'RecordType.DeveloperName'
         };

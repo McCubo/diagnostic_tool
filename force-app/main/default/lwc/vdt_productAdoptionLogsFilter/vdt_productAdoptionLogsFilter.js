@@ -4,7 +4,13 @@ export default class Vdt_productAdoptionLogsFilter extends LightningElement {
 
     _filter = {
         jobStartDate: '',
-        jobEndDate: ''
+        jobEndDate: '',
+        country: ''
+    }
+
+    handleCountryChange(event) {
+        this._filter.country = event.detail.value;
+        this.dispatchEvent(new CustomEvent('filterchange', {detail: this._filter}));
     }
 
     handleJobStartDateChange(evt) {

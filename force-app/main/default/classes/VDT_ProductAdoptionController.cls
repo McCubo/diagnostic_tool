@@ -132,4 +132,28 @@ public inherited sharing class VDT_ProductAdoptionController {
     public static String getInternationalCountryValue() {
         return VDT_CustomMetadataService.getInternationalCountryValue();
     }
+
+    @AuraEnabled
+    public static List<VDT_DataCalculationService.DataCalculationLog> fetchFinishedCalculations() {
+        try {
+            return VDT_DataCalculationService.getFinishedCalculationsWithDetailsByRecordType(
+                VDT_DataCalculationSelector.PRODUCT_ADOPTION_RECORD_TYPE_DEV, 
+                new List<String>{
+                    'VDT_Country__c',
+                    'Start_Month__c', 
+                    'Start_Year__c', 
+                    'Start_Date__c', 
+                    'End_Year__c',
+                    'End_Month__c',
+                    'End_Date__c', 
+                    'VDT_Job_Start_Date__c', 
+                    'VDT_Job_End_Date__c', 
+                    'CreatedBy.Name'
+                });
+        } catch (Exception e) {
+            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+            VDT_Log.get().publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }    
 }

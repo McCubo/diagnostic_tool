@@ -3,6 +3,16 @@
         <lightning-layout>
             <lightning-layout-item size="2">
                 <lightning-input 
+                    type="text" 
+                    variant="label-hidden"
+                    name="country"
+                    placeholder="Find Countries"
+                    value={_filter.country}
+                    onchange={handleCountryChange}
+                ></lightning-input>
+            </lightning-layout-item> 
+            <lightning-layout-item size="2">
+                <lightning-input 
                     type="date" 
                     variant="label-hidden"
                     name="jobstart"
