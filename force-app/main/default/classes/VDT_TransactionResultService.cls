@@ -45,7 +45,9 @@ public inherited sharing class VDT_TransactionResultService {
         Set<String> territoryIds = getTerritoryIdsByName(searchParameters.territoryName, searchParameters.isFullSearch);
 
         whereClauses.add('Data_Calculation__c = \''+ searchParameters.calculationRecordId + '\'');
-        if (String.isNotBlank(searchParameters.specialtyName) && String.isNotBlank(searchParameters.comparisonOperator) && searchParameters.filterNumber != null) {
+        if (String.isNotBlank(searchParameters.specialtyName) && 
+            searchParameters.specialtyName != 'total_in_territory' &&  searchParameters.specialtyName != 'total_in_hierarchy' &&
+            String.isNotBlank(searchParameters.comparisonOperator) && searchParameters.filterNumber != null) {
             whereClauses.add('Specialty__c = \'' + searchParameters.specialtyName + '\'');
             switch on searchParameters.comparisonOperator {
                 when 'eq'  {

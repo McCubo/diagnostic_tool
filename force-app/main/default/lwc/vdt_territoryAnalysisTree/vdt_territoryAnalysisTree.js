@@ -22,8 +22,8 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
     _columnsBase = [
         { label: 'Territory Name', fieldName: 'name', type: 'text', initialWidth: 150 },
         { label: 'Is Leaf?', fieldName: 'is_leaf', type: 'boolean', initialWidth: 100 },
-        { label: 'Total Accounts', fieldName: 'total_accounts', type: 'number', initialWidth: 115 },
-        { label: 'Territory Accounts', fieldName: 'territory_accounts', type: 'number', initialWidth: 115 }
+        { label: 'Total Accounts', fieldName: 'total_in_hierarchy', type: 'number', initialWidth: 115 },
+        { label: 'Territory Accounts', fieldName: 'total_in_territory', type: 'number', initialWidth: 115 }
     ];
 
     accountTypeOptions = ACCOUNT_TYPES;
@@ -126,7 +126,8 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
 
     setMetricOptions(data) {
         let options = [
-            {label: 'Territory Accounts', value: 'territory_accounts'}
+            {label: 'Total Accounts', value: 'total_in_hierarchy'},
+            {label: 'Territory Accounts', value: 'total_in_territory'}
         ];
         if (data.specialties && data.specialties.length > 0) {
             data.specialties.forEach(specialty => {
@@ -139,7 +140,7 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
     }
 
     getSpecialtyColumnsWithValues(territories) {
-        let defaultProperties = ['parentId', 'name', 'id', 'businessCountrySummary', 'personCountrySummary', 'territory_accounts', 'total_accounts', '_children', 'is_leaf'];
+        let defaultProperties = ['parentId', 'name', 'id', 'businessCountrySummary', 'personCountrySummary', 'total_in_territory', 'total_in_hierarchy', '_children', 'is_leaf'];
         let columnsWithValues = territories.reduce((accumulator, territory) => {
             let cols = [];
             Object.keys(territory).forEach(propertyName => {
@@ -182,9 +183,9 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
                 territory[specialtyProperty] = 0;
             }
         })
-        territory['territory_accounts'] = accountsInTerritory;
+        territory['total_in_territory'] = accountsInTerritory;
         let territoryItem = this.findTerritory(this.treeItems, territory.id);
-        territory['total_accounts'] = this.getTotalChildAccounts(territoryItem) + accountsInTerritory;
+        territory['total_in_hierarchy'] = this.getTotalChildAccounts(territoryItem) + accountsInTerritory;
         territory['is_leaf'] = territoryItem.items == null;
         
         return Object.assign(territory, specialtyNumbers);
@@ -314,6 +315,18 @@ export default class Vdt_territoryAnalysisTree extends LightningElement {
         if (this.serverResponse.data) {
             let cpd = this.serverResponse.data.currentPageTerritories.map(territory => {
                 return this.flatTerritoryRecord(JSON.parse(JSON.stringify(territory)));
+            }).filter(territory => {
+                if ((this._specialtyName == 'total_in_territory' || this._specialtyName == 'total_in_hierarchy') && this._filterNumber && this._comparisonOperator) {
+                    switch (this._comparisonOperator) {
+                        case 'eq': return territory[this._specialtyName] == this._filterNumber;
+                        case 'neq': return territory[this._specialtyName] != this._filterNumber;
+                        case 'lt': return territory[this._specialtyName] < this._filterNumber;
+                        case 'gt': return territory[this._specialtyName] > this._filterNumber;
+                        case 'loe': return territory[this._specialtyName] <= this._filterNumber;
+                        case 'goe': return territory[this._specialtyName] >= this._filterNumber;
+                    }
+                }
+                return true;
             });
             return cpd;
         }
