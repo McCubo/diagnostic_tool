@@ -52,13 +52,62 @@ export default class Vdt_tabs extends LightningElement {
     @wire(getActiveMainMenuOptions)
     _activeMenuOptions;
 
+    get isHomeVisible() {
+        if (this.activeMenuOptions.length > 0) {
+            return this.activeMenuOptions.includes('home');
+        }
+        return false;
+    }
+
+    get isMasterDataVisible() {
+        if (this.activeMenuOptions.length > 0) {
+            return this.activeMenuOptions.includes('master_data_analysis');
+        }
+        return false;
+    }
+
+    get isObjectAnalysisVisible() {
+        if (this.activeMenuOptions.length > 0) {
+            return this.activeMenuOptions.includes('object_field_analysis');
+        }
+        return false;
+    }
+
+    get isUsersVisible() {
+        if (this.activeMenuOptions.length > 0) {
+            return this.activeMenuOptions.includes('users');
+        }
+        return false;
+    }
+
     get isProductVisible() {
         if (this.activeMenuOptions.length > 0) {
             return this.activeMenuOptions.includes('product_adoption');
         }
         return false;
     }
+
+    get isSettingsVisible() {
+        if (this.activeMenuOptions.length > 0) {
+            return this.activeMenuOptions.includes('settings');
+        }
+        return false;
+    }    
     
+    get isTerritoryAnalysisVisible() {
+        if (this.activeMenuOptions.length > 0) {
+            return this.activeMenuOptions.includes('territory_analysis');
+        }
+        return false;
+    }
+
+    get isFieldLevelSecurityVisible() {
+        if (this.activeMenuOptions.length > 0) {
+            return this.activeMenuOptions.includes('field_level_security');
+        }
+        return false;
+    }
+
     get activeMenuOptions() {
         if (this._activeMenuOptions.data) {
             return this._activeMenuOptions.data.split(',');
