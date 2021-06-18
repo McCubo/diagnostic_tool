@@ -172,7 +172,9 @@ public with sharing class VDT_TerritoryAnalysisBuilder {
 
     public List<TerritoryItem> getTerritoryHierarchy() {        
         Map<String, List<Territory2>> territoriesByParent = new Map<String, List<Territory2>>();
-        for (Territory2 territory : [SELECT Id, Name, ParentTerritory2Id, DeveloperName FROM Territory2]) {
+        for (Territory2 territory : new VDT_Territory2Selector()
+                                    .withAdditionalFields(new List<String>{'ParentTerritory2Id', 'DeveloperName'})
+                                    .query()) {
             String parentId = String.isBlank(territory.ParentTerritory2Id) ? 'NULL' : territory.ParentTerritory2Id;
             if (territoriesByParent.containsKey(parentId)) {
                 territoriesByParent.get(parentId).add(territory);

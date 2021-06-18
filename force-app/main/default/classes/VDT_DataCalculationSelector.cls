@@ -386,6 +386,7 @@ public inherited sharing class VDT_DataCalculationSelector {
             }
         );
 
+        System.debug('TEST:query: ' + query);
         return Database.query(query);
     }
 }

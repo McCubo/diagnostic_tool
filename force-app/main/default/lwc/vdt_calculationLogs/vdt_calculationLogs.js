@@ -44,7 +44,10 @@ export default class Vdt_calculationLogs extends LightningElement {
         fetchFinishedCalculations()
         .then(data => {
             this._logs = JSON.parse(JSON.stringify(data)).filter(log => {
-                return log.VDT_Object_Name__c != null && log.VDT_Object_Name__c != '';
+                if (log.RecordType) {
+                    return log.RecordType.DeveloperName == 'VDT_Object_Field_Analysis' || log.RecordType.DeveloperName == 'VDT_Object_Field_Value_Occurrence';
+                }
+                return false;
             });
             if (this._logs.length) {
                 this._logs.forEach(log => {

@@ -43,7 +43,10 @@ export default class Vdt_onekeyLogs extends LightningElement {
         fetchFinishedCalculations()
         .then(data => {
             this._logs = JSON.parse(JSON.stringify(data)).filter(logRecord => {
-                return logRecord.VDT_Country__c != null && logRecord.VDT_Country__c != '';
+                if (logRecord.RecordType) {
+                    return logRecord.RecordType.DeveloperName == 'VDT_Master_Data_Analysis';
+                }
+                return false;
             });
             if (this._logs.length) {
                 this._logs.forEach(log => {
