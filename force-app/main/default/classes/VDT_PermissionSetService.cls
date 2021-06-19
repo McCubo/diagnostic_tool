@@ -5,6 +5,11 @@
  */
 public inherited sharing class VDT_PermissionSetService {
 
+    /**
+     * @description queries the Permission Set table (which holds information about profiles and permission set)
+     *              and build a list of VDT_OptionWrapper
+     * @return  `List<VDT_OptionWrapper>` They contain all information about both profiles and permission sets: label, value and secondary label.
+     */
     public static List<VDT_OptionWrapper> getPermissionSets() {
         List<VDT_OptionWrapper> permissionSetOptions = new List<VDT_OptionWrapper>();
         List<PermissionSet> permissionSets = new VDT_PermissionSetSelector()

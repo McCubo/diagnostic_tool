@@ -60,6 +60,10 @@ public with sharing class VDT_FieldLevelSecurityController {
         }
     }
 
+    /**
+     * @return  `List<VDT_OptionWrapper>` They contain all information about both profiles and permission sets: label, value and secondary label.
+     * @exception AuraHandledException
+     */
     @AuraEnabled
     public static List<VDT_OptionWrapper> getProfilesAndPermissionSets() {
         try {
