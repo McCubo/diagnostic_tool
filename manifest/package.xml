@@ -52,6 +52,9 @@
         <members>VDT_ObjectsCalculationFilterController</members>
         <members>VDT_OptionWrapper</members>
         <members>VDT_PageLayoutService</members>
+        <members>VDT_PermissionSetAnalysisBuilder</members>
+        <members>VDT_PermissionSetSelector</members>
+        <members>VDT_PermissionSetService</members>
         <members>VDT_ProductAdoptionBatch</members>
         <members>VDT_ProductAdoptionBuilder</members>
         <members>VDT_ProductAdoptionController</members>
@@ -130,11 +133,13 @@
         <members>VDT_Query.Veeva_Addresses</members>
         <members>VDT_Query.Veeva_Calls</members>
         <members>VDT_Query.Veeva_Product_Metrics</members>
+        <members>VDT_Tab.field_level_security</members>
         <members>VDT_Tab.home</members>
         <members>VDT_Tab.master_data_analysis</members>
         <members>VDT_Tab.object_field_analysis</members>
         <members>VDT_Tab.product_adoption</members>
         <members>VDT_Tab.settings</members>
+        <members>VDT_Tab.territory_analysis</members>
         <members>VDT_Tab.users</members>
         <name>CustomMetadata</name>
     </types>
@@ -170,6 +175,7 @@
         <members>VDT_EmailTemplates/VDT_FieldCamparisonCalculationFinished</members>
         <members>VDT_EmailTemplates/VDT_FieldLevelSecurityFinished</members>
         <members>VDT_EmailTemplates/VDT_FieldsOccurrencesFinished</members>
+        <members>VDT_EmailTemplates/VDT_FlsAndObjectPermissionFinished</members>
         <members>VDT_EmailTemplates/VDT_MasterAnalysisCalculationFinished</members>
         <members>VDT_EmailTemplates/VDT_TerritoryAnalysisFinished</members>
         <members>VDT_EmailTemplates/VDT_TerritoryExportCompleted</members>
@@ -219,6 +225,9 @@
         <members>vdt_orgConnection</members>
         <members>vdt_paginationItem</members>
         <members>vdt_paginator</members>
+        <members>vdt_permissionsMetadataAnalysis</members>
+        <members>vdt_permissionsMetadataLogFilters</members>
+        <members>vdt_permissionsMetadataLogs</members>
         <members>vdt_popover</members>
         <members>vdt_productAdoptionAnalysis</members>
         <members>vdt_productAdoptionLogs</members>
@@ -227,6 +236,9 @@
         <members>vdt_productAdoptionTableFilters</members>
         <members>vdt_productAdoptionTree</members>
         <members>vdt_productsAndHierarchy</members>
+        <members>vdt_profileAndPermissionSetAnalysis</members>
+        <members>vdt_profileAndPermissionSetFilter</members>
+        <members>vdt_profileAndPermissionSetResults</members>
         <members>vdt_profileIcon</members>
         <members>vdt_profileOptions</members>
         <members>vdt_sidebar</members>
@@ -245,13 +257,13 @@
         <name>LightningComponentBundle</name>
     </types>
     <types>
-        <members>vdt_tabs</members>
         <members>vdt_calculationData</members>
         <members>vdt_hcoFilter</members>
         <members>vdt_hcpFilter</members>
         <members>vdt_onekeyCountryChannel</members>
         <members>vdt_productFilter</members>
         <members>vdt_refreshMonitoring</members>
+        <members>vdt_tabs</members>
         <name>LightningMessageChannel</name>
     </types>
     <types>
@@ -280,6 +292,7 @@
         <members>vdt_moment</members>
         <members>vdt_onekey_summary_table</members>
         <members>vdt_styles</members>
+        <members>vdt_xlsx</members>
         <name>StaticResource</name>
     </types>
     <version>51.0</version>
