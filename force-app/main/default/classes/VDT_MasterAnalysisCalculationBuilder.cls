@@ -5,6 +5,8 @@
  */
 public with sharing class VDT_MasterAnalysisCalculationBuilder {
 
+    private String classificationField;
+    private Map<String, List<String>> accountClassificationByFieldValue = new Map<String, List<String>>();
     private String countryField;
     private String specialtyField;
     private Date startDate;
@@ -45,9 +47,10 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
      * @param startDate Filter Date
      * @param endDate Filter Date
      */
-    public VDT_MasterAnalysisCalculationBuilder(String countryField, String specialtyField, Date startDate, Date endDate) {
+    public VDT_MasterAnalysisCalculationBuilder(String countryField, String specialtyField, String classificationField, Date startDate, Date endDate) {
         this.countryField = countryField;
         this.specialtyField = specialtyField;
+        this.classificationField = classificationField;
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -97,6 +100,15 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
      */
     public VDT_MasterAnalysisCalculationBuilder withRecordTypesByType(Map<String, List<String>> accountRecordTypesByType) {
         this.accountRecordTypesByType = accountRecordTypesByType;
+        return this;
+    }
+
+    /**
+     * @param accountRecordTypesByType set the mapping to classify if an account record is EXTERNAL or INTERNAL account.
+     * @return  `VDT_MasterAnalysisCalculationBuilder` instance of the class
+     */
+    public VDT_MasterAnalysisCalculationBuilder withAccountTypeByFieldValue(Map<String, List<String>> accountClassificationByFieldValue) {
+        this.accountClassificationByFieldValue = accountClassificationByFieldValue;
         return this;
     }
 
@@ -153,7 +165,13 @@ public with sharing class VDT_MasterAnalysisCalculationBuilder {
                 specialty = '<<Empty>>';
             }
             this.analysisData.recordTypes.add(acc.RecordType.DeveloperName);
-            Boolean isExternal = accountRecordTypesByType.get(ACCOUNT_TYPE_EXTERNAL).contains(acc.RecordType.DeveloperName);            
+            Boolean isExternal = false;
+            if (accountRecordTypesByType.isEmpty()) {
+                String accountClassification = this.getPropertyValue(acc, this.classificationField);
+                isExternal = accountClassificationByFieldValue.get(ACCOUNT_TYPE_EXTERNAL).contains(accountClassification);
+            } else {
+                isExternal = accountRecordTypesByType.get(ACCOUNT_TYPE_EXTERNAL).contains(acc.RecordType.DeveloperName);
+            }
             this.updateKpiForCountry(ONEKEY_VS_NON_ONE_KEY_KPI_ID, country, isExternal ? 1 : 0, 1);            
             if (isExternal) {
                 Boolean hasAddress = this.addressByAccount.containsKey(acc.Id) && this.addressByAccount.get(acc.Id) > 0;

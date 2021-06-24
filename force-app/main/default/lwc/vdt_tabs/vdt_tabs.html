@@ -95,7 +95,17 @@
                         active={_tabs.fieldLevelSecurity.active}
                     ></c-vdt_tab-item>
                 </li>
-            </template>                         
+            </template>
+            <li 
+                class="slds-item"
+                onclick={handleVaultDocumentsClick}
+            >
+                <c-vdt_tab-item
+                    icon-name={_tabs.vaultDocuments.icon}
+                    tab-name={_tabs.vaultDocuments.name}
+                    active={_tabs.vaultDocuments.active}
+                ></c-vdt_tab-item>
+            </li>            
         </ul>
     </div>
 </template>

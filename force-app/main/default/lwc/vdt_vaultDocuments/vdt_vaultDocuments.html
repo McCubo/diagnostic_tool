@@ -1,0 +1,25 @@
+<template>
+    <div style="position: relative;">
+        <template if:true={showSpinner}>
+            <lightning-spinner class="spins" alternative-text="Loading" size="large"></lightning-spinner>
+        </template>
+        <lightning-layout horizontal-align='end' multiple-rows>
+            <lightning-layout-item style="margin-bottom: 1rem;">
+                <lightning-button label="Refresh Data" title="Non-primary action" onclick={handleRefresh}></lightning-button>
+            </lightning-layout-item>
+            <lightning-layout-item style="margin-bottom: 1rem; margin-left: 15px;">
+                <lightning-button label="Export to CSV" variant="brand" title="Non-primary action" onclick={handleExport}></lightning-button>
+            </lightning-layout-item>
+        </lightning-layout>
+        <lightning-layout>
+            <lightning-layout-item size="12">
+                <c-vdt_datatable
+                        key-field="id"
+                        data={data}
+                        columns={columns}
+                        hide-checkbox-column="">
+                </c-vdt_datatable>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

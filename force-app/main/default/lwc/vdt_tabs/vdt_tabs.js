@@ -43,6 +43,11 @@ export const TABS = {
         name: 'Field Level Security Analysis',
         icon: 'utility:lock',
         active: false
+    },
+    vaultDocuments: {
+        name: 'Veeva Vault Documents',
+        icon: 'utility:open_folder',
+        active: false
     }
 }
 export const DEFAULT_TAB = TABS.home;
@@ -160,5 +165,10 @@ export default class Vdt_tabs extends LightningElement {
     handleSettingsClick() {
         Object.values(this._tabs).forEach(tab => tab.active = tab.name === this._tabs.settings.name);
         publish(this.messageContext, tabsMessageChannel, {selectedTab: this._tabs.settings.name});
+    }
+
+    handleVaultDocumentsClick() {
+        Object.values(this._tabs).forEach(tab => tab.active = tab.name === this._tabs.vaultDocuments.name);
+        publish(this.messageContext, tabsMessageChannel, {selectedTab: this._tabs.vaultDocuments.name});
     }
 }

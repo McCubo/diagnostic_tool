@@ -84,7 +84,7 @@ export default class Vdt_productAdoptionTree extends LightningElement {
                 meetCriteria &= this._selectedProductTypes.includes(recordRow.type);
             } 
             if (this.countries.length > 0) {
-                meetCriteria &= this.countries.includes(recordRow.country);
+                meetCriteria &= this.countries.includes(recordRow.country) || this.countries.includes('All');
             } 
             if (this._selectedProductStatuses.length > 0) {
                 meetCriteria &=  this._selectedProductStatuses.includes(recordRow.status);

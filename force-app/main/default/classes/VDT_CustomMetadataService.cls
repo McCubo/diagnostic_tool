@@ -19,6 +19,18 @@ public inherited sharing class VDT_CustomMetadataService {
     @TestVisible
     private static Map<String, List<SObject>> customMetadataWithRecords = new Map<String, List<SObject>>();
 
+
+    public static List<VDT_Vault_Document_Column__mdt> getActiveDocumentColumns() {
+        List<VDT_Vault_Document_Column__mdt> activeColumns = new List<VDT_Vault_Document_Column__mdt>();
+        for (VDT_Vault_Document_Column__mdt column : [SELECT MasterLabel, Display_Order__c, Veeva_API_Name__c, Field_Type__c
+                                                        FROM VDT_Vault_Document_Column__mdt 
+                                                        WHERE Is_Active__c = TRUE 
+                                                        ORDER BY Display_Order__c ASC]) {
+            activeColumns.add(column);
+        }
+        return activeColumns;
+    }
+
     /**
      * @description  returns the Field to be used to filter records based on date parameters, if none is found, the `Default_Date_Field__c` from `Default Settings` is returned
      * @param objectName SObject API Name
@@ -291,11 +303,38 @@ public inherited sharing class VDT_CustomMetadataService {
      * @description Used to categorize whether an Account record should be treated as Internal or External Customer
      * @return  `Map<String, List<String>>` with two keys: External_Customers and Internal_Customers, each has a List of Account Record Type names
      */
+    public static Map<String, List<String>> getAccountClassificationByFieldValue() {
+        List<VDT_Account_Record_Type_Mapping__mdt> accountClassifications = new List<VDT_Account_Record_Type_Mapping__mdt>();
+        accountClassifications = [
+            SELECT  DeveloperName, Classification_Value__c
+            FROM    VDT_Account_Record_Type_Mapping__mdt
+            WHERE Classification_Value__c != NULL
+            WITH    SECURITY_ENFORCED
+        ];
+        if (customMetadataWithRecords.containsKey(VDT_ACCOUNT_RECORD_TYPE_CONFIGURATIONS)) {
+            accountClassifications = customMetadataWithRecords.get(VDT_ACCOUNT_RECORD_TYPE_CONFIGURATIONS);
+        }
+        Map<String, List<String>> accountTypeByFieldValue = new Map<String, List<String>>();
+        for (VDT_Account_Record_Type_Mapping__mdt recordTypeConfiguration : accountClassifications) {
+            if (!String.isBlank(recordTypeConfiguration.Classification_Value__c)) {
+                accountTypeByFieldValue.put(recordTypeConfiguration.DeveloperName, recordTypeConfiguration.Classification_Value__c.split(','));
+            } else {
+                accountTypeByFieldValue.put(recordTypeConfiguration.DeveloperName, new List<String>());
+            }
+        }
+        return accountTypeByFieldValue;
+    }
+
+    /**
+     * @description Used to categorize whether an Account record should be treated as Internal or External Customer
+     * @return  `Map<String, List<String>>` with two keys: External_Customers and Internal_Customers, each has a List of Account Record Type names
+     */
     public static Map<String, List<String>> getAccountRecordTypesByType() {
         List<VDT_Account_Record_Type_Mapping__mdt> recordTypeConfigurations = new List<VDT_Account_Record_Type_Mapping__mdt>();
         recordTypeConfigurations = [
             SELECT  DeveloperName, Account_Record_Types__c
             FROM    VDT_Account_Record_Type_Mapping__mdt
+            WHERE Account_Record_Types__c != NULL
             WITH    SECURITY_ENFORCED
         ];
         if (customMetadataWithRecords.containsKey(VDT_ACCOUNT_RECORD_TYPE_CONFIGURATIONS)) {
@@ -361,6 +400,28 @@ public inherited sharing class VDT_CustomMetadataService {
             specialtyField = defaultSettings[0].VDT_Default_Specialty_Field__c;
         }        
         return specialtyField;
+    }
+
+        /**
+     * @return  `String` Field API Name used to Group and Filter account records based on Specialty values
+     */
+    public static String getAccountClassificationField() {
+        String classificationField;
+        List<VDT_General_Setting__mdt> defaultSettings;
+        defaultSettings = [
+            SELECT  Account_Classification_Field__c
+            FROM    VDT_General_Setting__mdt
+            WHERE   DeveloperName = :DEFAULT_APP_SETTINGS
+            WITH    SECURITY_ENFORCED
+        ];
+        if (customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {
+            defaultSettings = customMetadataWithRecords.get(VDT_GENERAL_SETTINGS);
+        }
+
+        if (!defaultSettings.isEmpty()) {
+            classificationField = defaultSettings[0].Account_Classification_Field__c;
+        }        
+        return classificationField;
     }
 
     /**

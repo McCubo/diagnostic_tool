@@ -30,9 +30,11 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
             Map<String,String> queriesByName = VDT_CustomMetadataService.getQueriesByPackageVersionAndModule(packageVersion, 'Master Data Analysis');
             String countryField = VDT_CustomMetadataService.getCountryFieldForObject('Account');
             String specialtyField = VDT_CustomMetadataService.getAccountSpecialtyField();
+            String classificationField = VDT_CustomMetadataService.getAccountClassificationField();
             List<VDT_OptionWrapper> activeSpecialties = VDT_ObjectService.getPicklistOptionsBySObjectName(SObjectType.Account, specialtyField);
             List<VDT_KPI_Configuration__mdt> activeKpis = VDT_CustomMetadataService.getActiveKpiConfigurations();
             Map<String, List<String>> accountRecordTypesByType = VDT_CustomMetadataService.getAccountRecordTypesByType();
+            Map<String, List<String>> accountTypeByFieldValue = VDT_CustomMetadataService.getAccountClassificationByFieldValue();
             Map<String, Decimal> targetByCountryAndKpi = VDT_CustomMetadataService.getCountryKpiConfigurations();
             List<String> countries = this.dataCalculationRecord.VDT_Country__c.split(DELIMITER_CHARACTER);
             List<String> countryCriterias = new List<String>();
@@ -44,18 +46,20 @@ public with sharing class VDT_MasterAnalysisCalculationBatch implements Database
                 countryClause = 'AND (' + String.join(countryCriterias, ' OR ') + ')';
             }
             String query = String.format(
-                'SELECT Id, RecordType.DeveloperName, {0}, {1} FROM Account WHERE {0} != NULL {2}', 
+                'SELECT Id, RecordType.DeveloperName, {0}, {1}, {2} FROM Account WHERE {0} != NULL {3}', 
                 new List<String> {
                     countryField,
                     specialtyField,
+                    classificationField,
                     countryClause
                 }
             );
 
-            this.builder = new VDT_MasterAnalysisCalculationBuilder(countryField, specialtyField, this.startDate, this.endDate)
+            this.builder = new VDT_MasterAnalysisCalculationBuilder(countryField, specialtyField, classificationField, this.startDate, this.endDate)
             .withValidOptions(activeSpecialties)
             .initKpis(activeKpis)
             .withRecordTypesByType(accountRecordTypesByType)
+            .withAccountTypeByFieldValue(accountTypeByFieldValue)
             .withCustomTargets(targetByCountryAndKpi)
             .withCustomQueries(queriesByName);
             this.dataCalculationRecord.VDT_Job_Start_Date__c = Datetime.now();
