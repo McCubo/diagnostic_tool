@@ -79,6 +79,8 @@
         <members>VDT_UserDataFactory</members>
         <members>VDT_VeevaUsersController</members>
         <members>VDT_VeevaUsersControllerTest</members>
+        <members>VDT_VeevaVaultController</members>
+        <members>VDT_VeevaVaultService</members>
         <name>ApexClass</name>
     </types>
     <types>
@@ -86,7 +88,7 @@
         <name>ApexPage</name>
     </types>
     <types>
-        <members>*</members>
+        <members>VDT_Suite</members>
         <name>ApexTestSuite</name>
     </types>
     <types>
@@ -96,16 +98,12 @@
         <name>ApexTrigger</name>
     </types>
     <types>
-        <members>*</members>
+        <members>LightningOutApp</members>
         <name>AuraDefinitionBundle</name>
     </types>
     <types>
-        <members>*</members>
+        <members>VDT_ToolingAuth</members>
         <name>AuthProvider</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>ConnectedApp</name>
     </types>
     <types>
         <members>Veeva_Diagnostic_Tool</members>
@@ -133,6 +131,7 @@
         <members>VDT_Query.Veeva_Addresses</members>
         <members>VDT_Query.Veeva_Calls</members>
         <members>VDT_Query.Veeva_Product_Metrics</members>
+        <members>VDT_Query.Veeva_Vault_Documents</members>
         <members>VDT_Tab.field_level_security</members>
         <members>VDT_Tab.home</members>
         <members>VDT_Tab.master_data_analysis</members>
@@ -141,6 +140,16 @@
         <members>VDT_Tab.settings</members>
         <members>VDT_Tab.territory_analysis</members>
         <members>VDT_Tab.users</members>
+        <members>VDT_Vault_Document_Column.Document_Id</members>
+        <members>VDT_Vault_Document_Column.Document_Name</members>
+        <members>VDT_Vault_Document_Column.Document_Number</members>
+        <members>VDT_Vault_Document_Column.Document_Status</members>
+        <members>VDT_Vault_Document_Column.Document_Type</members>
+        <members>VDT_Vault_Document_Column.Expiration_Date</members>
+        <members>VDT_Vault_Document_Status.Veeva_Approved_Value</members>
+        <members>VDT_Vault_Document_Status_Map.Approved</members>
+        <members>VDT_Vault_Document_Status_Map.Draft</members>
+        <members>VDT_Vault_Document_Status_Map.Expired</members>
         <name>CustomMetadata</name>
     </types>
     <types>
@@ -162,6 +171,9 @@
         <members>VDT_Query__mdt</members>
         <members>VDT_Tab__mdt</members>
         <members>VDT_Transaction_Result__c</members>
+        <members>VDT_Vault_Document_Column__mdt</members>
+        <members>VDT_Vault_Document_Status_Map__mdt</members>
+        <members>VDT_Vault_Document_Status__mdt</members>
         <name>CustomObject</name>
     </types>
     <types>
@@ -182,6 +194,7 @@
         <name>EmailTemplate</name>
     </types>
     <types>
+        <members>vdt_app</members>
         <members>vdt_analysisDashboardFilter</members>
         <members>vdt_appHeader</members>
         <members>vdt_autocompleteInput</members>
@@ -252,6 +265,7 @@
         <members>vdt_treeCombobox</members>
         <members>vdt_unusedFieldsOnLayoutChart</members>
         <members>vdt_utils</members>
+        <members>vdt_vaultDocuments</members>
         <members>vdt_veevaUsers</members>
         <members>vdt_workspace</members>
         <name>LightningComponentBundle</name>
