@@ -112,6 +112,9 @@
     <types>
         <members>VDT_Account_Record_Type_Mapping.External_Customers</members>
         <members>VDT_Account_Record_Type_Mapping.Internal_Customers</members>
+        <members>VDT_Custom_Objects_Field_Mapping.DOCUMENT_STATUS</members>
+        <members>VDT_Custom_Objects_Field_Mapping.DOCUMENT_TYPE</members>
+        <members>VDT_Custom_Objects_Field_Mapping.DOCUMENT_VAULT_ID</members>
         <members>VDT_Custom_Objects_Field_Mapping.PRODUCT_VOD_STATUS</members>
         <members>VDT_General_Setting.Default</members>
         <members>VDT_KPI_Configuration.OneKey_Without_Visit_and_Cycle_Plan</members>
@@ -140,12 +143,12 @@
         <members>VDT_Tab.settings</members>
         <members>VDT_Tab.territory_analysis</members>
         <members>VDT_Tab.users</members>
-        <members>VDT_Vault_Document_Column.Document_Id</members>
         <members>VDT_Vault_Document_Column.Document_Name</members>
-        <members>VDT_Vault_Document_Column.Document_Number</members>
-        <members>VDT_Vault_Document_Column.Document_Status</members>
-        <members>VDT_Vault_Document_Column.Document_Type</members>
+        <members>VDT_Vault_Document_Column.Document_Number_Vault</members>
         <members>VDT_Vault_Document_Column.Expiration_Date</members>
+        <members>VDT_Vault_Document_Column.Id_Vault</members>
+        <members>VDT_Vault_Document_Column.Status_Vault</members>
+        <members>VDT_Vault_Document_Column.Type_Vault</members>
         <members>VDT_Vault_Document_Status.Veeva_Approved_Value</members>
         <members>VDT_Vault_Document_Status_Map.Approved</members>
         <members>VDT_Vault_Document_Status_Map.Draft</members>
@@ -194,14 +197,19 @@
         <name>EmailTemplate</name>
     </types>
     <types>
-        <members>vdt_app</members>
+        <members>Veeva_Diagnostic_Tool_UtilityBar</members>
+        <name>FlexiPage</name>
+    </types>
+    <types>
         <members>vdt_analysisDashboardFilter</members>
+        <members>vdt_app</members>
         <members>vdt_appHeader</members>
         <members>vdt_autocompleteInput</members>
         <members>vdt_calculationButton</members>
         <members>vdt_calculationLogs</members>
         <members>vdt_calculationLogsFilter</members>
         <members>vdt_calculationMonitoring</members>
+        <members>vdt_coloredCell</members>
         <members>vdt_csvUtil</members>
         <members>vdt_datatable</members>
         <members>vdt_dateRangePicker</members>
