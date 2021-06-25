@@ -59,8 +59,8 @@ export default class Vdt_vaultDocuments extends LightningElement {
             }
         ]);
         this.columns.splice(idPosition, 0, {
-            label: 'Id - CMR', 
-            fieldName: 'crmId',
+            label: 'Id - CRM', 
+            fieldName: 'vaultDocId',
             type: 'vdt_coloredCell',
             typeAttributes: {
                 source: 'crm'
@@ -107,6 +107,7 @@ export default class Vdt_vaultDocuments extends LightningElement {
                     dateValidation = new Date(document.expiration_date__c) > new Date();
                 }
                 document['ready_for_use'] = dateValidation && matchedDocument.isApproved && document.status__v == 'Approved';
+                document['vaultDocId'] = matchedDocument.vaultDocId;
                 document['statuses_match'] = matchedDocument.status == document.status__v;
                 document['cmr_doc_status'] = matchedDocument.status;
                 document['crmId'] = matchedDocument.crmId;
