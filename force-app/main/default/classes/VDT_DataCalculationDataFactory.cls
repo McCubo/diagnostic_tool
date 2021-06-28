@@ -7,6 +7,11 @@ public with sharing class VDT_DataCalculationDataFactory {
         this.dataCalculation = new VDT_Data_Calculation__c();
     }
 
+    public VDT_DataCalculationDataFactory profileOrPermissionSet(String objectName) {
+        this.dataCalculation.Permission_Set_Profile_Name__c = objectName;
+        return this;
+    }
+
     public VDT_DataCalculationDataFactory object(String objectApi) {
         this.dataCalculation.VDT_Object_Name__c = objectApi;
         return this;

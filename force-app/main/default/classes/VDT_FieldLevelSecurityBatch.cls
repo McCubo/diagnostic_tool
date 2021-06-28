@@ -25,6 +25,10 @@ public inherited sharing class VDT_FieldLevelSecurityBatch implements Database.B
         String query = 'SELECT Id, ParentId, Parent.Name, Parent.Profile.Name, SobjectType, Field, PermissionsEdit, PermissionsRead' 
                     + ' FROM FieldPermissions'
                     + ' WHERE SobjectType IN :sobjects';
+        if (Test.isRunningTest()) {
+            // No more than one executeBatch can be called from within a test method
+            query += ' LIMIT 200';
+        }
         this.flsDataCalculation.VDT_Job_Start_Date__c = Datetime.now();
         this.flsDataCalculation.Batches_Number__c = 0;
         this.builder = new VDT_FieldLevelSecurityBuilder().withPageLayoutBehaviors(sobjects);
