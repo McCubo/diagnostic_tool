@@ -16,11 +16,7 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Account_Record_Types__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>Classification_Value__c</field>
+                <field>Date_API_Field__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>

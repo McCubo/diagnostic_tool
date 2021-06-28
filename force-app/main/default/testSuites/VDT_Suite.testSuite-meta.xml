@@ -9,6 +9,7 @@
     <testClassName>VDT_DataCalculationTriggerTest</testClassName>
     <testClassName>VDT_DateRangePickerControllerTest</testClassName>
     <testClassName>VDT_DateRangePickerTest</testClassName>
+    <testClassName>VDT_FieldLevelSecurityControllerTest</testClassName>
     <testClassName>VDT_LogTriggerTest</testClassName>
     <testClassName>VDT_MasterDataAnalysisControllerTest</testClassName>
     <testClassName>VDT_ObjectsCalculationControllerTest</testClassName>

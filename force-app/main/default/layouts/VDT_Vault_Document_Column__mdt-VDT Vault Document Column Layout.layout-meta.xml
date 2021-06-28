@@ -16,11 +16,19 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Account_Record_Types__c</field>
+                <field>Is_Active__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Classification_Value__c</field>
+                <field>Display_Order__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Veeva_API_Name__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Field_Type__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>

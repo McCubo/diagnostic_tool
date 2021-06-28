@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Module_Name__c</fullName>
+    <fullName>Package_Version__c</fullName>
     <externalId>false</externalId>
     <fieldManageability>DeveloperControlled</fieldManageability>
-    <label>Module Name</label>
+    <label>Package Version</label>
     <required>false</required>
     <type>Picklist</type>
     <valueSet>
@@ -11,19 +11,14 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>Master Data Analysis</fullName>
+                <fullName>Veeva</fullName>
                 <default>true</default>
-                <label>Master Data Analysis</label>
+                <label>Veeva</label>
             </value>
             <value>
-                <fullName>Product Adoption</fullName>
+                <fullName>OCE</fullName>
                 <default>false</default>
-                <label>Product Adoption</label>
-            </value>
-            <value>
-                <fullName>Vault Document</fullName>
-                <default>false</default>
-                <label>Vault Document</label>
+                <label>OCE</label>
             </value>
         </valueSetDefinition>
     </valueSet>
