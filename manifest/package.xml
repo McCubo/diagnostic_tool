@@ -30,6 +30,7 @@
         <members>VDT_FieldLevelSecurityBatch</members>
         <members>VDT_FieldLevelSecurityBuilder</members>
         <members>VDT_FieldLevelSecurityController</members>
+        <members>VDT_FieldLevelSecurityControllerTest</members>
         <members>VDT_FieldSummary</members>
         <members>VDT_FieldSummarySelector</members>
         <members>VDT_FieldValuesOccurrencesBatch</members>
@@ -201,6 +202,23 @@
         <name>FlexiPage</name>
     </types>
     <types>
+        <members>VDT_Account_Record_Type_Mapping__mdt-VDT Account Record Type Mapping Layout</members>
+        <members>VDT_Custom_Objects_Field_Mapping__mdt-VDT Custom Objects Field Mapping Layout</members>
+        <members>VDT_General_Setting__mdt-VDT General Setting Layout</members>
+        <members>VDT_KPI_Configuration__mdt-KPI Configuration Layout</members>
+        <members>VDT_KPI_by_Country__mdt-VDT KPI by Country Layout</members>
+        <members>VDT_Object_Batch_Size_Mapping__mdt-VDT Object Batch Size Mapping Layout</members>
+        <members>VDT_Object_Country_Field_Mapping__mdt-VDT Object Country Field Mapping Layout</members>
+        <members>VDT_Object_Date_Field_Mapping__mdt-VDT Object Date Field Mapping Layout</members>
+        <members>VDT_Object_Product_Field_Mapping__mdt-VDT Object Product Field Mapping Layout</members>
+        <members>VDT_Query__mdt-VDT Query Layout</members>
+        <members>VDT_Tab__mdt-VDT Tab Layout</members>
+        <members>VDT_Vault_Document_Column__mdt-VDT Vault Document Column Layout</members>
+        <members>VDT_Vault_Document_Status_Map__mdt-VDT Vault Document Status Map Layout</members>
+        <members>VDT_Vault_Document_Status__mdt-VDT Vault Document Status Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
         <members>vdt_analysisDashboardFilter</members>
         <members>vdt_app</members>
         <members>vdt_appHeader</members>
@@ -290,6 +308,7 @@
     </types>
     <types>
         <members>VDT_ToolingREST</members>
+        <members>VDT_Veeva_Vault</members>
         <name>NamedCredential</name>
     </types>
     <types>
@@ -317,22 +336,5 @@
         <members>vdt_xlsx</members>
         <name>StaticResource</name>
     </types>
-    <types>
-        <members>VDT_Account_Record_Type_Mapping__mdt-VDT Account Record Type Mapping Layout</members>
-        <members>VDT_Custom_Objects_Field_Mapping__mdt-VDT Custom Objects Field Mapping Layout</members>
-        <members>VDT_General_Setting__mdt-VDT General Setting Layout</members>
-        <members>VDT_KPI_Configuration__mdt-KPI Configuration Layout</members>
-        <members>VDT_KPI_by_Country__mdt-VDT KPI by Country Layout</members>
-        <members>VDT_Object_Batch_Size_Mapping__mdt-VDT Object Batch Size Mapping Layout</members>
-        <members>VDT_Object_Country_Field_Mapping__mdt-VDT Object Country Field Mapping Layout</members>
-        <members>VDT_Object_Date_Field_Mapping__mdt-VDT Object Date Field Mapping Layout</members>
-        <members>VDT_Object_Product_Field_Mapping__mdt-VDT Object Product Field Mapping Layout</members>
-        <members>VDT_Query__mdt-VDT Query Layout</members>
-        <members>VDT_Tab__mdt-VDT Tab Layout</members>
-        <members>VDT_Vault_Document_Column__mdt-VDT Vault Document Column Layout</members>
-        <members>VDT_Vault_Document_Status_Map__mdt-VDT Vault Document Status Map Layout</members>
-        <members>VDT_Vault_Document_Status__mdt-VDT Vault Document Status Layout</members>
-        <name>Layout</name>
-    </types>    
     <version>51.0</version>
 </Package>
