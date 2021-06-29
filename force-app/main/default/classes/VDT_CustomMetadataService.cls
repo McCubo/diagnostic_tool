@@ -20,6 +20,22 @@ public inherited sharing class VDT_CustomMetadataService {
     private static Map<String, List<SObject>> customMetadataWithRecords = new Map<String, List<SObject>>();
 
 
+    /**
+     * @description  returns the Field to be used Join records from vault and CRM objects
+     * @return  `String` Vault Field API Name
+     */
+    public static String getVaultJoinField() {
+        String dateField;
+        List<VDT_General_Setting__mdt> defaultSettings = [SELECT Vault_Join_Field__c
+                                                                         FROM VDT_General_Setting__mdt
+                                                                         WHERE DeveloperName = :DEFAULT_APP_SETTINGS
+                                                                         WITH SECURITY_ENFORCED];
+        if (customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {        
+            defaultSettings = customMetadataWithRecords.get(VDT_GENERAL_SETTINGS);
+        }
+        return defaultSettings[0].Vault_Join_Field__c;
+    }
+
     public static List<VDT_Vault_Document_Column__mdt> getActiveDocumentColumns() {
         List<VDT_Vault_Document_Column__mdt> activeColumns = new List<VDT_Vault_Document_Column__mdt>();
         for (VDT_Vault_Document_Column__mdt column : [SELECT MasterLabel, Display_Order__c, Veeva_API_Name__c, Field_Type__c

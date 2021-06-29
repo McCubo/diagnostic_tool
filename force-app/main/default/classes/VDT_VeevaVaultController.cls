@@ -6,6 +6,15 @@
 public with sharing class VDT_VeevaVaultController {
 
     @AuraEnabled
+    public static string getVaultJoinField() {
+        try {
+            return VDT_CustomMetadataService.getVaultJoinField();
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled
     public static List<VDT_Vault_Document_Column__mdt> getColumns(){
         try {
             return VDT_CustomMetadataService.getActiveDocumentColumns();

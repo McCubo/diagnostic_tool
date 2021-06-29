@@ -1,5 +1,6 @@
 import { LightningElement } from 'lwc';
 
+import getVaultJoinField from '@salesforce/apex/VDT_VeevaVaultController.getVaultJoinField';
 import getDocumentsFromVault from '@salesforce/apex/VDT_VeevaVaultController.getDocumentsFromVault';
 import getColumns from '@salesforce/apex/VDT_VeevaVaultController.getColumns';
 import getApprovedDocuments from '@salesforce/apex/VDT_VeevaVaultController.getApprovedDocuments';
@@ -30,6 +31,8 @@ export default class Vdt_vaultDocuments extends LightningElement {
     }
 
     async getDataFromServer() {
+        let matchProperty = await getVaultJoinField();
+
         let _columns = await getColumns();
         let idPosition = null;
         this.columns = _columns.map((column, index) => {
@@ -59,7 +62,7 @@ export default class Vdt_vaultDocuments extends LightningElement {
             }
         ]);
         this.columns.splice(idPosition, 0, {
-            label: 'Id - CRM', 
+            label: 'Document Name - CRM', 
             fieldName: 'vaultDocId',
             type: 'vdt_coloredCell',
             typeAttributes: {
@@ -86,8 +89,8 @@ export default class Vdt_vaultDocuments extends LightningElement {
         });
         let vaultDocuments = await getDocumentsFromVault();
         let vaultDocIds = vaultDocuments.reduce((ids, document) => {
-            if (document['id']) {
-                ids.push(document['id']);
+            if (document[matchProperty]) {
+                ids.push(document[matchProperty]);
             }
             return ids;
         }, []);
@@ -100,7 +103,7 @@ export default class Vdt_vaultDocuments extends LightningElement {
                 document.status__v = 'Approved';
             }
 
-            let matchedDocument = approvedDocuments.find(approvedDocument => approvedDocument.vaultDocId == document.id);
+            let matchedDocument = approvedDocuments.find(approvedDocument => approvedDocument.vaultDocId == document[matchProperty]);
             if (matchedDocument) {
                 let dateValidation = true;
                 if (document.expiration_date__c) {
