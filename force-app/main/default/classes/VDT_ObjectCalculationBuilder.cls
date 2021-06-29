@@ -165,7 +165,7 @@ public inherited sharing class VDT_ObjectCalculationBuilder {
                     .get(field)
                     .getDescribe();
             fieldSummary = new VDT_FieldSummary(
-                fieldDescribe.getLabel(),
+                fieldDescribe.getLabel().replace('"', '\\\"'),
                 field,
                 String.valueOf(fieldDescribe.getType())
             );
