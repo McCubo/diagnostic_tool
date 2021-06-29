@@ -46,6 +46,10 @@
                 <behavior>Edit</behavior>
                 <field>Account_Classification_Field__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Vault_Join_Field__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
