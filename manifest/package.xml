@@ -203,10 +203,18 @@
     </types>
     <types>
         <members>VDT_Account_Record_Type_Mapping__mdt-VDT Account Record Type Mapping Layout</members>
+        <members>VDT_CRM_Document_Column__mdt-VDT CRM Document Column Layout</members>
         <members>VDT_Custom_Objects_Field_Mapping__mdt-VDT Custom Objects Field Mapping Layout</members>
+        <members>VDT_Data_Calculation_Entry__c-Data Calculation Entry Layout</members>
+        <members>VDT_Data_Calculation__c-Data Calculation Layout</members>
+        <members>VDT_Data_Calculation__c-Field Level Analysis</members>
+        <members>VDT_Data_Calculation__c-Master Data Analysis Layout</members>
+        <members>VDT_Data_Calculation__c-Product Adoption Layout</members>
+        <members>VDT_Data_Calculation__c-Territory Analysis</members>
         <members>VDT_General_Setting__mdt-VDT General Setting Layout</members>
         <members>VDT_KPI_Configuration__mdt-KPI Configuration Layout</members>
         <members>VDT_KPI_by_Country__mdt-VDT KPI by Country Layout</members>
+        <members>VDT_Log_Event__c-Log Event Layout</members>
         <members>VDT_Object_Batch_Size_Mapping__mdt-VDT Object Batch Size Mapping Layout</members>
         <members>VDT_Object_Country_Field_Mapping__mdt-VDT Object Country Field Mapping Layout</members>
         <members>VDT_Object_Date_Field_Mapping__mdt-VDT Object Date Field Mapping Layout</members>
@@ -291,6 +299,7 @@
         <members>vdt_treeCombobox</members>
         <members>vdt_unusedFieldsOnLayoutChart</members>
         <members>vdt_utils</members>
+        <members>vdt_vault</members>
         <members>vdt_vaultDocuments</members>
         <members>vdt_veevaUsers</members>
         <members>vdt_workspace</members>
