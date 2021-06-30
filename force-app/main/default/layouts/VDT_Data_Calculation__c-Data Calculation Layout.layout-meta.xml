@@ -51,10 +51,6 @@
                 <behavior>Edit</behavior>
                 <field>End_Month__c</field>
             </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>Batches_Number__c</field>
-            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
@@ -110,6 +106,10 @@
     </relatedLists>
     <relatedLists>
         <relatedList>RelatedFileList</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>VDT_Transaction_Result__c.Data_Calculation__c</relatedList>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>

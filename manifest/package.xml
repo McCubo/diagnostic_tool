@@ -164,6 +164,7 @@
     </types>
     <types>
         <members>VDT_Account_Record_Type_Mapping__mdt</members>
+        <members>VDT_CRM_Document_Column__mdt</members>
         <members>VDT_Calculation_Status_Update__e</members>
         <members>VDT_Custom_Objects_Field_Mapping__mdt</members>
         <members>VDT_Data_Calculation_Entry__c</members>

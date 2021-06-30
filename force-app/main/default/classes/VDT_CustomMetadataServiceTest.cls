@@ -6,7 +6,7 @@ public inherited sharing class VDT_CustomMetadataServiceTest {
         VDT_CustomMetadataService.customMetadataWithRecords.put('VDT_Custom_Objects_Field_Mapping__mdt', 
             (List<VDT_Custom_Objects_Field_Mapping__mdt>) JSON.deserialize('[{"Field_API_Name__c": "VDT_Status__c"}]', List<VDT_Custom_Objects_Field_Mapping__mdt>.class));
         Test.startTest();
-        String fieldAPI = VDT_CustomMetadataService.getFieldNameForCustomObject('PRODUCT_VOD_STATUS');
+        String fieldAPI = VDT_CustomMetadataService.getFieldNameForCustomObject('Veeva', 'PRODUCT_VOD_STATUS');
         Test.stopTest();
         system.assertEquals('VDT_Status__c', fieldAPI);
     }
