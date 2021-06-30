@@ -19,26 +19,9 @@ public inherited sharing class VDT_CustomMetadataService {
     @TestVisible
     private static Map<String, List<SObject>> customMetadataWithRecords = new Map<String, List<SObject>>();
 
-
-    /**
-     * @description  returns the Field to be used Join records from vault and CRM objects
-     * @return  `String` Vault Field API Name
-     */
-    public static String getVaultJoinField() {
-        String dateField;
-        List<VDT_General_Setting__mdt> defaultSettings = [SELECT Vault_Join_Field__c
-                                                                         FROM VDT_General_Setting__mdt
-                                                                         WHERE DeveloperName = :DEFAULT_APP_SETTINGS
-                                                                         WITH SECURITY_ENFORCED];
-        if (customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {        
-            defaultSettings = customMetadataWithRecords.get(VDT_GENERAL_SETTINGS);
-        }
-        return defaultSettings[0].Vault_Join_Field__c;
-    }
-
     public static List<VDT_Vault_Document_Column__mdt> getActiveDocumentColumns() {
         List<VDT_Vault_Document_Column__mdt> activeColumns = new List<VDT_Vault_Document_Column__mdt>();
-        for (VDT_Vault_Document_Column__mdt column : [SELECT MasterLabel, Display_Order__c, Veeva_API_Name__c, Field_Type__c
+        for (VDT_Vault_Document_Column__mdt column : [SELECT MasterLabel, Display_Order__c, Vault_API_Name__c
                                                         FROM VDT_Vault_Document_Column__mdt 
                                                         WHERE Is_Active__c = TRUE 
                                                         ORDER BY Display_Order__c ASC]) {
@@ -159,14 +142,14 @@ public inherited sharing class VDT_CustomMetadataService {
      * @param mappingName Custom Metadata Type record's developer name
      * @return  `String` Field API Name
      */
-    public static String getFieldNameForCustomObject(String mappingName) {
+    public static String getFieldNameForCustomObject(String packageVersion, String mappingName) {
         String fieldName;
         List<VDT_Custom_Objects_Field_Mapping__mdt> objectFieldMappings;       
         objectFieldMappings = [
             SELECT  Id,
                     Field_API_Name__c
             FROM    VDT_Custom_Objects_Field_Mapping__mdt
-            WHERE   DeveloperName = :mappingName
+            WHERE   Field_Map_Key__c = :mappingName AND Package_Version__c = :packageVersion
             WITH    SECURITY_ENFORCED
         ];
         if (customMetadataWithRecords.containsKey(VDT_CUSTOM_OBJECT_FIELD_MAPPING)) {

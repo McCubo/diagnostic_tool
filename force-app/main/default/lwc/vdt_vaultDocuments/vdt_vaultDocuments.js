@@ -1,10 +1,14 @@
 import { LightningElement } from 'lwc';
 
-import getVaultJoinField from '@salesforce/apex/VDT_VeevaVaultController.getVaultJoinField';
+import getAPIFieldNameByMappingName from '@salesforce/apex/VDT_VeevaVaultController.getAPIFieldNameByMappingName';
 import getDocumentsFromVault from '@salesforce/apex/VDT_VeevaVaultController.getDocumentsFromVault';
-import getColumns from '@salesforce/apex/VDT_VeevaVaultController.getColumns';
+import getVaultColumns from '@salesforce/apex/VDT_VeevaVaultController.getVaultColumns';
+import getStatusValue from '@salesforce/apex/VDT_VeevaVaultController.getStatusValue';
+import getCRMColumns from '@salesforce/apex/VDT_VeevaVaultController.getCRMColumns';
 import getApprovedDocuments from '@salesforce/apex/VDT_VeevaVaultController.getApprovedDocuments';
+import getStatusMap from '@salesforce/apex/VDT_VeevaVaultController.getStatusMap';
 import { downloadCSVFile } from 'c/vdt_csvUtil'
+import { flattenJSON } from 'c/vdt_utils';
 
 export default class Vdt_vaultDocuments extends LightningElement {
 
@@ -31,25 +35,40 @@ export default class Vdt_vaultDocuments extends LightningElement {
     }
 
     async getDataFromServer() {
-        let matchProperty = await getVaultJoinField();
+        let vaultId = await getAPIFieldNameByMappingName({mapName: 'VAULT_IDENTIFIER'});
+        let vaultStatus = await getAPIFieldNameByMappingName({mapName: 'VAULT_STATUS'});
+        let matchProperty = await getAPIFieldNameByMappingName({mapName: 'CRM_VAULT_JOIN_FIELD'});
+        let crmStatus = await getAPIFieldNameByMappingName({mapName: 'CRM_DOCUMENT_STATUS'});
+        let _columns = await getVaultColumns();
+        let _crmColumns = await getCRMColumns();
+        let statusMap = await getStatusMap();
+        let approvedValue = await getStatusValue({status: 'APPROVED'});
 
-        let _columns = await getColumns();
-        let idPosition = null;
-        this.columns = _columns.map((column, index) => {
-            if (column.Veeva_API_Name__c == 'id') {
-                idPosition = index + 1;
-            }
+        _columns = _columns.map(column => {
             return {
-                
                 label: column.MasterLabel, 
-                fieldName: column.Veeva_API_Name__c,
+                fieldName: column.Vault_API_Name__c,
                 type: 'vdt_coloredCell',
                 typeAttributes: {
                     source: 'vault'
                 }
             };
-        })
-        .concat([
+        });
+
+        _crmColumns.forEach(cmrcolumn => {
+            let vaultColumn = _columns.findIndex(column => column.fieldName == cmrcolumn.Vault_API_Field__c);
+            let position = vaultColumn != -1 ? vaultColumn + 1 : _columns.length;
+            _columns.splice(position, 0, {
+                label: cmrcolumn.MasterLabel, 
+                fieldName: cmrcolumn.Field_API_Name__c,
+                type: 'vdt_coloredCell',
+                typeAttributes: {
+                    source: 'crm'
+                }
+            });
+        });
+
+        this.columns = _columns.concat([
             { 
                 label: 'Statuses Match?', 
                 fieldName: 'statuses_match',
@@ -61,64 +80,32 @@ export default class Vdt_vaultDocuments extends LightningElement {
                 type: 'boolean'
             }
         ]);
-        this.columns.splice(idPosition, 0, {
-            label: 'Document Name - CRM', 
-            fieldName: 'vaultDocId',
-            type: 'vdt_coloredCell',
-            typeAttributes: {
-                source: 'crm'
-            }
-        });
-        let vaultStatus = this.columns.findIndex(column => column.fieldName == 'status__v') + 1;        
-        this.columns.splice(vaultStatus, 0, { 
-            label: 'Status - CRM', 
-            fieldName: 'cmr_doc_status',
-            type: 'vdt_coloredCell',
-            typeAttributes: {
-                source: 'crm'
-            }
-        });
-        let vaultType = this.columns.findIndex(column => column.fieldName == 'type__v') + 1;
-        this.columns.splice(vaultType, 0, { 
-            label: 'Type - CRM', 
-            fieldName: 'type',
-            type: 'vdt_coloredCell',
-            typeAttributes: {
-                source: 'crm'
-            }
-        });
         let vaultDocuments = await getDocumentsFromVault();
+        console.log('vaultDocuments: %O', JSON.stringify(vaultDocuments));
         let vaultDocIds = vaultDocuments.reduce((ids, document) => {
-            if (document[matchProperty]) {
-                ids.push(document[matchProperty]);
+            if (document[vaultId]) {
+                ids.push(document[vaultId]);
             }
             return ids;
         }, []);
         let approvedDocuments = await getApprovedDocuments({vaultDocIds});
         
-        vaultDocuments.forEach(document => {
-            document['ready_for_use'] = false;
-
-            if (document.type__v == 'Material') {
-                document.status__v = 'Approved';
-            }
-
-            let matchedDocument = approvedDocuments.find(approvedDocument => approvedDocument.vaultDocId == document[matchProperty]);
+        vaultDocuments.map(document => {
+            let newDocument = document;
+            let matchedDocument = approvedDocuments.find(approvedDocument => approvedDocument[matchProperty] == document[vaultId]);
             if (matchedDocument) {
-                let dateValidation = true;
-                if (document.expiration_date__c) {
-                    dateValidation = new Date(document.expiration_date__c) > new Date();
-                }
-                document['ready_for_use'] = dateValidation && matchedDocument.isApproved && document.status__v == 'Approved';
-                document['vaultDocId'] = matchedDocument.vaultDocId;
-                document['statuses_match'] = matchedDocument.status == document.status__v;
-                document['cmr_doc_status'] = matchedDocument.status;
-                document['crmId'] = matchedDocument.crmId;
-                document['type'] = matchedDocument.type;
+                let crmDocument = flattenJSON(matchedDocument);
+                let isMatch = document[vaultStatus] == statusMap[crmDocument[crmStatus]];
+                let isReadyToUse = isMatch && crmDocument[crmStatus] == approvedValue;
+                newDocument = Object.assign(document, crmDocument);
+                newDocument['statuses_match'] = isMatch;
+                newDocument['ready_for_use'] = isReadyToUse;
             }
+            return newDocument;
         });
         this.rawData = JSON.stringify(vaultDocuments);
         this.data = vaultDocuments;
         this.showSpinner = false;
     }
+
 }

@@ -7,6 +7,17 @@ const label = {
     warning: 'Warning'
 }
 
+export function flattenJSON(obj = {}, res = {}, extraKey = '') {
+    for (let key in obj) {
+       if (typeof obj[key] !== 'object') {
+          res[extraKey + key] = obj[key];
+       } else {
+          this.flattenJSON(obj[key], res, `${extraKey}${key}.`);
+       };
+    };
+    return res;
+};
+
 export function showToast(message, type) {
     const evt = new ShowToastEvent({
         title: label[type],

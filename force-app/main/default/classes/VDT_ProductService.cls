@@ -13,7 +13,8 @@ public with sharing class VDT_ProductService {
     public static ProductAdoptionData getProductTreeInformation() {
         ProductAdoptionData productAdoption = new ProductAdoptionData();
         String productCountry = VDT_CustomMetadataService.getCountryFieldForObject('Product_vod__c');
-        statusField = VDT_CustomMetadataService.getFieldNameForCustomObject('PRODUCT_VOD_STATUS');
+        String packageVersion = VDT_CustomMetadataService.getPackageVersion();
+        statusField = VDT_CustomMetadataService.getFieldNameForCustomObject(packageVersion, 'PRODUCT_VOD_STATUS');
         List<Product_vod__c> products = new VDT_ProductSelector()
                                         .withAdditionalFields(new List<String> {
                                             Product_vod__c.Parent_Product_vod__c.getDescribe().getName(),
