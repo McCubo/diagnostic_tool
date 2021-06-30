@@ -16,15 +16,15 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Is_Active__c</field>
+                <field>Field_API_Name__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Display_Order__c</field>
+                <field>Vault_API_Field__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Vault_API_Name__c</field>
+                <field>Package_Version__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>

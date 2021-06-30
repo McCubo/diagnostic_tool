@@ -3,6 +3,10 @@
     <label>Default</label>
     <protected>false</protected>
     <values>
+        <field>Account_Classification_Field__c</field>
+        <value xsi:type="xsd:string">Account_Type__c</value>
+    </values>
+    <values>
         <field>Apex_Async_Execution_Daily_Allocation__c</field>
         <value xsi:type="xsd:double">100.0</value>
     </values>
@@ -32,7 +36,7 @@
     </values>
     <values>
         <field>Maximum_Running_Calculations__c</field>
-        <value xsi:type="xsd:double">1.0</value>
+        <value xsi:type="xsd:double">2.0</value>
     </values>
     <values>
         <field>Package_Version__c</field>

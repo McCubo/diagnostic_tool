@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Veeva Vault Documents</label>
+    <protected>false</protected>
+    <values>
+        <field>Module_Name__c</field>
+        <value xsi:type="xsd:string">Vault Document</value>
+    </values>
+    <values>
+        <field>Name__c</field>
+        <value xsi:type="xsd:string">Documents</value>
+    </values>
+    <values>
+        <field>Package_Version__c</field>
+        <value xsi:type="xsd:string">Veeva</value>
+    </values>
+    <values>
+        <field>Query__c</field>
+        <value xsi:type="xsd:string">SELECT {0}
+FROM Approved_Document_vod__c
+WHERE Document_ID_vod__c IN :vaultDocIds</value>
+    </values>
+</CustomMetadata>

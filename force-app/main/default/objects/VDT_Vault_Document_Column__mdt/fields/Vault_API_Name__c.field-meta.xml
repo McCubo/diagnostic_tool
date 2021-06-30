@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Document_Status__c</fullName>
+    <fullName>Vault_API_Name__c</fullName>
     <externalId>false</externalId>
     <fieldManageability>DeveloperControlled</fieldManageability>
-    <label>CRM Document Status</label>
+    <label>Vault API Name</label>
     <length>100</length>
     <required>false</required>
     <type>Text</type>

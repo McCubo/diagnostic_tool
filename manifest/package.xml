@@ -113,10 +113,17 @@
     <types>
         <members>VDT_Account_Record_Type_Mapping.External_Customers</members>
         <members>VDT_Account_Record_Type_Mapping.Internal_Customers</members>
-        <members>VDT_Custom_Objects_Field_Mapping.DOCUMENT_STATUS</members>
-        <members>VDT_Custom_Objects_Field_Mapping.DOCUMENT_TYPE</members>
-        <members>VDT_Custom_Objects_Field_Mapping.DOCUMENT_VAULT_ID</members>
-        <members>VDT_Custom_Objects_Field_Mapping.PRODUCT_VOD_STATUS</members>
+        <members>VDT_CRM_Document_Column.CRM_Document_Id</members>
+        <members>VDT_CRM_Document_Column.CRM_Id</members>
+        <members>VDT_CRM_Document_Column.CRM_Name</members>
+        <members>VDT_CRM_Document_Column.CRM_Product_Type</members>
+        <members>VDT_CRM_Document_Column.CRM_Status</members>
+        <members>VDT_CRM_Document_Column.CRM_Type</members>
+        <members>VDT_Custom_Objects_Field_Mapping.Approved_Document_Status</members>
+        <members>VDT_Custom_Objects_Field_Mapping.Approved_Document_Vault_Id</members>
+        <members>VDT_Custom_Objects_Field_Mapping.Product_Catalog_Status</members>
+        <members>VDT_Custom_Objects_Field_Mapping.Veeva_Vault_Id</members>
+        <members>VDT_Custom_Objects_Field_Mapping.Veeva_Vault_Status</members>
         <members>VDT_General_Setting.Default</members>
         <members>VDT_KPI_Configuration.OneKey_Without_Visit_and_Cycle_Plan</members>
         <members>VDT_KPI_Configuration.Onekey_Without_cycle_plan</members>
@@ -146,7 +153,6 @@
         <members>VDT_Tab.users</members>
         <members>VDT_Vault_Document_Column.Document_Name</members>
         <members>VDT_Vault_Document_Column.Document_Number_Vault</members>
-        <members>VDT_Vault_Document_Column.Expiration_Date</members>
         <members>VDT_Vault_Document_Column.Id_Vault</members>
         <members>VDT_Vault_Document_Column.Status_Vault</members>
         <members>VDT_Vault_Document_Column.Type_Vault</members>
