@@ -119,8 +119,16 @@
         <members>VDT_CRM_Document_Column.CRM_Product_Type</members>
         <members>VDT_CRM_Document_Column.CRM_Status</members>
         <members>VDT_CRM_Document_Column.CRM_Type</members>
+        <members>VDT_CRM_Document_Column.Email_Template_Name</members>
+        <members>VDT_CRM_Document_Column.Email_Template_Status</members>
+        <members>VDT_CRM_Document_Column.Email_Template_Type</members>
         <members>VDT_Custom_Objects_Field_Mapping.Approved_Document_Status</members>
         <members>VDT_Custom_Objects_Field_Mapping.Approved_Document_Vault_Id</members>
+        <members>VDT_Custom_Objects_Field_Mapping.Email_Template_Name</members>
+        <members>VDT_Custom_Objects_Field_Mapping.Email_Template_Status</members>
+        <members>VDT_Custom_Objects_Field_Mapping.OCE_Vault_Id</members>
+        <members>VDT_Custom_Objects_Field_Mapping.OCE_Vault_Status</members>
+        <members>VDT_Custom_Objects_Field_Mapping.PRODUCT_VOD_STATUS</members>
         <members>VDT_Custom_Objects_Field_Mapping.Product_Catalog_Status</members>
         <members>VDT_Custom_Objects_Field_Mapping.Veeva_Vault_Id</members>
         <members>VDT_Custom_Objects_Field_Mapping.Veeva_Vault_Status</members>
@@ -138,6 +146,7 @@
         <members>VDT_Query.OCE_Account_Goal</members>
         <members>VDT_Query.OCE_Addresses_By_Account</members>
         <members>VDT_Query.OCE_Calls</members>
+        <members>VDT_Query.OCE_Email_Templates</members>
         <members>VDT_Query.Veeva_Account_Goal</members>
         <members>VDT_Query.Veeva_Addresses</members>
         <members>VDT_Query.Veeva_Calls</members>
@@ -156,6 +165,7 @@
         <members>VDT_Vault_Document_Column.Id_Vault</members>
         <members>VDT_Vault_Document_Column.Status_Vault</members>
         <members>VDT_Vault_Document_Column.Type_Vault</members>
+        <members>VDT_Vault_Document_Status.OCE_Email_Template_Approved_Value</members>
         <members>VDT_Vault_Document_Status.Veeva_Approved_Value</members>
         <members>VDT_Vault_Document_Status_Map.Approved</members>
         <members>VDT_Vault_Document_Status_Map.Draft</members>

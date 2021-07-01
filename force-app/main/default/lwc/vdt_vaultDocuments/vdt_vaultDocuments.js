@@ -96,7 +96,7 @@ export default class Vdt_vaultDocuments extends LightningElement {
             if (matchedDocument) {
                 let crmDocument = flattenJSON(matchedDocument);
                 let isMatch = document[vaultStatus] == statusMap[crmDocument[crmStatus]];
-                let isReadyToUse = isMatch && crmDocument[crmStatus] == approvedValue;
+                let isReadyToUse = isMatch && String(crmDocument[crmStatus]) == approvedValue;
                 newDocument = Object.assign(document, crmDocument);
                 newDocument['statuses_match'] = isMatch;
                 newDocument['ready_for_use'] = isReadyToUse;
