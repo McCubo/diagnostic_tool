@@ -21,8 +21,11 @@ public with sharing class VDT_VeevaVaultController {
     public static Map<String, String> getStatusMap() {
         try {
             Map<String, String> statusMap = new Map<String, String>();
-            for (VDT_Vault_Document_Status_Map__mdt statusMapCMT : [SELECT MasterLabel, Document_Status__c FROM VDT_Vault_Document_Status_Map__mdt]) {
-                statusMap.put(statusMapCMT.Document_Status__c, statusMapCMT.MasterLabel);
+            String packageVersion = VDT_CustomMetadataService.getPackageVersion();
+            for (VDT_Vault_Document_Status_Map__mdt statusMapCMT : [SELECT Vault_Status__c, Document_Status__c 
+                                                                        FROM VDT_Vault_Document_Status_Map__mdt 
+                                                                        WHERE Package_Version__c = :packageVersion]) {
+                statusMap.put(statusMapCMT.Document_Status__c, statusMapCMT.Vault_Status__c);
             }
             return statusMap;
         } catch (Exception e) {
