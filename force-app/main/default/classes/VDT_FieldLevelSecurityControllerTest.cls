@@ -8,6 +8,15 @@
 public with sharing class VDT_FieldLevelSecurityControllerTest {
 
     @IsTest
+    static void shouldHandleException() {
+        try {
+            Integer value = 1/0;
+        } catch (Exception e) {
+            VDT_FieldLevelSecurityController.handledException(e);
+        }
+    }
+
+    @IsTest
     static void shouldCreateProfileOrPermissionSetCalculation() {
         String jsonSearchParameters = '{"objectNames": ["System Administrator"]}';
         VDT_CustomMetadataService.customMetadataWithRecords.put(
@@ -24,6 +33,7 @@ public with sharing class VDT_FieldLevelSecurityControllerTest {
         MultiStaticResourceCalloutMock multimock = new MultiStaticResourceCalloutMock();
         StaticResourceCalloutMock mock = new StaticResourceCalloutMock();
         multimock.setStaticResource('callout:VDT_ToolingREST/?q=SELECT+Layout.Name+FROM+ProfileLayout+WHERE+TableEnumOrId+IN+(\'Account\',\'PersonAccount\')', 'VDT_ProfileToolingResponse');
+        multimock.setStaticResource('callout:VDT_ToolingREST/0000000000001','VDT_ProfileQueryLocator');
         multimock.setStatusCode(200);
         multimock.setHeader('Content-Type', 'application/json');
         // Associate the callout with a mock response

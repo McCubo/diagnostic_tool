@@ -34,9 +34,7 @@ public with sharing class VDT_FieldLevelSecurityController {
                 );
             return VDT_DataCalculationService.getExistingFieldLevelSecurityAnalysisCalculation(calculationParameters);
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
+            throw handledException(e);
         }
     }
 
@@ -54,9 +52,7 @@ public with sharing class VDT_FieldLevelSecurityController {
             );
             VDT_DataCalculationService.triggerFieldLevelSecurityAnalysisCalculation(calculationParameters);
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
+            throw handledException(e);
         }
     }
 
@@ -69,9 +65,7 @@ public with sharing class VDT_FieldLevelSecurityController {
         try {
             return VDT_PermissionSetService.getPermissionSets();
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
+            throw handledException(e);
         }
     }
 
@@ -84,9 +78,7 @@ public with sharing class VDT_FieldLevelSecurityController {
                 );
             return VDT_DataCalculationService.getExistingProfileAndPermissionAnalysisCalculation(calculationParameters);
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
+            throw handledException(e);
         }
     }
 
@@ -99,9 +91,7 @@ public with sharing class VDT_FieldLevelSecurityController {
                     'Permission_Set_Profile_Name__c', 'VDT_Job_Start_Date__c', 'VDT_Job_End_Date__c', 'CreatedBy.Name'
                 });
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
+            throw handledException(e);
         }
     }
 
@@ -114,10 +104,14 @@ public with sharing class VDT_FieldLevelSecurityController {
                 );
             VDT_DataCalculationService.triggerFlsAndObjectAnalysisCalculation(calculationParameters);
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
+            throw handledException(e);
         }
     }
 
+    @TestVisible
+    private static AuraHandledException handledException(Exception e) {
+        VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+        VDT_Log.get().publish();
+        return new AuraHandledException(e.getMessage());
+    }
 }

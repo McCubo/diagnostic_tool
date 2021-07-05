@@ -104,13 +104,14 @@ public with sharing class VDT_ObjectsCalculationControllerTest {
         MultiStaticResourceCalloutMock multimock = new MultiStaticResourceCalloutMock();
         StaticResourceCalloutMock mock = new StaticResourceCalloutMock();
         multimock.setStaticResource('callout:VDT_ToolingREST/?q=SELECT+Layout.Name+FROM+ProfileLayout+WHERE+TableEnumOrId=\'01I0v000000c9wiEAA\'', 'VDT_ProfileToolingResponse');
+        multimock.setStaticResource('callout:VDT_ToolingREST/0000000000001','VDT_ProfileQueryLocator');
         multimock.setStaticResource('callout:VDT_ToolingREST/?q=SELECT+Id+FROM+CustomObject+WHERE+DeveloperName=\'VDT_Log_Event\'', 'VDT_ObjectToolingResponse');
         multimock.setStatusCode(200);
         multimock.setHeader('Content-Type', 'application/json');
         // Associate the callout with a mock response
         Test.setMock(HttpCalloutMock.class, multimock);
 
-        String jsonSearchParameters = '{"startYear": 2015, "startMonth": 1, "endYear": 2021, "endMonth": 1, "objectName": "VDT_Log_Event__c"}';
+        String jsonSearchParameters = '{"startYear": 2015, "startMonth": 1, "endYear": 2050, "endMonth": 1, "objectName": "VDT_Log_Event__c"}';
         User contextuser = getUser('System Administrator');
         PermissionSet ps = [SELECT Id FROM PermissionSet WHERE Name = 'BASE_CRM_Diagnostic_Tool_User']; 
         insert new PermissionSetAssignment(AssigneeId = contextuser.id, PermissionSetId = ps.Id);

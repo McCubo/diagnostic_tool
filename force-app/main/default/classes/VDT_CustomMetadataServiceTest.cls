@@ -2,6 +2,19 @@
 public inherited sharing class VDT_CustomMetadataServiceTest {
 
     @IsTest
+    static void methodName() {
+        VDT_CustomMetadataService.customMetadataWithRecords.put('VDT_Tab__mdt', 
+        (List<VDT_Tab__mdt>) JSON.deserialize('[{"DeveloperName": "home"}, {"DeveloperName": "master_data_analysis"}]', List<VDT_Tab__mdt>.class));
+        List<String> menuOptions = new List<String>();
+        Test.startTest();
+        String csvOptions = VDT_CustomMetadataService.getActiveMenuOptions();
+        menuOptions = csvOptions.split(',');
+        Test.stopTest();
+        System.assert(!menuOptions.isEmpty());
+        System.assertEquals(2, menuOptions.size());
+    }
+
+    @IsTest
     static void shouldReturnFieldNameForObject() {
         VDT_CustomMetadataService.customMetadataWithRecords.put('VDT_Custom_Objects_Field_Mapping__mdt', 
             (List<VDT_Custom_Objects_Field_Mapping__mdt>) JSON.deserialize('[{"Field_API_Name__c": "VDT_Status__c"}]', List<VDT_Custom_Objects_Field_Mapping__mdt>.class));

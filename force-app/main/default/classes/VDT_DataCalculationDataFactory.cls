@@ -57,6 +57,11 @@ public with sharing class VDT_DataCalculationDataFactory {
         return this;
     }
 
+    public VDT_DataCalculationDataFactory territory(String territory) {
+        this.dataCalculation.Territory__c = territory;
+        return this;
+    }
+
     public VDT_DataCalculationDataFactory recordType(String recordTypeName) {
         Id recordTypeId = Schema.SObjectType.VDT_Data_Calculation__c.getRecordTypeInfosByDeveloperName().get(recordTypeName).getRecordTypeId();
         this.dataCalculation.RecordTypeId = recordTypeId;

@@ -10,9 +10,7 @@ public inherited sharing class VDT_TerritoryAnalysisController {
         try {
              return new VDT_TerritoryAnalysisBuilder().getTerritoryHierarchy();
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
+            throw handleException(e);
         }
     }
     @AuraEnabled
@@ -20,9 +18,7 @@ public inherited sharing class VDT_TerritoryAnalysisController {
         try {
             VDT_DataCalculationService.deleteCalculationRecordsById(ids);
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
+            throw handleException(e);
         }
     }
     @AuraEnabled
@@ -34,9 +30,7 @@ public inherited sharing class VDT_TerritoryAnalysisController {
                     'Territory__c', 'VDT_Country__c', 'VDT_Job_Start_Date__c', 'VDT_Job_End_Date__c', 'CreatedBy.Name'
                 });
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
+            throw handleException(e);
         }
     }
     @AuraEnabled
@@ -52,9 +46,7 @@ public inherited sharing class VDT_TerritoryAnalysisController {
             }
             return options;
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
+            throw handleException(e);
         }
     }
 
@@ -73,9 +65,7 @@ public inherited sharing class VDT_TerritoryAnalysisController {
                 );
             return VDT_DataCalculationService.getExistingTerritoryAnalysisCalculation(calculationParameters);
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
+            throw handleException(e);
         }
     }
 
@@ -94,9 +84,7 @@ public inherited sharing class VDT_TerritoryAnalysisController {
             pw.totalRecords = VDT_TransactionResultService.getTransactionTotalRecords(searchParameters);
             return pw;            
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());            
+            throw handleException(e);
         }
     }
 
@@ -123,9 +111,7 @@ public inherited sharing class VDT_TerritoryAnalysisController {
             );
             VDT_DataCalculationService.triggerTerritoryAnalysisCalculation(calculationParameters);
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
+            throw handleException(e);
         }
     }
 
@@ -137,9 +123,14 @@ public inherited sharing class VDT_TerritoryAnalysisController {
                                 new VDT_TransactionResultService.TerritorySearchParameter(calculationRecordId, pageNumber, recordsPerPage, countries, territoryName, specialtyName, comparisonOperator, filterNumber, accountType, false);
             Database.executeBatch(new VDT_TerritoryAnalysisExportBatch(searchParameters));
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
+            throw handleException(e);
         }
+    }
+
+    @TestVisible
+    private static AuraHandledException handleException(Exception e) {
+        VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+        VDT_Log.get().publish();
+        return new AuraHandledException(e.getMessage());
     }
 }

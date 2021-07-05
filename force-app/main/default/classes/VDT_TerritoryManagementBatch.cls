@@ -41,6 +41,7 @@ public with sharing class VDT_TerritoryManagementBatch implements Database.Batch
             }
         );
 
+        System.debug('TEST:query: ' + query);
         builder.withTerritories(this.territoryDataCalculation.Territory__c);
         this.territoryDataCalculation.VDT_Job_Start_Date__c = Datetime.now();
         this.territoryDataCalculation.Batches_Number__c = 0;
