@@ -8,11 +8,7 @@ public with sharing class VDT_VeevaVaultController {
     @AuraEnabled
     public static String getStatusValue(String status) {
         try {
-            String packageVersion = VDT_CustomMetadataService.getPackageVersion();
-            String approvedValue = [SELECT Status_Value__c 
-                                    FROM VDT_Vault_Document_Status__mdt 
-                                    WHERE Package_Version__c = :packageVersion AND Status__c = :status][0].Status_Value__c;
-            return approvedValue;
+            return VDT_CustomMetadataService.getStatusApiFieldName(status);
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
@@ -20,14 +16,7 @@ public with sharing class VDT_VeevaVaultController {
     @AuraEnabled
     public static Map<String, String> getStatusMap() {
         try {
-            Map<String, String> statusMap = new Map<String, String>();
-            String packageVersion = VDT_CustomMetadataService.getPackageVersion();
-            for (VDT_Vault_Document_Status_Map__mdt statusMapCMT : [SELECT Vault_Status__c, Document_Status__c 
-                                                                        FROM VDT_Vault_Document_Status_Map__mdt 
-                                                                        WHERE Package_Version__c = :packageVersion]) {
-                statusMap.put(statusMapCMT.Document_Status__c, statusMapCMT.Vault_Status__c);
-            }
-            return statusMap;
+            return VDT_CustomMetadataService.getVaultCrmStatusesMap();
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
@@ -35,15 +24,14 @@ public with sharing class VDT_VeevaVaultController {
     @AuraEnabled
     public static List<VDT_CRM_Document_Column__mdt> getCRMColumns() {
         try {
-            String packageVersion = VDT_CustomMetadataService.getPackageVersion();
-            return [SELECT MasterLabel, Field_API_Name__c, Vault_API_Field__c FROM VDT_CRM_Document_Column__mdt WHERE Package_Version__c = :packageVersion];
+            return VDT_CustomMetadataService.getCRMColumns();
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
     }
 
     @AuraEnabled
-    public static string getAPIFieldNameByMappingName(String mapName) {
+    public static String getAPIFieldNameByMappingName(String mapName) {
         try {
             String packageVersion = VDT_CustomMetadataService.getPackageVersion();
             return VDT_CustomMetadataService.getFieldNameForCustomObject(packageVersion, mapName);
@@ -74,9 +62,7 @@ public with sharing class VDT_VeevaVaultController {
             });
             return VDT_VeevaVaultService.parseResponse(vql);
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
+            throw handleException(e);
         }
     }
 
@@ -86,10 +72,10 @@ public with sharing class VDT_VeevaVaultController {
             List<SObject> documents = new List<SObject>();
 
             String packageVersion = VDT_CustomMetadataService.getPackageVersion();
-            Map<String,String> queriesByName = VDT_CustomMetadataService.getQueriesByPackageVersionAndModule(packageVersion, 'Vault Document');
+            Map<String, String> queriesByName = VDT_CustomMetadataService.getQueriesByPackageVersionAndModule(packageVersion, 'Vault Document');
 
             List<String> columns = new List<String>();
-            for (VDT_CRM_Document_Column__mdt crmColumn : [SELECT Field_API_Name__c FROM VDT_CRM_Document_Column__mdt WHERE Package_Version__c = :packageVersion]) {
+            for (VDT_CRM_Document_Column__mdt crmColumn : VDT_CustomMetadataService.getCRMColumns()) {
                 columns.add(crmColumn.Field_API_Name__c);
             }
 
@@ -102,23 +88,14 @@ public with sharing class VDT_VeevaVaultController {
             }
             return documents;
         } catch (Exception e) {
-            VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
-            VDT_Log.get().publish();
-            throw new AuraHandledException(e.getMessage());
+            throw handleException(e);
         }
     }
 
-    private static String getPropertyValue(SObject record, String fieldName) {
-        String value = '';
-        if (fieldName.contains('.')) {
-            String relationship = fieldName.split('\\.').get(0);
-            String relatedField = fieldName.split('\\.').get(1);
-            if (record.getSObject(relationship) != null) {
-                value = record.getSObject(relationship).get(relatedField).toString();
-            }
-        } else {
-            value = String.valueOf(record.get(fieldName));
-        }
-        return value;
+    @TestVisible
+    private static AuraHandledException handleException(Exception e) {
+        VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
+        VDT_Log.get().publish();
+        return new AuraHandledException(e.getMessage());
     }
 }

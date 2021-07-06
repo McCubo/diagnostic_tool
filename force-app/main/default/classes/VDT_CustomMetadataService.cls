@@ -4,6 +4,7 @@
  * @description Provides methods to access congifuration records stored in Custom Metadata Type objects
  */
 public inherited sharing class VDT_CustomMetadataService {
+    
     public static final String DEFAULT_APP_SETTINGS = 'Default';
     public static final String VDT_GENERAL_SETTINGS = 'VDT_General_Setting__mdt';
     public static final String VDT_QUERIES = 'VDT_Query__mdt';
@@ -16,15 +17,63 @@ public inherited sharing class VDT_CustomMetadataService {
     public static final String VDT_KPI_BY_COUNTRY_CONFIGURATIONS = 'VDT_KPI_by_Country__mdt';    
     public static final String VDT_ACCOUNT_RECORD_TYPE_CONFIGURATIONS = 'VDT_Account_Record_Type_Mapping__mdt';    
     public static final String VDT_BATCH_SIZE_MAPPING = 'VDT_Object_Batch_Size_Mapping__mdt';
+    public static final String VDT_VAULT_STATUSES = 'VDT_Vault_Document_Status__mdt';
+    public static final String VDT_VAULT_CRM_STATUSES_MAP = 'VDT_Vault_Document_Status_Map__mdt';
+    public static final String VDT_CRM_COLUMNS = 'VDT_CRM_Document_Column__mdt';
+    public static final String VDT_VAULT_COLUMNS = 'VDT_Vault_Document_Column__mdt';    
+
     @TestVisible
     private static Map<String, List<SObject>> customMetadataWithRecords = new Map<String, List<SObject>>();
 
+    public static List<VDT_CRM_Document_Column__mdt> getCRMColumns() {
+        String packageVersion = getPackageVersion();
+        List<VDT_CRM_Document_Column__mdt> configurations = [SELECT MasterLabel, Field_API_Name__c, Vault_API_Field__c 
+                                                      FROM VDT_CRM_Document_Column__mdt 
+                                                      WHERE Package_Version__c = :packageVersion];
+        if (customMetadataWithRecords.containsKey(VDT_CRM_COLUMNS)) {
+            configurations = customMetadataWithRecords.get(VDT_CRM_COLUMNS);
+        }
+        return configurations;
+    }
+
+    public static String getStatusApiFieldName(String status) {
+        String packageVersion = getPackageVersion();
+        
+        List<VDT_Vault_Document_Status__mdt> configurations = [SELECT Status_Value__c 
+                                                                FROM VDT_Vault_Document_Status__mdt 
+                                                                WHERE Package_Version__c = :packageVersion 
+                                                                AND Status__c = :status];
+        if (customMetadataWithRecords.containsKey(VDT_VAULT_STATUSES)) {
+            configurations = customMetadataWithRecords.get(VDT_VAULT_STATUSES);
+        }
+        return configurations[0].Status_Value__c;
+    }
+
+    public static Map<String, String> getVaultCrmStatusesMap() {
+        Map<String, String> statusMap = new Map<String, String>();
+        String packageVersion = getPackageVersion();        
+        List<VDT_Vault_Document_Status_Map__mdt> configurations = [SELECT Vault_Status__c, Document_Status__c 
+                                                                    FROM VDT_Vault_Document_Status_Map__mdt 
+                                                                    WHERE Package_Version__c = :packageVersion];
+        if (customMetadataWithRecords.containsKey(VDT_VAULT_CRM_STATUSES_MAP)) {
+            configurations = customMetadataWithRecords.get(VDT_VAULT_CRM_STATUSES_MAP);
+        }
+        for (VDT_Vault_Document_Status_Map__mdt statusMapCMT : configurations) {
+            statusMap.put(statusMapCMT.Document_Status__c, statusMapCMT.Vault_Status__c);
+        }        
+        return statusMap;
+    }
+
     public static List<VDT_Vault_Document_Column__mdt> getActiveDocumentColumns() {
         List<VDT_Vault_Document_Column__mdt> activeColumns = new List<VDT_Vault_Document_Column__mdt>();
-        for (VDT_Vault_Document_Column__mdt column : [SELECT MasterLabel, Display_Order__c, Vault_API_Name__c
-                                                        FROM VDT_Vault_Document_Column__mdt 
-                                                        WHERE Is_Active__c = TRUE 
-                                                        ORDER BY Display_Order__c ASC]) {
+        List<VDT_Vault_Document_Column__mdt> configurations = [SELECT MasterLabel, Display_Order__c, Vault_API_Name__c
+                                                                FROM VDT_Vault_Document_Column__mdt 
+                                                                WHERE Is_Active__c = TRUE 
+                                                                ORDER BY Display_Order__c ASC];
+        if (customMetadataWithRecords.containsKey(VDT_VAULT_COLUMNS)) {
+            configurations = customMetadataWithRecords.get(VDT_VAULT_COLUMNS);
+        }
+        for (VDT_Vault_Document_Column__mdt column : configurations) {
             activeColumns.add(column);
         }
         return activeColumns;
