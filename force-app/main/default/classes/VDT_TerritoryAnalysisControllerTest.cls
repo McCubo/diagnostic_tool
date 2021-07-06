@@ -118,6 +118,48 @@ public class VDT_TerritoryAnalysisControllerTest {
         
     }
 
+    @IsTest
+    static void shouldReturnCalculationRecords() {
+        VDT_Data_Calculation__c calc = new VDT_DataCalculationDataFactory()
+            .status('Completed')
+            .recordType(VDT_DataCalculationSelector.MASTER_ANALYSIS_RECORD_TYPE_DEV)
+            .insertRecord()
+            .getRecord();
+
+        Territory2 t = [SELECT Id, Name FROM Territory2 WHERE ParentTerritory2Id = null LIMIT 1][0];
+
+        Account a = new Account(Name = 'ORG Test');
+        insert a;
+        ObjectTerritory2Association assoc = new ObjectTerritory2Association(
+            ObjectId = a.Id,
+            Territory2Id = t.Id,
+            AssociationCause = 'Territory2Manual'
+        );
+
+        VDT_Transaction_Result__c r1 = new VDT_Transaction_Result__c(
+            Territory_Id__c = t.Id,
+            Data_Calculation__c = calc.Id,
+            Specialty__c = 'Dental Care',
+            Country__c = 'DE',
+            Total_Accounts__c = 1,
+            Account_Type__c = 'Person'
+        );
+        VDT_Transaction_Result__c r2 = new VDT_Transaction_Result__c(
+            Territory_Id__c = t.Id,
+            Data_Calculation__c = calc.Id,
+            Specialty__c = 'Dental Care',
+            Country__c = 'DE',
+            Total_Accounts__c = 1,
+            Account_Type__c = 'Business'
+        );        
+        insert new List<VDT_Transaction_Result__c>{r1, r2};
+
+        Test.startTest();
+        VDT_TerritoryAnalysisController.getRecordsPerPageSOQL(calc.Id, 1, 10, new List<String>{'DE'}, t.Name, 'Dental Care', 'lt', 5000, null, true);
+        VDT_TerritoryAnalysisController.exportReport(calc.Id, 1, 10, new List<String>{'DE'}, t.Name, 'Dental Care', 'lt', 5000, null, true);
+        Test.stopTest();
+        
+    }
     private static User getUser() {
         PermissionSet ps = [SELECT Id FROM PermissionSet WHERE Name = 'BASE_CRM_Diagnostic_Tool_User'];        
         User newUser = new VDT_UserDataFactory()
