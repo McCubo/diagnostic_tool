@@ -1,0 +1,41 @@
+{
+    "responseStatus": "SUCCESS",
+    "responseDetails": {
+        "pagesize": 1000,
+        "pageoffset": 0,
+        "size": 5,
+        "total": 5
+    },
+    "data": [
+        {
+            "name__v": "Document 3 - v1",
+            "id": 9,
+            "status__v": "Approved",
+            "global_id__sys": "72433_9"
+        },
+        {
+            "name__v": "Training Document - v2",
+            "id": 8,
+            "status__v": "Draft",
+            "global_id__sys": "72433_8"
+        },
+        {
+            "name__v": "Training Document",
+            "id": 7,
+            "status__v": "Draft",
+            "global_id__sys": "72433_7"
+        },
+        {
+            "name__v": "Document 1",
+            "id": 5,
+            "status__v": "Approved",
+            "global_id__sys": "72433_5"
+        },
+        {
+            "name__v": "Document 2",
+            "id": 4,
+            "status__v": "Draft",
+            "global_id__sys": "72433_4"
+        }
+    ]
+}

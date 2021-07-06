@@ -1,7 +1,6 @@
 {
 	"size": 579,
 	"totalSize": 579,
-	"nextRecordsUrl": "test/0000000000001",
 	"done": true,
 	"queryLocator": null,
 	"entityTypeName": "ProfileLayout",

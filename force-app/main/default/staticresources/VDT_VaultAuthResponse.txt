@@ -1,0 +1,13 @@
+{
+    "responseStatus": "SUCCESS",
+    "sessionId": "F5FBC532A3E248275CD90BCEEBE63B4D58C04DBB7DF05EA3F9DF19506BBF64F699C43D98A1EED116FD70D5EE6BD23EDD8377A151D51BC41494DAE4AE6A9106D3",
+    "userId": 9253351,
+    "vaultIds": [
+        {
+            "id": 72433,
+            "name": "BASE Life Science - PromoMats",
+            "url": "https://partnersi-baselife-promomats.veevavault.com/api"
+        }
+    ],
+    "vaultId": 72433
+}

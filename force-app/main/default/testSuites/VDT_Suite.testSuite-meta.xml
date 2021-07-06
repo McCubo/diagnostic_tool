@@ -14,5 +14,8 @@
     <testClassName>VDT_MasterDataAnalysisControllerTest</testClassName>
     <testClassName>VDT_ObjectsCalculationControllerTest</testClassName>
     <testClassName>VDT_ProductAdoptionControllerTest</testClassName>
+    <testClassName>VDT_TabsControllerTest</testClassName>
+    <testClassName>VDT_TerritoryAnalysisControllerTest</testClassName>
     <testClassName>VDT_VeevaUsersControllerTest</testClassName>
+    <testClassName>VDT_VeevaVaultControllerTest</testClassName>
 </ApexTestSuite>
