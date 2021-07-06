@@ -66,9 +66,11 @@
         <members>VDT_RecordTypeSelector</members>
         <members>VDT_RecordTypeService</members>
         <members>VDT_TabsController</members>
+        <members>VDT_TabsControllerTest</members>
         <members>VDT_Territory2Selector</members>
         <members>VDT_TerritoryAnalysisBuilder</members>
         <members>VDT_TerritoryAnalysisController</members>
+        <members>VDT_TerritoryAnalysisControllerTest</members>
         <members>VDT_TerritoryAnalysisExportBatch</members>
         <members>VDT_TerritoryManagementBatch</members>
         <members>VDT_ToolingAPIService</members>
@@ -81,6 +83,7 @@
         <members>VDT_VeevaUsersController</members>
         <members>VDT_VeevaUsersControllerTest</members>
         <members>VDT_VeevaVaultController</members>
+        <members>VDT_VeevaVaultControllerTest</members>
         <members>VDT_VeevaVaultService</members>
         <name>ApexClass</name>
     </types>
@@ -167,9 +170,10 @@
         <members>VDT_Vault_Document_Column.Type_Vault</members>
         <members>VDT_Vault_Document_Status.OCE_Email_Template_Approved_Value</members>
         <members>VDT_Vault_Document_Status.Veeva_Approved_Value</members>
-        <members>VDT_Vault_Document_Status_Map.Approved</members>
-        <members>VDT_Vault_Document_Status_Map.Draft</members>
-        <members>VDT_Vault_Document_Status_Map.Expired</members>
+        <members>VDT_Vault_Document_Status_Map.OCE_Approved</members>
+        <members>VDT_Vault_Document_Status_Map.Veeva_Approved</members>
+        <members>VDT_Vault_Document_Status_Map.Veeva_Draft</members>
+        <members>VDT_Vault_Document_Status_Map.Veeva_Expired</members>
         <name>CustomMetadata</name>
     </types>
     <types>
@@ -353,7 +357,10 @@
     </types>
     <types>
         <members>VDT_ObjectToolingResponse</members>
+        <members>VDT_ProfileQueryLocator</members>
         <members>VDT_ProfileToolingResponse</members>
+        <members>VDT_VaultAuthResponse</members>
+        <members>VDT_VaultQueryResponse</members>
         <members>vdt_chartjs</members>
         <members>vdt_d3</members>
         <members>vdt_moment</members>
