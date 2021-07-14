@@ -1,12 +1,12 @@
 @IsTest
 public with sharing class VDT_ProductDataFactory {
     
-    private Product_vod__c product;
+    private SObject product;
 
     public VDT_ProductDataFactory(String name) {
-        this.product = new Product_vod__c(
-            Name = name
-        );
+        String productSObjectAPIName = VDT_CustomMetadataService.getProductCatalogObjectAPI();
+        this.product = Schema.getGlobalDescribe().get(productSObjectAPIName).newSObject();
+        this.setProperty('Name', name);
     }
 
     public VDT_ProductDataFactory setProperty(String propertyName, Object value) {
@@ -19,12 +19,12 @@ public with sharing class VDT_ProductDataFactory {
         return this;
     }
 
-    public Product_vod__c getRecord() {
+    public SObject getRecord() {
         return this.product;
     }
 
-    public VDT_ProductDataFactory addChildProduct(Product_vod__c childProduct) {
-        childProduct.Parent_Product_vod__c = this.product.Id;
+    public VDT_ProductDataFactory addChildProduct(SObject childProduct) {
+        childProduct.put('Parent_Product_vod__c', this.product.Id);
         insert childProduct;
         return this;
     }

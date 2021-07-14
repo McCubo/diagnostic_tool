@@ -25,6 +25,22 @@ public inherited sharing class VDT_CustomMetadataService {
     @TestVisible
     private static Map<String, List<SObject>> customMetadataWithRecords = new Map<String, List<SObject>>();
 
+    public static String getProductCatalogObjectAPI() {
+        String productCatalogObjectAPI;
+        List<VDT_General_Setting__mdt> defaultSettings = [SELECT Product_Catalog_Object__c
+                                                          FROM VDT_General_Setting__mdt
+                                                          WHERE DeveloperName = :DEFAULT_APP_SETTINGS
+                                                          WITH SECURITY_ENFORCED];
+        if (customMetadataWithRecords.containsKey(VDT_GENERAL_SETTINGS)) {
+            defaultSettings = customMetadataWithRecords.get(VDT_GENERAL_SETTINGS);
+        }
+
+        if (!defaultSettings.isEmpty()) {
+            productCatalogObjectAPI = defaultSettings[0].Product_Catalog_Object__c;
+        }
+        return productCatalogObjectAPI;
+    }
+
     public static List<VDT_CRM_Document_Column__mdt> getCRMColumns() {
         String packageVersion = getPackageVersion();
         List<VDT_CRM_Document_Column__mdt> configurations = [SELECT MasterLabel, Field_API_Name__c, Vault_API_Field__c 

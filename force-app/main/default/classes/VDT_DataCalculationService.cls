@@ -359,7 +359,8 @@ public inherited sharing class VDT_DataCalculationService {
         insert dataCalculationRecord;
 
         if (dataCalculationRecord.Status__c == STATUS_IN_PROGRESS) {
-            Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject('Product_vod__c');
+            String productSObjectAPIName = VDT_CustomMetadataService.getProductCatalogObjectAPI();
+            Integer batchSize = VDT_CustomMetadataService.getBatchSizeForObject(productSObjectAPIName);
             List<String> additionalFields = new List<String>{'VDT_Country__c', 'Start_Date__c', 'End_Date__c'};
             List<VDT_Data_Calculation__c> records = new VDT_DataCalculationSelector().withAdditionalFields(additionalFields).getById(dataCalculationRecord.Id);
             VDT_ProductAdoptionBatch productAdoptionBatch = new VDT_ProductAdoptionBatch(records[0]); 

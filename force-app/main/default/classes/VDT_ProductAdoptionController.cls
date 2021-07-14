@@ -70,8 +70,9 @@ public inherited sharing class VDT_ProductAdoptionController {
     @AuraEnabled
     public static String getProductCountryFieldType() {
         try {
-            String countryFieldName = VDT_CustomMetadataService.getCountryFieldForObject('Product_vod__c');
-            return VDT_ObjectService.getFieldTypeBySObjectName('Product_vod__c', countryFieldName);
+            String productSObjectAPIName = VDT_CustomMetadataService.getProductCatalogObjectAPI();
+            String countryFieldName = VDT_CustomMetadataService.getCountryFieldForObject(productSObjectAPIName);
+            return VDT_ObjectService.getFieldTypeBySObjectName(productSObjectAPIName, countryFieldName);
         } catch (Exception e) {
             System.debug('e: ' + e.getCause() + '  ' + e.getStackTraceString());
             VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
@@ -88,8 +89,10 @@ public inherited sharing class VDT_ProductAdoptionController {
     @AuraEnabled
     public static List<VDT_OptionWrapper> getCountryOptions() {
         try {
-            String countryFieldName = VDT_CustomMetadataService.getCountryFieldForObject('Product_vod__c');
-            return VDT_ObjectService.getPicklistOptionsBySObjectName(SObjectType.Product_vod__c, countryFieldName);
+            String productSObjectAPIName = VDT_CustomMetadataService.getProductCatalogObjectAPI();
+            String countryFieldName = VDT_CustomMetadataService.getCountryFieldForObject(productSObjectAPIName);
+            SObjectType sObjType = ((SObject) Type.forName(productSObjectAPIName).newInstance()).getSObjectType();
+            return VDT_ObjectService.getPicklistOptionsBySObjectName(sObjType.getDescribe(), countryFieldName);
         } catch (Exception e) {
             VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
             VDT_Log.get().publish();
@@ -106,8 +109,9 @@ public inherited sharing class VDT_ProductAdoptionController {
     @AuraEnabled
     public static List<VDT_OptionWrapper> getCountryOptionFromReference() {
         try {
-            String countryFieldName = VDT_CustomMetadataService.getCountryFieldForObject('Product_vod__c');
-            return VDT_ObjectService.getPicklistOptionsByReference('Product_vod__c', countryFieldName);
+            String productSObjectAPIName = VDT_CustomMetadataService.getProductCatalogObjectAPI();
+            String countryFieldName = VDT_CustomMetadataService.getCountryFieldForObject(productSObjectAPIName);
+            return VDT_ObjectService.getPicklistOptionsByReference(productSObjectAPIName, countryFieldName);
         } catch (Exception e) {
             VDT_Log.get().add(e.getMessage() + '\n' + e.getStackTraceString(), VDT_LogSeverity.ERROR);
             VDT_Log.get().publish();

@@ -6,36 +6,38 @@
 public with sharing class VDT_ProductService {
 
     private static String statusField;
+    private static String typeField;
+    private static String parentProductField;
 
     /**
      * @return  `ProductAdoptionData` an object containing all product hierarchy information
      */
     public static ProductAdoptionData getProductTreeInformation() {
         ProductAdoptionData productAdoption = new ProductAdoptionData();
-        String productCountry = VDT_CustomMetadataService.getCountryFieldForObject('Product_vod__c');
+        String productSObjectAPIName = VDT_CustomMetadataService.getProductCatalogObjectAPI();
+        String productCountryField = VDT_CustomMetadataService.getCountryFieldForObject(productSObjectAPIName);
         String packageVersion = VDT_CustomMetadataService.getPackageVersion();
         statusField = VDT_CustomMetadataService.getFieldNameForCustomObject(packageVersion, 'PRODUCT_VOD_STATUS');
-        List<Product_vod__c> products = new VDT_ProductSelector()
-                                        .withAdditionalFields(new List<String> {
-                                            Product_vod__c.Parent_Product_vod__c.getDescribe().getName(),
-                                            productCountry,
-                                            statusField
-                                        })
-                                        .query();
-
-        Map<Id, List<Product_vod__c>> childProductsByParent = new Map<Id, List<Product_vod__c>>();        
-        for (Product_vod__c product : products) {
-            productAdoption.productTypes.add(product.Product_Type_vod__c);
+        typeField = VDT_CustomMetadataService.getFieldNameForCustomObject(packageVersion, 'PRODUCT_TYPE_FIELD');
+        parentProductField = VDT_CustomMetadataService.getFieldNameForCustomObject(packageVersion, 'PARENT_PRODUCT_FIELD');
+        Map<String,String> queries = VDT_CustomMetadataService.getQueriesByPackageVersionAndModule(packageVersion, 'Product Adoption');
+        String query = queries.get('Products_Hierarchy');        
+        List<SObject> products = Database.query(query);
+        
+        Map<Id, List<SObject>> childProductsByParent = new Map<Id, List<SObject>>();        
+        for (SObject product : products) {
+            productAdoption.productTypes.add(getProductProperty(product, typeField));
             productAdoption.productStatuses.add(getProductProperty(product, statusField));
-            if (String.isNotBlank(product.Parent_Product_vod__c)) {
-                if (childProductsByParent.containsKey(product.Parent_Product_vod__c)) {
-                    childProductsByParent.get(product.Parent_Product_vod__c).add(product);
+            String parentProduct = getProductProperty(product, parentProductField);
+            if (String.isNotBlank(parentProduct)) {
+                if (childProductsByParent.containsKey(parentProduct)) {
+                    childProductsByParent.get(parentProduct).add(product);
                 } else {
-                    childProductsByParent.put(product.Parent_Product_vod__c, new List<Product_vod__c> {product});
+                    childProductsByParent.put(parentProduct, new List<SObject> {product});
                 }        
             }
         }                                        
-        productAdoption.treeItems = getProductCatalogTree(products, childProductsByParent, productCountry, true);
+        productAdoption.treeItems = getProductCatalogTree(products, childProductsByParent, productCountryField, true);
         return productAdoption;
     }
 
@@ -47,17 +49,17 @@ public with sharing class VDT_ProductService {
      * @param isRootNode 
      * @return  `List<ProductCatalogTreeItem>`
      */
-    private static List<ProductCatalogTreeItem> getProductCatalogTree(List<Product_vod__c> products, Map<Id, List<Product_vod__c>> childProductsByParent, String productCountry, Boolean isRootNode) {
+    private static List<ProductCatalogTreeItem> getProductCatalogTree(List<SObject> products, Map<Id, List<SObject>> childProductsByParent, String productCountry, Boolean isRootNode) {
         List<ProductCatalogTreeItem> productCatalogTree = new List<ProductCatalogTreeItem>();
-        for (Product_vod__c product : products) {
+        for (SObject product : products) {
             String country = getProductProperty(product, productCountry);
             String status = getProductProperty(product, statusField);
-            ProductCatalogTreeItem productTreeItem = new ProductCatalogTreeItem(product.Name, product.Id, product.Product_Type_vod__c, country, status);
+            ProductCatalogTreeItem productTreeItem = new ProductCatalogTreeItem(getProductProperty(product, 'Name'), product.Id, getProductProperty(product, typeField), country, status);
             if (childProductsByParent.containsKey(product.Id)) {
-                List<Product_vod__c> childProducts = childProductsByParent.get(product.Id);
+                List<SObject> childProducts = childProductsByParent.get(product.Id);
                 productTreeItem.items = getProductCatalogTree(childProducts, childProductsByParent, productCountry, false);
             }
-            if ((isRootNode && String.isBlank(product.Parent_Product_vod__c)) || !isRootNode) {
+            if (isRootNode && String.isBlank(getProductProperty(product, parentProductField)) || !isRootNode) {
                 productCatalogTree.add(productTreeItem);
             }
         }
@@ -70,7 +72,7 @@ public with sharing class VDT_ProductService {
      * @param fieldAPI Field API Name
      * @return  `String` field value
      */
-    private static String getProductProperty(Product_vod__c product, String fieldAPI) {
+    private static String getProductProperty(SObject product, String fieldAPI) {
         String value = '';
         if (fieldAPI.contains('.')) {
             String relationship = fieldAPI.split('\\.').get(0);

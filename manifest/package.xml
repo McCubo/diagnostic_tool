@@ -129,10 +129,14 @@
         <members>VDT_Custom_Objects_Field_Mapping.Approved_Document_Vault_Id</members>
         <members>VDT_Custom_Objects_Field_Mapping.Email_Template_Name</members>
         <members>VDT_Custom_Objects_Field_Mapping.Email_Template_Status</members>
+        <members>VDT_Custom_Objects_Field_Mapping.OCE_Parent_Product</members>
+        <members>VDT_Custom_Objects_Field_Mapping.OCE_Product_Type</members>
         <members>VDT_Custom_Objects_Field_Mapping.OCE_Vault_Id</members>
         <members>VDT_Custom_Objects_Field_Mapping.OCE_Vault_Status</members>
         <members>VDT_Custom_Objects_Field_Mapping.PRODUCT_VOD_STATUS</members>
         <members>VDT_Custom_Objects_Field_Mapping.Product_Catalog_Status</members>
+        <members>VDT_Custom_Objects_Field_Mapping.Veeva_Parent_Product</members>
+        <members>VDT_Custom_Objects_Field_Mapping.Veeva_Product_Type</members>
         <members>VDT_Custom_Objects_Field_Mapping.Veeva_Vault_Id</members>
         <members>VDT_Custom_Objects_Field_Mapping.Veeva_Vault_Status</members>
         <members>VDT_General_Setting.Default</members>
@@ -153,6 +157,8 @@
         <members>VDT_Query.Veeva_Account_Goal</members>
         <members>VDT_Query.Veeva_Addresses</members>
         <members>VDT_Query.Veeva_Calls</members>
+        <members>VDT_Query.Veeva_Product_Batch</members>
+        <members>VDT_Query.Veeva_Product_Hierarchy</members>
         <members>VDT_Query.Veeva_Product_Metrics</members>
         <members>VDT_Query.Veeva_Vault_Documents</members>
         <members>VDT_Tab.field_level_security</members>

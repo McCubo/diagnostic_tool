@@ -6,7 +6,7 @@
 public with sharing class VDT_ProductAdoptionBuilder {
 
     private ProductAdoptionSummary adoptionData = new ProductAdoptionSummary();
-    private List<Product_vod__c> records = new List<Product_vod__c>();
+    private List<SObject> records = new List<SObject>();
     private Set<String> productIds = new Set<String>();
     private Set<String> countries = new Set<String>();
     private Map<String, Map<String, Integer>> keyMessagesByProduct = new Map<String, Map<String, Integer>>();
@@ -21,9 +21,12 @@ public with sharing class VDT_ProductAdoptionBuilder {
     private final String PRESENTATION_STATUS_APPROVED = 'Approved_vod';
     private final String APPROVED_DOCUMENT_STATUS_APPROVED = 'Approved_vod';
     private String internationalCountryCode;
+    private static String typeField;
 
     public VDT_ProductAdoptionBuilder() {
         this.internationalCountryCode = VDT_CustomMetadataService.getInternationalCountryValue();
+        String packageVersion = VDT_CustomMetadataService.getPackageVersion();
+        typeField = VDT_CustomMetadataService.getFieldNameForCustomObject(packageVersion, 'PRODUCT_TYPE_FIELD');
     }
 
     /**
@@ -49,10 +52,10 @@ public with sharing class VDT_ProductAdoptionBuilder {
      * @param records 
      * @return  `VDT_ProductAdoptionBuilder`
      */
-    public VDT_ProductAdoptionBuilder withRecords(List<Product_vod__c> records) {
+    public VDT_ProductAdoptionBuilder withRecords(List<SObject> records) {
         this.records = records;
         productIds.clear();
-        for (Product_vod__c product : records) {
+        for (SObject product : records) {
             productIds.add(product.Id);
         }
         return this;
@@ -249,11 +252,13 @@ public with sharing class VDT_ProductAdoptionBuilder {
      * @return  `VDT_ProductAdoptionBuilder`
      */
     public VDT_ProductAdoptionBuilder calculate() {
-        String productCountryField = this.countryFieldByObject.get('Product_vod__c');
-        for (Product_vod__c product : this.records) {
-            adoptionData.productTypes.add(product.Product_Type_vod__c);            
+        String productSObjectAPIName = VDT_CustomMetadataService.getProductCatalogObjectAPI();
+        String productCountryField = this.countryFieldByObject.get(productSObjectAPIName);
+        for (SObject product : this.records) {
+            String productType = getPropertyValue(product, typeField);
+            adoptionData.productTypes.add(productType);            
             String countryValue = getPropertyValue(product, productCountryField);
-            ProductSummary prodSummary = new ProductSummary(product.Id, product.Name, countryValue, product.Product_Type_vod__c);            
+            ProductSummary prodSummary = new ProductSummary(product.Id, getPropertyValue(product, 'Name'), countryValue, productType);
             for (String country : this.countries) {
                 if (country != countryValue && countryValue != this.internationalCountryCode) {
                     continue;
@@ -306,7 +311,7 @@ public with sharing class VDT_ProductAdoptionBuilder {
      * @param fieldName Field API Name
      * @return  `String` field value for the given field API name
      */
-    private static String getPropertyValue(Product_vod__c product, String fieldName) {
+    private static String getPropertyValue(SObject product, String fieldName) {
         String value = '';
         if (fieldName.contains('.')) {
             String relationship = fieldName.split('\\.').get(0);

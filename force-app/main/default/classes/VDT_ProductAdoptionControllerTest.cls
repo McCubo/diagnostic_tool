@@ -39,20 +39,20 @@ public with sharing class VDT_ProductAdoptionControllerTest {
 
     @IsTest
     static void shouldReturnProductTree() {
-        VDT_CustomMetadataService.customMetadataWithRecords.put('VDT_Object_Country_Field_Mapping__mdt', 
-            (List<VDT_Object_Country_Field_Mapping__mdt>) JSON.deserialize('[{"Country_Field_Reference__c": "CreatedBy.Country"}]', List<VDT_Object_Country_Field_Mapping__mdt>.class));
-        VDT_CustomMetadataService.customMetadataWithRecords.put('VDT_Custom_Objects_Field_Mapping__mdt', 
-            (List<VDT_Custom_Objects_Field_Mapping__mdt>) JSON.deserialize('[{"Field_API_Name__c": "Name"}]', List<VDT_Custom_Objects_Field_Mapping__mdt>.class));
         User contextuser = getUser();
         VDT_ProductService.ProductAdoptionData adoptionData;
+        String packageVersion = VDT_CustomMetadataService.getPackageVersion();
+        String productSObjectAPIName = VDT_CustomMetadataService.getProductCatalogObjectAPI();
+        String productCountryField = VDT_CustomMetadataService.getCountryFieldForObject(productSObjectAPIName);
+        String typeField = VDT_CustomMetadataService.getFieldNameForCustomObject(packageVersion, 'PRODUCT_TYPE_FIELD');
         Test.startTest();
         System.runAs(contextuser) {
             new VDT_ProductDataFactory('Product Onco')
-            .setProperty('Country__c', 'DE')
-            .setProperty('Product_Type_vod__c', 'Detail')
+            .setProperty(productCountryField, 'DE')
+            .setProperty(typeField, 'Detail')
             .create()
-            .addChildProduct(new VDT_ProductDataFactory('ONCO Lvl 1').setProperty('Country__c', 'DE').getRecord())
-            .addChildProduct(new VDT_ProductDataFactory('Onco Level 2').setProperty('Country__c', 'DE').getRecord());
+            .addChildProduct(new VDT_ProductDataFactory('ONCO Lvl 1').setProperty(productCountryField, 'DE').getRecord())
+            .addChildProduct(new VDT_ProductDataFactory('Onco Level 2').setProperty(productCountryField, 'DE').getRecord());
             adoptionData = VDT_ProductAdoptionController.getProductCatalogTree();
         }
         Test.stopTest();
@@ -154,11 +154,8 @@ public with sharing class VDT_ProductAdoptionControllerTest {
         VDT_CustomMetadataService.customMetadataWithRecords.put('VDT_Object_Country_Field_Mapping__mdt', 
             (List<VDT_Object_Country_Field_Mapping__mdt>) JSON.deserialize('[{"Country_Field_Reference__c": "CreatedBy.Country"}]', List<VDT_Object_Country_Field_Mapping__mdt>.class));
 
-        VDT_CustomMetadataService.customMetadataWithRecords.put('VDT_General_Setting__mdt', 
-            (List<VDT_General_Setting__mdt>) JSON.deserialize('[{"Maximum_Running_Calculations__c": "2", "Batch_Size__c": 200}]', List<VDT_General_Setting__mdt>.class));
-
         User adminUser = getUser();
-        String jsonSearchParameters = '{"startYear": 2015, "startMonth": 1, "endYear": 2021, "endMonth": 1, "countries": ["DE"]}';
+        String jsonSearchParameters = '{"startYear": 2015, "startMonth": 1, "endYear": 2021, "endMonth": 1, "countries": ["DE", "All"]}';
         Test.startTest();
         System.runAs(adminUser) {
             /*
