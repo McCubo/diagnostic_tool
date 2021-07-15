@@ -61,7 +61,6 @@
         <members>VDT_ProductAdoptionController</members>
         <members>VDT_ProductAdoptionControllerTest</members>
         <members>VDT_ProductDataFactory</members>
-        <members>VDT_ProductSelector</members>
         <members>VDT_ProductService</members>
         <members>VDT_RecordTypeSelector</members>
         <members>VDT_RecordTypeService</members>
