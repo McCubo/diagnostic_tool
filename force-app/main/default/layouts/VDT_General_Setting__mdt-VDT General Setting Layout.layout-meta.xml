@@ -46,6 +46,10 @@
                 <behavior>Edit</behavior>
                 <field>Account_Classification_Field__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Product_Catalog_Object__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>

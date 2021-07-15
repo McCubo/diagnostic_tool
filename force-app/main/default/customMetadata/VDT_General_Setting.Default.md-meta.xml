@@ -43,6 +43,10 @@
         <value xsi:type="xsd:string">Veeva</value>
     </values>
     <values>
+        <field>Product_Catalog_Object__c</field>
+        <value xsi:type="xsd:string">Product_vod__c</value>
+    </values>
+    <values>
         <field>Standard_Field_Identifier__c</field>
         <value xsi:type="xsd:string">vod__c</value>
     </values>
