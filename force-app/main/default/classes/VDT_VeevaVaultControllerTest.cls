@@ -102,12 +102,10 @@ public class VDT_VeevaVaultControllerTest {
         (List<VDT_Query__mdt>) JSON.deserialize('[{"Name__c": "Documents", "Query__c": "SELECT {0} FROM Approved_Document_vod__c"}]', 
         List<VDT_Query__mdt>.class));
 
-        Id recordTypeId = Schema.SObjectType.Approved_Document_vod__c.getRecordTypeInfosByDeveloperName().get('Email_Fragment_vod').getRecordTypeId();
-        Approved_Document_vod__c aDocument = new Approved_Document_vod__c(
-            RecordTypeId = recordTypeId,
-            Name = 'TEST DOC'
-        );
-
+        Id recordTypeId = [SELECT Id FROM RecordType WHERE SObjectType = 'Approved_Document_vod__c' AND DeveloperName = 'Email_Fragment_vod'][0].Id;
+        sObject aDocument = Schema.getGlobalDescribe().get('Approved_Document_vod__c').newSObject();
+        aDocument.put('RecordTypeId', recordTypeId);
+        aDocument.put('Name', 'TEST DOC');
         insert aDocument;
 
         Test.startTest();
