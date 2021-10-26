@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>Approved Document Vault Id</label>
+    <label>CLM Presentation Status</label>
     <protected>false</protected>
     <values>
         <field>Field_API_Name__c</field>
-        <value xsi:type="xsd:string">Document_ID_vod__c</value>
+        <value xsi:type="xsd:string">Status_vod__c</value>
     </values>
     <values>
         <field>Field_Map_Key__c</field>
-        <value xsi:type="xsd:string">CRM_VAULT_JOIN_FIELD_EMAIL TEMPLATES</value>
+        <value xsi:type="xsd:string">CRM_DOCUMENT_STATUS_CLM PRESENTATION</value>
     </values>
     <values>
         <field>Package_Version__c</field>

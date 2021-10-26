@@ -26,6 +26,10 @@
                 <behavior>Edit</behavior>
                 <field>Vault_API_Name__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Sections__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>

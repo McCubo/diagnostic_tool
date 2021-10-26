@@ -11,6 +11,10 @@
         <value xsi:type="xsd:string">Veeva</value>
     </values>
     <values>
+        <field>Section__c</field>
+        <value xsi:type="xsd:string">Email Templates</value>
+    </values>
+    <values>
         <field>Vault_Status__c</field>
         <value xsi:type="xsd:string">Approved</value>
     </values>

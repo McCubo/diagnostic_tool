@@ -3,6 +3,10 @@
     <label>CRM - Status</label>
     <protected>false</protected>
     <values>
+        <field>Display_Order__c</field>
+        <value xsi:type="xsd:double">6.0</value>
+    </values>
+    <values>
         <field>Field_API_Name__c</field>
         <value xsi:type="xsd:string">Status_vod__c</value>
     </values>
@@ -11,7 +15,11 @@
         <value xsi:type="xsd:string">Veeva</value>
     </values>
     <values>
+        <field>Section__c</field>
+        <value xsi:type="xsd:string">Email Templates</value>
+    </values>
+    <values>
         <field>Vault_API_Field__c</field>
-        <value xsi:type="xsd:string">status__v</value>
+        <value xsi:nil="true"/>
     </values>
 </CustomMetadata>

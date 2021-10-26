@@ -4,7 +4,7 @@
     <protected>false</protected>
     <values>
         <field>Field_API_Name__c</field>
-        <value xsi:type="xsd:string">id</value>
+        <value xsi:type="xsd:string">document_number__v</value>
     </values>
     <values>
         <field>Field_Map_Key__c</field>

@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>CRM - Document Id</label>
+    <label>Veeva Email Template</label>
     <protected>false</protected>
     <values>
-        <field>Display_Order__c</field>
-        <value xsi:type="xsd:double">4.0</value>
-    </values>
-    <values>
-        <field>Field_API_Name__c</field>
-        <value xsi:type="xsd:string">Document_ID_vod__c</value>
+        <field>CRM_Record_Type__c</field>
+        <value xsi:type="xsd:string">Email_Template_vod</value>
     </values>
     <values>
         <field>Package_Version__c</field>
@@ -19,7 +15,7 @@
         <value xsi:type="xsd:string">Email Templates</value>
     </values>
     <values>
-        <field>Vault_API_Field__c</field>
-        <value xsi:nil="true"/>
+        <field>Vault_Type__c</field>
+        <value xsi:type="xsd:string">Email Template</value>
     </values>
 </CustomMetadata>

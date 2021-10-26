@@ -4,14 +4,26 @@
     <protected>false</protected>
     <values>
         <field>Display_Order__c</field>
-        <value xsi:type="xsd:double">3.0</value>
+        <value xsi:type="xsd:double">5.0</value>
+    </values>
+    <values>
+        <field>Field_Type__c</field>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>Is_Active__c</field>
         <value xsi:type="xsd:boolean">true</value>
     </values>
     <values>
+        <field>Sections__c</field>
+        <value xsi:type="xsd:string">Email Templates, CLM Presentation</value>
+    </values>
+    <values>
         <field>Vault_API_Name__c</field>
         <value xsi:type="xsd:string">status__v</value>
+    </values>
+    <values>
+        <field>Veeva_API_Name__c</field>
+        <value xsi:nil="true"/>
     </values>
 </CustomMetadata>

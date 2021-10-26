@@ -3,12 +3,20 @@
     <label>CRM - Product Type</label>
     <protected>false</protected>
     <values>
+        <field>Display_Order__c</field>
+        <value xsi:type="xsd:double">5.0</value>
+    </values>
+    <values>
         <field>Field_API_Name__c</field>
         <value xsi:type="xsd:string">Product_vod__r.Product_Type_vod__c</value>
     </values>
     <values>
         <field>Package_Version__c</field>
         <value xsi:type="xsd:string">Veeva</value>
+    </values>
+    <values>
+        <field>Section__c</field>
+        <value xsi:type="xsd:string">Email Templates</value>
     </values>
     <values>
         <field>Vault_API_Field__c</field>

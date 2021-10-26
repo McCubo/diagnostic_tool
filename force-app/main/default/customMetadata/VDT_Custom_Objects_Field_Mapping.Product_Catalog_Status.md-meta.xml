@@ -12,6 +12,6 @@
     </values>
     <values>
         <field>Package_Version__c</field>
-        <value xsi:type="xsd:string">Veeva</value>
+        <value xsi:type="xsd:string">OCE</value>
     </values>
 </CustomMetadata>

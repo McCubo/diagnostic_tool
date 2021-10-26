@@ -3,12 +3,20 @@
     <label>Email Template Status</label>
     <protected>false</protected>
     <values>
+        <field>Display_Order__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
         <field>Field_API_Name__c</field>
         <value xsi:type="xsd:string">OCE__IsActive__c</value>
     </values>
     <values>
         <field>Package_Version__c</field>
         <value xsi:type="xsd:string">OCE</value>
+    </values>
+    <values>
+        <field>Section__c</field>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>Vault_API_Field__c</field>

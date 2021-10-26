@@ -16,6 +16,6 @@
     </values>
     <values>
         <field>Query__c</field>
-        <value xsi:type="xsd:string">SELECT Id, Name, Country__c, Product_Type_vod__c FROM Product_vod__c</value>
+        <value xsi:type="xsd:string">SELECT Id, Name, Country__c, Product_Type_vod__c FROM Product_vod__c {0}</value>
     </values>
 </CustomMetadata>

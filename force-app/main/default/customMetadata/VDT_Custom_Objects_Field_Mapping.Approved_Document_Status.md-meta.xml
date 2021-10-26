@@ -8,7 +8,7 @@
     </values>
     <values>
         <field>Field_Map_Key__c</field>
-        <value xsi:type="xsd:string">CRM_DOCUMENT_STATUS</value>
+        <value xsi:type="xsd:string">CRM_DOCUMENT_STATUS_EMAIL TEMPLATES</value>
     </values>
     <values>
         <field>Package_Version__c</field>
