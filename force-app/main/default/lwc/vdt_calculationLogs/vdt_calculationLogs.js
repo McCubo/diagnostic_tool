@@ -13,6 +13,7 @@ export default class Vdt_calculationLogs extends LightningElement {
         { label: 'Job End Date', fieldName: 'jobEndDateString', type: 'text', sortable: true },
         { label: 'Created By', fieldName: 'createdByName', type: 'text' },
         { label: 'Status', fieldName: 'Status__c', type: 'text' },
+        { label: 'Process', fieldName: 'processName', type: 'text' },
     ];
     _logs;
     @track _filteredLogs;
@@ -56,6 +57,7 @@ export default class Vdt_calculationLogs extends LightningElement {
                     log.jobStartDateString = log.VDT_Job_Start_Date__c ? moment(log.VDT_Job_Start_Date__c).format(this._jobDateFormat) : null;
                     log.jobEndDateString = log.VDT_Job_End_Date__c ? moment(log.VDT_Job_End_Date__c).format(this._jobDateFormat) : null;
                     log.createdByName = log.CreatedBy.Name;
+                    log.processName = log.RecordType.DeveloperName == 'VDT_Object_Field_Analysis' ? 'Object Field Analysis' : 'Picklist Fields Analysis';
                 });
                 this._filteredLogs = JSON.parse(JSON.stringify(this._logs));
                 this._showTable = true;

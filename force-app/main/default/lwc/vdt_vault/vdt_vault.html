@@ -7,12 +7,9 @@
         type="button">
     </lightning-radio-group>
     <template if:true={showDocuments}>
-        <c-vdt_vault-documents></c-vdt_vault-documents>
+        <c-vdt_vault-documents section="Email Templates"></c-vdt_vault-documents>
     </template>
     <template if:true={showClmPresentation}>
-        <c-vdt_illustration-provider
-            svgname="lakeMountain"
-            message="Section still under construction."
-        ></c-vdt_illustration-provider>
+        <c-vdt_vault-documents section="CLM Presentation"></c-vdt_vault-documents>
     </template>
 </template>

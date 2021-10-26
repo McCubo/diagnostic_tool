@@ -21,7 +21,7 @@ public with sharing class VDT_ProductAdoptionBuilder {
     private final String PRESENTATION_STATUS_APPROVED = 'Approved_vod';
     private final String APPROVED_DOCUMENT_STATUS_APPROVED = 'Approved_vod';
     private String internationalCountryCode;
-    private static String typeField;
+    private String typeField;
 
     public VDT_ProductAdoptionBuilder() {
         this.internationalCountryCode = VDT_CustomMetadataService.getInternationalCountryValue();
@@ -255,7 +255,7 @@ public with sharing class VDT_ProductAdoptionBuilder {
         String productSObjectAPIName = VDT_CustomMetadataService.getProductCatalogObjectAPI();
         String productCountryField = this.countryFieldByObject.get(productSObjectAPIName);
         for (SObject product : this.records) {
-            String productType = getPropertyValue(product, typeField);
+            String productType = getPropertyValue(product, this.typeField);
             adoptionData.productTypes.add(productType);            
             String countryValue = getPropertyValue(product, productCountryField);
             ProductSummary prodSummary = new ProductSummary(product.Id, getPropertyValue(product, 'Name'), countryValue, productType);
@@ -312,6 +312,7 @@ public with sharing class VDT_ProductAdoptionBuilder {
      * @return  `String` field value for the given field API name
      */
     private static String getPropertyValue(SObject product, String fieldName) {
+        System.debug('TEST:fieldName:' + fieldName);
         String value = '';
         if (fieldName.contains('.')) {
             String relationship = fieldName.split('\\.').get(0);

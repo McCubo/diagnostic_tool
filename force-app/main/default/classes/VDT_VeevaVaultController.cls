@@ -6,25 +6,25 @@
 public with sharing class VDT_VeevaVaultController {
 
     @AuraEnabled
-    public static String getStatusValue(String status) {
+    public static String getStatusValue(String status, String section) {
         try {
-            return VDT_CustomMetadataService.getStatusApiFieldName(status);
+            return VDT_CustomMetadataService.getStatusApiFieldName(status, section);
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
     }
     @AuraEnabled
-    public static Map<String, String> getStatusMap() {
+    public static Map<String, String> getStatusMap(String section) {
         try {
-            return VDT_CustomMetadataService.getVaultCrmStatusesMap();
+            return VDT_CustomMetadataService.getVaultCrmStatusesMap(section);
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
     }
     @AuraEnabled
-    public static List<VDT_CRM_Document_Column__mdt> getCRMColumns() {
+    public static List<VDT_CRM_Document_Column__mdt> getCRMColumns(String section) {
         try {
-            return VDT_CustomMetadataService.getCRMColumns();
+            return VDT_CustomMetadataService.getCRMColumns(section);
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
@@ -41,24 +41,25 @@ public with sharing class VDT_VeevaVaultController {
     }
 
     @AuraEnabled
-    public static List<VDT_Vault_Document_Column__mdt> getVaultColumns(){
+    public static List<VDT_Vault_Document_Column__mdt> getVaultColumns(String section){
         try {
-            return VDT_CustomMetadataService.getActiveDocumentColumns();
+            return VDT_CustomMetadataService.getActiveDocumentColumns(section);
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
     }
 
     @AuraEnabled
-    public static List<Object> getDocumentsFromVault() {
-        try {            
+    public static List<Object> getDocumentsFromVault(String section) {
+        try {
             List<String> selectFields = new List<String>();
-            for (VDT_Vault_Document_Column__mdt activeColumn : VDT_CustomMetadataService.getActiveDocumentColumns()) {
+            for (VDT_Vault_Document_Column__mdt activeColumn : VDT_CustomMetadataService.getActiveDocumentColumns(section)) {
                 selectFields.add(activeColumn.Vault_API_Name__c);
             }
-
-            String vql = String.format('SELECT {0} FROM documents', new List<String>{
-                String.join(selectFields, ',')
+            String whereClause = VDT_CustomMetadataService.getVaultDocumentTypes(section);
+            String vql = String.format('SELECT {0} FROM documents {1}', new List<String>{
+                String.join(selectFields, ','),
+                whereClause
             });
             return VDT_VeevaVaultService.parseResponse(vql);
         } catch (Exception e) {
@@ -67,7 +68,7 @@ public with sharing class VDT_VeevaVaultController {
     }
 
     @AuraEnabled
-    public static List<SObject> getApprovedDocuments(List<String> vaultDocIds) {
+    public static List<SObject> getApprovedDocuments(List<String> vaultDocIds, String section) {
         try {
             List<SObject> documents = new List<SObject>();
 
@@ -75,17 +76,15 @@ public with sharing class VDT_VeevaVaultController {
             Map<String, String> queriesByName = VDT_CustomMetadataService.getQueriesByPackageVersionAndModule(packageVersion, 'Vault Document');
 
             List<String> columns = new List<String>();
-            for (VDT_CRM_Document_Column__mdt crmColumn : VDT_CustomMetadataService.getCRMColumns()) {
+            for (VDT_CRM_Document_Column__mdt crmColumn : VDT_CustomMetadataService.getCRMColumns(section)) {
                 columns.add(crmColumn.Field_API_Name__c);
             }
 
-            String approvedDocumentsQuery = queriesByName.get('Documents');
+            String approvedDocumentsQuery = queriesByName.get(section);
             List<SObject> records = Database.query(String.format(approvedDocumentsQuery, new List<String>{
                 String.join(columns, ',')
             }));
-            for (SObject record : records) {
-                documents.add(record);
-            }
+            documents.addAll(records);
             return documents;
         } catch (Exception e) {
             throw handleException(e);

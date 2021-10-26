@@ -14,7 +14,7 @@ export default class Vdt_vault extends LightningElement {
 
     get sectionOptions() {
         return [
-            { label: 'Documents', value: 'documents' },
+            { label: 'Email Templates', value: 'documents' },
             { label: 'CLM Presentation', value: 'clm' },
         ];
     }

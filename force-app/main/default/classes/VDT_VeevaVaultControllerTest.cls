@@ -9,13 +9,13 @@ public class VDT_VeevaVaultControllerTest {
     @IsTest
     static void shouldReturnApproved_StatusFieldAPI() {
         
-        VDT_CustomMetadataService.customMetadataWithRecords.put('VDT_Vault_Document_Status__mdt', 
-            (List<VDT_Vault_Document_Status__mdt>) JSON.deserialize('[{"Status_Value__c": "Status_vod__c"}]', List<VDT_Vault_Document_Status__mdt>.class));
+        VDT_CustomMetadataService.customMetadataWithRecords.put('VDT_Vault_Document_Status_Map__mdt', 
+            (List<VDT_Vault_Document_Status_Map__mdt>) JSON.deserialize('[{"Document_Status__c": "Approved_vod"}]', List<VDT_Vault_Document_Status_Map__mdt>.class));
         String statusField;
         Test.startTest();
-        statusField = VDT_VeevaVaultController.getStatusValue('APPROVED');
+        statusField = VDT_VeevaVaultController.getStatusValue('Approved');
         Test.stopTest();
-        System.assertEquals('Status_vod__c', statusField);
+        System.assertEquals('Approved_vod', statusField);
 
     }
 

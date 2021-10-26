@@ -17,13 +17,32 @@ public inherited sharing class VDT_CustomMetadataService {
     public static final String VDT_KPI_BY_COUNTRY_CONFIGURATIONS = 'VDT_KPI_by_Country__mdt';    
     public static final String VDT_ACCOUNT_RECORD_TYPE_CONFIGURATIONS = 'VDT_Account_Record_Type_Mapping__mdt';    
     public static final String VDT_BATCH_SIZE_MAPPING = 'VDT_Object_Batch_Size_Mapping__mdt';
-    public static final String VDT_VAULT_STATUSES = 'VDT_Vault_Document_Status__mdt';
     public static final String VDT_VAULT_CRM_STATUSES_MAP = 'VDT_Vault_Document_Status_Map__mdt';
     public static final String VDT_CRM_COLUMNS = 'VDT_CRM_Document_Column__mdt';
     public static final String VDT_VAULT_COLUMNS = 'VDT_Vault_Document_Column__mdt';    
+    public static final String VDT_VAULT_TYPES = 'VDT_Vault_Document_Record_Type__mdt';
 
     @TestVisible
     private static Map<String, List<SObject>> customMetadataWithRecords = new Map<String, List<SObject>>();
+
+    public static String getVaultDocumentTypes(String section) {
+        String packageVersion = getPackageVersion();
+        List<String> vaultTypes = new List<String>();
+        List<VDT_Vault_Document_Record_Type__mdt> configurations = [SELECT Vault_Type__c 
+                                                                    FROM VDT_Vault_Document_Record_Type__mdt 
+                                                                    WHERE Package_Version__c = :packageVersion
+                                                                    AND Section__c = :section];
+        if (customMetadataWithRecords.containsKey(VDT_VAULT_TYPES)) {
+            configurations = customMetadataWithRecords.get(VDT_VAULT_TYPES);
+        }
+        for (VDT_Vault_Document_Record_Type__mdt conf : configurations) {
+            vaultTypes.add('type__v = \'' + conf.Vault_Type__c + '\'');
+        }
+        if (!vaultTypes.isEmpty()) {
+            return 'WHERE ' + String.join(vaultTypes, ' OR ');
+        }
+        return '';
+    }
 
     public static String getProductCatalogObjectAPI() {
         String productCatalogObjectAPI;
@@ -41,36 +60,37 @@ public inherited sharing class VDT_CustomMetadataService {
         return productCatalogObjectAPI;
     }
 
-    public static List<VDT_CRM_Document_Column__mdt> getCRMColumns() {
+    public static List<VDT_CRM_Document_Column__mdt> getCRMColumns(String section) {
         String packageVersion = getPackageVersion();
-        List<VDT_CRM_Document_Column__mdt> configurations = [SELECT MasterLabel, Field_API_Name__c, Vault_API_Field__c 
+        List<VDT_CRM_Document_Column__mdt> configurations = [SELECT MasterLabel, Field_API_Name__c, Vault_API_Field__c, Display_Order__c
                                                       FROM VDT_CRM_Document_Column__mdt 
-                                                      WHERE Package_Version__c = :packageVersion];
+                                                      WHERE Package_Version__c = :packageVersion AND Section__c = :section ORDER BY Display_Order__c];
         if (customMetadataWithRecords.containsKey(VDT_CRM_COLUMNS)) {
             configurations = customMetadataWithRecords.get(VDT_CRM_COLUMNS);
         }
         return configurations;
     }
 
-    public static String getStatusApiFieldName(String status) {
+    public static String getStatusApiFieldName(String status, String section) {
         String packageVersion = getPackageVersion();
         
-        List<VDT_Vault_Document_Status__mdt> configurations = [SELECT Status_Value__c 
-                                                                FROM VDT_Vault_Document_Status__mdt 
-                                                                WHERE Package_Version__c = :packageVersion 
-                                                                AND Status__c = :status];
-        if (customMetadataWithRecords.containsKey(VDT_VAULT_STATUSES)) {
-            configurations = customMetadataWithRecords.get(VDT_VAULT_STATUSES);
+        List<VDT_Vault_Document_Status_Map__mdt> configurations = [SELECT Document_Status__c 
+                                                                    FROM VDT_Vault_Document_Status_Map__mdt 
+                                                                    WHERE Package_Version__c = :packageVersion
+                                                                    AND Vault_Status__c = :status AND Section__c = :section];
+
+        if (customMetadataWithRecords.containsKey(VDT_VAULT_CRM_STATUSES_MAP)) {
+            configurations = customMetadataWithRecords.get(VDT_VAULT_CRM_STATUSES_MAP);
         }
-        return configurations[0].Status_Value__c;
+        return configurations[0].Document_Status__c;
     }
 
-    public static Map<String, String> getVaultCrmStatusesMap() {
+    public static Map<String, String> getVaultCrmStatusesMap(String section) {
         Map<String, String> statusMap = new Map<String, String>();
         String packageVersion = getPackageVersion();        
         List<VDT_Vault_Document_Status_Map__mdt> configurations = [SELECT Vault_Status__c, Document_Status__c 
                                                                     FROM VDT_Vault_Document_Status_Map__mdt 
-                                                                    WHERE Package_Version__c = :packageVersion];
+                                                                    WHERE Package_Version__c = :packageVersion AND Section__c = :section];
         if (customMetadataWithRecords.containsKey(VDT_VAULT_CRM_STATUSES_MAP)) {
             configurations = customMetadataWithRecords.get(VDT_VAULT_CRM_STATUSES_MAP);
         }
@@ -80,11 +100,13 @@ public inherited sharing class VDT_CustomMetadataService {
         return statusMap;
     }
 
-    public static List<VDT_Vault_Document_Column__mdt> getActiveDocumentColumns() {
+    public static List<VDT_Vault_Document_Column__mdt> getActiveDocumentColumns(String section) {
+        String likeOperator = '%'+ section + '%';
         List<VDT_Vault_Document_Column__mdt> activeColumns = new List<VDT_Vault_Document_Column__mdt>();
         List<VDT_Vault_Document_Column__mdt> configurations = [SELECT MasterLabel, Display_Order__c, Vault_API_Name__c
                                                                 FROM VDT_Vault_Document_Column__mdt 
                                                                 WHERE Is_Active__c = TRUE 
+                                                                AND Sections__c LIKE :likeOperator
                                                                 ORDER BY Display_Order__c ASC];
         if (customMetadataWithRecords.containsKey(VDT_VAULT_COLUMNS)) {
             configurations = customMetadataWithRecords.get(VDT_VAULT_COLUMNS);
@@ -96,7 +118,8 @@ public inherited sharing class VDT_CustomMetadataService {
     }
 
     /**
-     * @description  returns the Field to be used to filter records based on date parameters, if none is found, the `Default_Date_Field__c` from `Default Settings` is returned
+     * @description  returns the Field to be used to filter records based on date parameters, 
+     *               if none is found, the `Default_Date_Field__c` from `Default Settings` is returned
      * @param objectName SObject API Name
      * @return  `String` with the Field API name
      */
@@ -106,7 +129,7 @@ public inherited sharing class VDT_CustomMetadataService {
                                                                          FROM VDT_Object_Date_Field_Mapping__mdt
                                                                          WHERE MasterLabel = :objectName
                                                                          WITH SECURITY_ENFORCED];
-        if (customMetadataWithRecords.containsKey(VDT_DATE_FIELD_MAPPING)) {        
+        if (customMetadataWithRecords.containsKey(VDT_DATE_FIELD_MAPPING)) {
             dateFieldMappings = customMetadataWithRecords.get(VDT_DATE_FIELD_MAPPING);
         }
 
