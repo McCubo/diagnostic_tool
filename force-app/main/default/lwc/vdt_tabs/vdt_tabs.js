@@ -20,7 +20,7 @@ export const TABS = {
         active: false
     },
     users: {
-        name: 'Veeva Users',
+        name: 'CRM Users',
         icon: 'utility:people',
         active: false
     },
@@ -45,7 +45,7 @@ export const TABS = {
         active: false
     },
     vaultDocuments: {
-        name: 'Veeva Vault Documents',
+        name: 'CRM Vault Documents',
         icon: 'utility:open_folder',
         active: false
     }

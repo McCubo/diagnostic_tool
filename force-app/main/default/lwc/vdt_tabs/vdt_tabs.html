@@ -1,111 +1,93 @@
 <template>
     <div class="container">
-        <ul class="slds-has-block-links_space">
-            <template if:true={isHomeVisible}>
-                <li 
-                    class="slds-item"
-                    onclick={handleHomeClick}
-                >
-                    <c-vdt_tab-item
-                        icon-name={_tabs.home.icon}
-                        tab-name={_tabs.home.name}
-                        active={_tabs.home.active}
-                    ></c-vdt_tab-item>
-                </li>
-            </template>
-            <template if:true={isMasterDataVisible}>
-                <li 
-                    class="slds-item"
-                    onclick={handleOnekeyClick}
-                >
-                    <c-vdt_tab-item
-                        icon-name={_tabs.onekey.icon}
-                        tab-name={_tabs.onekey.name}
-                        active={_tabs.onekey.active}
-                    ></c-vdt_tab-item>
-                </li>
-            </template>
-            <template if:true={isObjectAnalysisVisible}>
-                <li 
-                    class="slds-item"
-                    onclick={handleFieldAnalysisClick}
-                >
-                    <c-vdt_tab-item
-                        icon-name={_tabs.fieldAnalysis.icon}
-                        tab-name={_tabs.fieldAnalysis.name}
-                        active={_tabs.fieldAnalysis.active}
-                    ></c-vdt_tab-item>
-                </li>
-            </template>
-            <template if:true={isUsersVisible}>
-                <li 
-                    class="slds-item"
-                    onclick={handleUsersClick}
-                >
-                    <c-vdt_tab-item
-                        icon-name={_tabs.users.icon}
-                        tab-name={_tabs.users.name}
-                        active={_tabs.users.active}
-                    ></c-vdt_tab-item>
-                </li>
-            </template>
-            <template if:true={isProductVisible}>
-                <li 
-                class="slds-item"
-                onclick={handleProductsClick}>
-                    <c-vdt_tab-item
-                        icon-name={_tabs.products.icon}
-                        tab-name={_tabs.products.name}
-                        active={_tabs.products.active}>
-                    </c-vdt_tab-item>
-                </li>
-            </template>
-            <template if:true={isSettingsVisible}>
-                <li 
-                    class="slds-item"
-                    onclick={handleSettingsClick}
-                >
-                    <c-vdt_tab-item
-                        icon-name={_tabs.settings.icon}
-                        tab-name={_tabs.settings.name}
-                        active={_tabs.settings.active}
-                    ></c-vdt_tab-item>
-                </li>
-            </template>
-            <template if:true={isTerritoryAnalysisVisible}>
-                <li 
-                    class="slds-item"
-                    onclick={handleTerritoryClick}
-                >
-                    <c-vdt_tab-item
-                        icon-name={_tabs.territory.icon}
-                        tab-name={_tabs.territory.name}
-                        active={_tabs.territory.active}
-                    ></c-vdt_tab-item>
-                </li>
-            </template>
-            <template if:true={isFieldLevelSecurityVisible}>
-                <li 
-                    class="slds-item"
-                    onclick={handleFLSClick}
-                >
-                    <c-vdt_tab-item
-                        icon-name={_tabs.fieldLevelSecurity.icon}
-                        tab-name={_tabs.fieldLevelSecurity.name}
-                        active={_tabs.fieldLevelSecurity.active}
-                    ></c-vdt_tab-item>
-                </li>
-            </template>
-            <li 
-                class="slds-item"
-                onclick={handleVaultDocumentsClick}
-            >
-                <c-vdt_tab-item
-                    icon-name={_tabs.vaultDocuments.icon}
-                    tab-name={_tabs.vaultDocuments.name}
-                    active={_tabs.vaultDocuments.active}
-                ></c-vdt_tab-item>
-            </li>            
-        </ul>
+        <lightning-accordion active-section-name="crm_section">
+            <lightning-accordion-section name="crm_section" label="CRM Diagnostic Tool">
+                <ul class="slds-has-block-links_space">
+                    <template if:true={isHomeVisible}>
+                        <li class="slds-item" onclick={handleHomeClick}>
+                            <c-vdt_tab-item
+                                icon-name={_tabs.home.icon}
+                                tab-name={_tabs.home.name}
+                                active={_tabs.home.active}>
+                            </c-vdt_tab-item>
+                        </li>
+                    </template>
+                    <template if:true={isMasterDataVisible}>
+                        <li class="slds-item" onclick={handleOnekeyClick}>
+                            <c-vdt_tab-item
+                                icon-name={_tabs.onekey.icon}
+                                tab-name={_tabs.onekey.name}
+                                active={_tabs.onekey.active}>
+                            </c-vdt_tab-item>
+                        </li>
+                    </template>
+                    <template if:true={isObjectAnalysisVisible}>
+                        <li class="slds-item" onclick={handleFieldAnalysisClick}>
+                            <c-vdt_tab-item
+                                icon-name={_tabs.fieldAnalysis.icon}
+                                tab-name={_tabs.fieldAnalysis.name}
+                                active={_tabs.fieldAnalysis.active}>
+                            </c-vdt_tab-item>
+                        </li>
+                    </template>
+                    <template if:true={isUsersVisible}>
+                        <li class="slds-item" onclick={handleUsersClick}>
+                            <c-vdt_tab-item
+                                icon-name={_tabs.users.icon}
+                                tab-name={_tabs.users.name}
+                                active={_tabs.users.active}>
+                            </c-vdt_tab-item>
+                        </li>
+                    </template>
+                    <template if:true={isProductVisible}>
+                        <li class="slds-item" onclick={handleProductsClick}>
+                            <c-vdt_tab-item
+                                icon-name={_tabs.products.icon}
+                                tab-name={_tabs.products.name}
+                                active={_tabs.products.active}>
+                            </c-vdt_tab-item>
+                        </li>
+                    </template>
+                    <template if:true={isSettingsVisible}>
+                        <li class="slds-item" onclick={handleSettingsClick}>
+                            <c-vdt_tab-item
+                                icon-name={_tabs.settings.icon}
+                                tab-name={_tabs.settings.name}
+                                active={_tabs.settings.active}>
+                            </c-vdt_tab-item>
+                        </li>
+                    </template>
+                    <template if:true={isTerritoryAnalysisVisible}>
+                        <li class="slds-item" onclick={handleTerritoryClick}>
+                            <c-vdt_tab-item
+                                icon-name={_tabs.territory.icon}
+                                tab-name={_tabs.territory.name}
+                                active={_tabs.territory.active}
+                            ></c-vdt_tab-item>
+                        </li>
+                    </template>
+                    <template if:true={isFieldLevelSecurityVisible}>
+                        <li class="slds-item" onclick={handleFLSClick}>
+                            <c-vdt_tab-item
+                                icon-name={_tabs.fieldLevelSecurity.icon}
+                                tab-name={_tabs.fieldLevelSecurity.name}
+                                active={_tabs.fieldLevelSecurity.active}>
+                            </c-vdt_tab-item>
+                        </li>
+                    </template>           
+                </ul>
+            </lightning-accordion-section>
+            <lightning-accordion-section name="vault_section" label="Vault System Information">
+                <ul class="slds-has-block-links_space">
+                    <li class="slds-item" onclick={handleVaultDocumentsClick}>
+                        <c-vdt_tab-item
+                            icon-name={_tabs.vaultDocuments.icon}
+                            tab-name={_tabs.vaultDocuments.name}
+                            active={_tabs.vaultDocuments.active}>
+                        </c-vdt_tab-item>
+                    </li> 
+                </ul>
+            </lightning-accordion-section>
+        </lightning-accordion>
     </div>
 </template>
