@@ -1,0 +1,14 @@
+.half-a-border-on-left {
+    position: relative;
+}
+  
+.half-a-border-on-left::after {
+    content: "";
+    position: absolute;
+    width: 1px;
+    left: 0px;
+    height: 82%;
+    background: black;
+    top: 70%;
+    transform: translate(-50%, -50%);
+}

@@ -48,6 +48,11 @@ export const TABS = {
         name: 'CRM Vault Documents',
         icon: 'utility:open_folder',
         active: false
+    },
+    vaultUserKpis : {
+        name: 'User Overview Analysis',
+        icon: 'utility:metrics',
+        active: false
     }
 }
 export const DEFAULT_TAB = TABS.home;
@@ -170,5 +175,10 @@ export default class Vdt_tabs extends LightningElement {
     handleVaultDocumentsClick() {
         Object.values(this._tabs).forEach(tab => tab.active = tab.name === this._tabs.vaultDocuments.name);
         publish(this.messageContext, tabsMessageChannel, {selectedTab: this._tabs.vaultDocuments.name});
+    }
+
+    handleVaultUserKpisClick() {
+        Object.values(this._tabs).forEach(tab => tab.active = tab.name === this._tabs.vaultUserKpis.name);
+        publish(this.messageContext, tabsMessageChannel, {selectedTab: this._tabs.vaultUserKpis.name});
     }
 }

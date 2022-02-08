@@ -41,6 +41,10 @@ export default class Vdt_workspace extends LightningElement {
         return this._selectedTab === TABS.vaultDocuments.name;
     }
 
+    get showVaultUserKpis() {
+        return this._selectedTab === TABS.vaultUserKpis.name;
+    }
+
     handleMessage(message) {
         if (message.selectedTab) {
             this._selectedTab = message.selectedTab;

@@ -85,7 +85,14 @@
                             tab-name={_tabs.vaultDocuments.name}
                             active={_tabs.vaultDocuments.active}>
                         </c-vdt_tab-item>
-                    </li> 
+                    </li>
+                    <li class="slds-item" onclick={handleVaultUserKpisClick}>
+                        <c-vdt_tab-item
+                            icon-name={_tabs.vaultUserKpis.icon}
+                            tab-name={_tabs.vaultUserKpis.name}
+                            active={_tabs.vaultUserKpis.active}>
+                        </c-vdt_tab-item>
+                    </li>
                 </ul>
             </lightning-accordion-section>
         </lightning-accordion>

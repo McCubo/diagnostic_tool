@@ -1,0 +1,23 @@
+<template>
+    <div class="slds-grid slds-wrap slds-gutters">
+        <div class="slds-col slds-size_1-of-2">
+            <div class="slds-grid slds-wrap slds-gutters slds-p-bottom_medium">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input type="date" name="input1" label="Extraction Date" ></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-2 slds-p-top_medium half-a-border-on-left">
+                    <lightning-icon icon-name="action:new_group" alternative-text="# Active Users" title="# Active Users" size="small"></lightning-icon>
+                    <strong> # Active Users: 96</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slds-grid slds-wrap slds-gutters">        
+        <div class="slds-col slds-size_1-of-1">
+            <canvas class="pieChart" style="height:40vh; width:70vw" lwc:dom="manual"></canvas>
+        </div>
+        <div class="slds-col slds-size_1-of-3">
+            <canvas class="barChart" style="height:40vh; width:70vw" lwc:dom="manual"></canvas>
+        </div>
+    </div>
+</template>
